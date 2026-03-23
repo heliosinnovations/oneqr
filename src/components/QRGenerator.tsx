@@ -10,6 +10,14 @@ export default function QRGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generatedUrl, setGeneratedUrl] = useState<string>("");
+
+  // Customization options
+  const [fgColor, setFgColor] = useState("#1a1a1a");
+  const [bgColor, setBgColor] = useState("#ffffff");
+  const [size, setSize] = useState(400);
+  const [errorLevel, setErrorLevel] = useState<"L" | "M" | "Q" | "H">("M");
+  const [showCustomize, setShowCustomize] = useState(false);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const printFrameRef = useRef<HTMLIFrameElement>(null);
 
@@ -34,13 +42,13 @@ export default function QRGenerator() {
     try {
       // Generate QR code as data URL for display and PNG download
       const dataUrl = await QRCode.toDataURL(processedUrl, {
-        width: 400,
+        width: size,
         margin: 2,
         color: {
-          dark: "#1a1a1a",
-          light: "#ffffff",
+          dark: fgColor,
+          light: bgColor,
         },
-        errorCorrectionLevel: "M",
+        errorCorrectionLevel: errorLevel,
       });
       setQrDataUrl(dataUrl);
       setGeneratedUrl(processedUrl);
@@ -48,13 +56,13 @@ export default function QRGenerator() {
       // Generate SVG for SVG download
       const svgString = await QRCode.toString(processedUrl, {
         type: "svg",
-        width: 400,
+        width: size,
         margin: 2,
         color: {
-          dark: "#1a1a1a",
-          light: "#ffffff",
+          dark: fgColor,
+          light: bgColor,
         },
-        errorCorrectionLevel: "M",
+        errorCorrectionLevel: errorLevel,
       });
       setQrSvg(svgString);
     } catch {
@@ -62,7 +70,7 @@ export default function QRGenerator() {
     } finally {
       setIsGenerating(false);
     }
-  }, [url]);
+  }, [url, size, fgColor, bgColor, errorLevel]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -187,6 +195,131 @@ export default function QRGenerator() {
         >
           {error}
         </p>
+      )}
+
+      {/* Customize Toggle */}
+      <button
+        onClick={() => setShowCustomize(!showCustomize)}
+        className="mb-4 flex items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-fg"
+        aria-expanded={showCustomize}
+        aria-controls="customize-panel"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={`h-4 w-4 transition-transform ${showCustomize ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+        Customize QR Code
+      </button>
+
+      {/* Customization Options */}
+      {showCustomize && (
+        <div
+          id="customize-panel"
+          className="mb-6 grid gap-4 border border-border bg-white/50 p-6 md:grid-cols-2"
+        >
+          {/* Foreground Color */}
+          <div>
+            <label
+              htmlFor="fg-color"
+              className="mb-2 block text-xs uppercase tracking-wider text-muted"
+            >
+              Foreground Color
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="color"
+                id="fg-color"
+                value={fgColor}
+                onChange={(e) => setFgColor(e.target.value)}
+                className="h-12 w-16 cursor-pointer rounded border border-border"
+              />
+              <input
+                type="text"
+                value={fgColor}
+                onChange={(e) => setFgColor(e.target.value)}
+                className="flex-1 border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus:border-accent"
+                pattern="^#[0-9A-Fa-f]{6}$"
+              />
+            </div>
+          </div>
+
+          {/* Background Color */}
+          <div>
+            <label
+              htmlFor="bg-color"
+              className="mb-2 block text-xs uppercase tracking-wider text-muted"
+            >
+              Background Color
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="color"
+                id="bg-color"
+                value={bgColor}
+                onChange={(e) => setBgColor(e.target.value)}
+                className="h-12 w-16 cursor-pointer rounded border border-border"
+              />
+              <input
+                type="text"
+                value={bgColor}
+                onChange={(e) => setBgColor(e.target.value)}
+                className="flex-1 border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus:border-accent"
+                pattern="^#[0-9A-Fa-f]{6}$"
+              />
+            </div>
+          </div>
+
+          {/* Size */}
+          <div>
+            <label
+              htmlFor="qr-size"
+              className="mb-2 block text-xs uppercase tracking-wider text-muted"
+            >
+              Size: {size}px
+            </label>
+            <input
+              type="range"
+              id="qr-size"
+              min="200"
+              max="1000"
+              step="50"
+              value={size}
+              onChange={(e) => setSize(Number(e.target.value))}
+              className="w-full"
+            />
+            <div className="mt-1 flex justify-between text-xs text-muted">
+              <span>200px</span>
+              <span>1000px</span>
+            </div>
+          </div>
+
+          {/* Error Correction Level */}
+          <div>
+            <label
+              htmlFor="error-level"
+              className="mb-2 block text-xs uppercase tracking-wider text-muted"
+            >
+              Error Correction
+            </label>
+            <select
+              id="error-level"
+              value={errorLevel}
+              onChange={(e) => setErrorLevel(e.target.value as "L" | "M" | "Q" | "H")}
+              className="w-full border border-border bg-white px-3 py-2 outline-none focus:border-accent"
+            >
+              <option value="L">Low (7%)</option>
+              <option value="M">Medium (15%)</option>
+              <option value="Q">Quartile (25%)</option>
+              <option value="H">High (30%)</option>
+            </select>
+          </div>
+        </div>
       )}
 
       {/* Generate Button */}
