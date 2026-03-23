@@ -359,6 +359,61 @@
       padding: 0 48px;
     }
 
+    /* AD PLACEMENT #3: Sidebar (Desktop only) */
+    .how-it-works-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 64px;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+
+    .ad-sidebar {
+      position: sticky;
+      top: 120px;
+      align-self: start;
+    }
+
+    .ad-sidebar .ad-slot {
+      min-height: 600px;
+    }
+
+    /* AD PLACEMENT #4: Between Pricing Cards */
+    .pricing-grid-with-ad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .ad-pricing-slot {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .ad-pricing-slot::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.02;
+      pointer-events: none;
+    }
+
+    .ad-pricing-slot .ad-slot {
+      min-height: 250px;
+      width: 100%;
+    }
+
     /* PRICING SECTION */
     .pricing {
       padding: 120px 48px;
@@ -647,6 +702,20 @@
       .ad-slot {
         min-height: 50px;
       }
+
+      /* Hide sidebar on mobile */
+      .how-it-works-wrapper {
+        grid-template-columns: 1fr;
+      }
+
+      .ad-sidebar {
+        display: none;
+      }
+
+      /* Stack pricing cards vertically on mobile */
+      .pricing-grid-with-ad {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -737,7 +806,7 @@
         </p>
       </div>
 
-      <div class="pricing-grid">
+      <div class="pricing-grid-with-ad">
         <div class="pricing-card">
           <div class="pricing-tag">Single QR Code</div>
           <div class="pricing-price"><span class="currency">$</span>3.99</div>
@@ -764,41 +833,63 @@
           </ul>
           <button class="pricing-btn">Get Unlimited</button>
         </div>
+
+        <!-- ✨ AD PLACEMENT #4: Between Pricing Cards (300×250) -->
+        <div class="ad-pricing-slot">
+          <div class="ad-label">Advertisement</div>
+          <div class="ad-slot rectangle">
+            📍 AD PLACEMENT #4: Medium Rectangle (300×250)<br>
+            Between Pricing Cards — Native format, looks like a third option
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- How it works -->
   <section class="how-it-works" id="how-it-works">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">
-          How it <span class="italic">works</span>
-        </h2>
+    <div class="how-it-works-wrapper">
+      <div class="how-it-works-content">
+        <div class="section-header">
+          <h2 class="section-title">
+            How it <span class="italic">works</span>
+          </h2>
+        </div>
+
+        <div class="steps-row">
+          <div class="step">
+            <div class="step-number">01</div>
+            <div class="step-content">
+              <h3 class="step-title">Create your <span class="accent">QR</span></h3>
+              <p class="step-desc">Enter any URL. Your QR code generates instantly. Download as PNG or SVG. No account required.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">02</div>
+            <div class="step-content">
+              <h3 class="step-title">Save to your <span class="accent">dashboard</span></h3>
+              <p class="step-desc">Enter your email for magic link access. Your QR lives in the cloud, ready whenever you need it.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">03</div>
+            <div class="step-content">
+              <h3 class="step-title">Edit <span class="accent">forever</span></h3>
+              <p class="step-desc">Pay once. Update the destination URL as many times as you want. The printed QR keeps working.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="steps-row">
-        <div class="step">
-          <div class="step-number">01</div>
-          <div class="step-content">
-            <h3 class="step-title">Create your <span class="accent">QR</span></h3>
-            <p class="step-desc">Enter any URL. Your QR code generates instantly. Download as PNG or SVG. No account required.</p>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-number">02</div>
-          <div class="step-content">
-            <h3 class="step-title">Save to your <span class="accent">dashboard</span></h3>
-            <p class="step-desc">Enter your email for magic link access. Your QR lives in the cloud, ready whenever you need it.</p>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-number">03</div>
-          <div class="step-content">
-            <h3 class="step-title">Edit <span class="accent">forever</span></h3>
-            <p class="step-desc">Pay once. Update the destination URL as many times as you want. The printed QR keeps working.</p>
+      <!-- ✨ AD PLACEMENT #3: Sidebar (Desktop only, 300×600) -->
+      <div class="ad-sidebar">
+        <div class="ad-container">
+          <div class="ad-label">Advertisement</div>
+          <div class="ad-slot">
+            📍 AD PLACEMENT #3: Half-Page (300×600)<br>
+            Sidebar — Desktop only, sticky scroll, newspaper-style column
           </div>
         </div>
       </div>
