@@ -1,4 +1,4 @@
-# OneQR
+# The QR Spot
 
 Simple, honest QR code generator with no limits, no expiring codes, and no tricks. Free to generate, pay once to edit forever.
 
@@ -21,8 +21,8 @@ Simple, honest QR code generator with no limits, no expiring codes, and no trick
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/heliosinnovations/oneqr.git
-   cd oneqr
+   git clone https://github.com/heliosinnovations/theqrspot.git
+   cd theqrspot
    ```
 
 2. Install dependencies:
@@ -53,7 +53,7 @@ Simple, honest QR code generator with no limits, no expiring codes, and no trick
 ## Project Structure
 
 ```
-oneqr/
+theqrspot/
 ├── src/
 │   ├── app/
 │   │   ├── globals.css    # Global styles + design tokens

@@ -9,9 +9,9 @@ export default function PrivacyPage() {
           <section className="mb-12">
             <h2 className="text-3xl font-serif mb-4">Who We Are</h2>
             <p>
-              OneQR is a QR code generator service operated by Helios Innovations. Our website address is:{" "}
-              <a href="https://oneqr.vercel.app" className="text-[#ff4d00] hover:underline">
-                https://oneqr.vercel.app
+              The QR Spot is a QR code generator service operated by Helios Innovations. Our website address is:{" "}
+              <a href="https://theqrspot.com" className="text-[#ff4d00] hover:underline">
+                https://theqrspot.com
               </a>
             </p>
           </section>
@@ -183,7 +183,7 @@ export default function PrivacyPage() {
 
           <section className="mb-12">
             <h2 className="text-3xl font-serif mb-4">Children's Privacy</h2>
-            <p>OneQR is not intended for users under 13. We do not knowingly collect data from children.</p>
+            <p>The QR Spot is not intended for users under 13. We do not knowingly collect data from children.</p>
           </section>
 
           <section className="mb-12">
@@ -214,8 +214,8 @@ export default function PrivacyPage() {
               </li>
               <li>
                 Website:{" "}
-                <a href="https://oneqr.vercel.app" className="text-[#ff4d00] hover:underline">
-                  https://oneqr.vercel.app
+                <a href="https://theqrspot.com" className="text-[#ff4d00] hover:underline">
+                  https://theqrspot.com
                 </a>
               </li>
             </ul>

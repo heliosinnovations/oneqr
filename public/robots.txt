@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://oneqr-kappa.vercel.app/sitemap.xml
+Sitemap: https://theqrspot.com/sitemap.xml
 
 # Block crawling of search results
 Disallow: /api/

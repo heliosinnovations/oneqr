@@ -24,9 +24,9 @@ export default function Home() {
             <Link
               href="/"
               className="font-serif text-[28px] italic text-fg"
-              aria-label="OneQR - Home"
+              aria-label="The QR Spot - Home"
             >
-              One<span className="text-accent">QR</span>
+              The QR <span className="text-accent">Spot</span>
             </Link>
 
             {/* Nav Links - Hidden on mobile */}
@@ -336,7 +336,7 @@ export default function Home() {
         <div className="mx-auto grid max-w-7xl items-center gap-6 md:grid-cols-3">
           {/* Logo */}
           <div className="font-serif text-2xl italic text-fg">
-            One<span className="text-accent">QR</span>
+            The QR <span className="text-accent">Spot</span>
           </div>
 
           {/* Links */}

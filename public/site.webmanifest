@@ -1,6 +1,6 @@
 {
-  "name": "OneQR - Free QR Code Generator",
-  "short_name": "OneQR",
+  "name": "The QR Spot - Free QR Code Generator",
+  "short_name": "The QR Spot",
   "description": "Generate unlimited QR codes for free. Create, download, and print instantly.",
   "start_url": "/",
   "display": "standalone",

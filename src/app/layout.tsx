@@ -15,13 +15,13 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const siteUrl = "https://oneqr-kappa.vercel.app";
+const siteUrl = "https://theqrspot.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Free QR Code Generator | OneQR - Create, Download, Print",
+  title: "Free QR Code Generator | The QR Spot - Create, Download, Print",
   description:
-    "Generate unlimited QR codes for free with OneQR. Create, download as PNG or SVG, and print instantly. No signup required, no expiration, no hidden fees. The simplest QR code maker online.",
+    "Generate unlimited QR codes for free with The QR Spot. Create, download as PNG or SVG, and print instantly. No signup required, no expiration, no hidden fees. The simplest QR code maker online.",
   keywords: [
     "free QR code generator",
     "QR code maker",
@@ -51,8 +51,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: siteUrl,
-    siteName: "OneQR",
-    title: "Free QR Code Generator | OneQR - Create, Download, Print",
+    siteName: "The QR Spot",
+    title: "Free QR Code Generator | The QR Spot - Create, Download, Print",
     description:
       "Generate unlimited QR codes for free. Create, download as PNG or SVG, and print instantly. No signup, no expiration, no hidden fees.",
     images: [
@@ -60,13 +60,13 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "OneQR - Free QR Code Generator",
+        alt: "The QR Spot - Free QR Code Generator",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free QR Code Generator | OneQR - Create, Download, Print",
+    title: "Free QR Code Generator | The QR Spot - Create, Download, Print",
     description:
       "Generate unlimited QR codes for free. Create, download as PNG or SVG, and print instantly. No signup, no expiration, no hidden fees.",
     images: ["/og-image.png"],
@@ -97,10 +97,10 @@ export const viewport: Viewport = {
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "OneQR",
+  name: "The QR Spot",
   url: siteUrl,
   description:
-    "Generate unlimited QR codes for free with OneQR. Create, download as PNG or SVG, and print instantly.",
+    "Generate unlimited QR codes for free with The QR Spot. Create, download as PNG or SVG, and print instantly.",
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -114,7 +114,7 @@ const websiteSchema = {
 const webApplicationSchema = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "OneQR",
+  name: "The QR Spot",
   url: siteUrl,
   applicationCategory: "UtilitiesApplication",
   operatingSystem: "Any",

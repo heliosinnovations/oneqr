@@ -10,9 +10,9 @@ export default function FAQPage() {
 
             <div className="space-y-6">
               <div>
-                <h3 className="text-xl font-semibold mb-2">What is OneQR?</h3>
+                <h3 className="text-xl font-semibold mb-2">What is The QR Spot?</h3>
                 <p className="text-gray-700">
-                  OneQR is a QR code generator that lets you create QR codes for free, download them, and optionally
+                  The QR Spot is a QR code generator that lets you create QR codes for free, download them, and optionally
                   make them editable forever. Unlike other services, your QR codes never expire and there are no hidden
                   limits.
                 </p>
@@ -144,7 +144,7 @@ export default function FAQPage() {
               <div>
                 <h3 className="text-xl font-semibold mb-2">How do editable QR codes work?</h3>
                 <p className="text-gray-700">
-                  When you make a QR code editable, it redirects through our service (e.g., <code>oneqr.app/abc123</code>
+                  When you make a QR code editable, it redirects through our service (e.g., <code>theqrspot.com/abc123</code>
                   ). You can change the destination URL in your dashboard, and the QR code automatically updates.
                 </p>
               </div>
@@ -328,8 +328,8 @@ export default function FAQPage() {
               </li>
               <li>
                 Website:{" "}
-                <a href="https://oneqr.vercel.app" className="text-[#ff4d00] hover:underline">
-                  https://oneqr.vercel.app
+                <a href="https://theqrspot.com" className="text-[#ff4d00] hover:underline">
+                  https://theqrspot.com
                 </a>
               </li>
             </ul>
