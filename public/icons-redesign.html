@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneQR - Icon Redesign Variations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 48px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .accent {
+      color: #ff4d00;
+      font-style: italic;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 60px;
+      font-size: 18px;
+    }
+
+    .variation {
+      background: #1a1a1a;
+      color: #fafafa;
+      padding: 60px 40px;
+      margin-bottom: 40px;
+      border-radius: 2px;
+    }
+
+    .variation-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 32px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .variation-desc {
+      text-align: center;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 40px;
+      font-size: 15px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .feature {
+      background: #1a1a1a;
+      padding: 40px;
+      position: relative;
+    }
+
+    .feature h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    .feature p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* Variation 1: Minimalist Line Icons */
+    .v1-icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 24px;
+      stroke: #ff4d00;
+      stroke-width: 1.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Variation 2: Bold Geometric Icons */
+    .v2-icon {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 24px;
+      fill: #ff4d00;
+    }
+
+    /* Variation 3: Outlined with Background Circle */
+    .v3-icon-wrapper {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 24px;
+      background: rgba(255, 77, 0, 0.1);
+      border: 1.5px solid #ff4d00;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .v3-icon {
+      width: 32px;
+      height: 32px;
+      stroke: #ff4d00;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @media (max-width: 768px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Icon <span class="accent">Redesign</span></h1>
+    <p class="subtitle">Three editorial-appropriate approaches for OneQR features</p>
+
+    <!-- Variation 1: Minimalist Line Icons -->
+    <div class="variation">
+      <h2 class="variation-title">Variation 1: <span class="accent">Minimalist Lines</span></h2>
+      <p class="variation-desc">Clean, editorial stroke-based icons. Think New York Times meets Stripe.</p>
+
+      <div class="features-grid">
+        <div class="feature">
+          <svg class="v1-icon" viewBox="0 0 24 24">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          <h3>Instant Generation</h3>
+          <p>Enter a URL, get a QR code. Download PNG or SVG. No signup, no wait.</p>
+        </div>
+
+        <div class="feature">
+          <svg class="v1-icon" viewBox="0 0 24 24">
+            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+          </svg>
+          <h3>Cloud Storage</h3>
+          <p>Save QR codes to your dashboard. Access from anywhere with magic link login.</p>
+        </div>
+
+        <div class="feature">
+          <svg class="v1-icon" viewBox="0 0 24 24">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          <h3>No Limits</h3>
+          <p>Create unlimited QR codes. Download as many times as you want. Forever free.</p>
+        </div>
+
+        <div class="feature">
+          <svg class="v1-icon" viewBox="0 0 24 24">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          <h3>Optional Editing</h3>
+          <p>Need to change where your QR points? Unlock editing for a small one-time fee.</p>
+        </div>
+
+        <div class="feature">
+          <svg class="v1-icon" viewBox="0 0 24 24">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          <h3>Scan Analytics</h3>
+          <p>Track how many people scan your QR codes. See what's working.</p>
+        </div>
+
+        <div class="feature">
+          <svg class="v1-icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <h3>Never Expires</h3>
+          <p>Your QR codes work forever. No monthly fees, no surprise charges.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variation 2: Bold Geometric Icons -->
+    <div class="variation">
+      <h2 class="variation-title">Variation 2: <span class="accent">Bold Geometric</span></h2>
+      <p class="variation-desc">Strong shapes with solid fills. Confident and modern.</p>
+
+      <div class="features-grid">
+        <div class="feature">
+          <svg class="v2-icon" viewBox="0 0 24 24">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          <h3>Instant Generation</h3>
+          <p>Enter a URL, get a QR code. Download PNG or SVG. No signup, no wait.</p>
+        </div>
+
+        <div class="feature">
+          <svg class="v2-icon" viewBox="0 0 24 24">
+            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+          </svg>
+          <h3>Cloud Storage</h3>
+          <p>Save QR codes to your dashboard. Access from anywhere with magic link login.</p>
+        </div>
+
+        <div class="feature">
+          <svg class="v2-icon" viewBox="0 0 24 24">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+          </svg>
+          <h3>No Limits</h3>
+          <p>Create unlimited QR codes. Download as many times as you want. Forever free.</p>
+        </div>
+
+        <div class="feature">
+          <svg class="v2-icon" viewBox="0 0 24 24">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+          <h3>Optional Editing</h3>
+          <p>Need to change where your QR points? Unlock editing for a small one-time fee.</p>
+        </div>
+
+        <div class="feature">
+          <svg class="v2-icon" viewBox="0 0 24 24">
+            <path d="M3 3v18h18"/>
+            <path d="M18 17V9"/>
+            <path d="M13 17V5"/>
+            <path d="M8 17v-3"/>
+          </svg>
+          <h3>Scan Analytics</h3>
+          <p>Track how many people scan your QR codes. See what's working.</p>
+        </div>
+
+        <div class="feature">
+          <svg class="v2-icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+          <h3>Never Expires</h3>
+          <p>Your QR codes work forever. No monthly fees, no surprise charges.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variation 3: Outlined with Circle Background -->
+    <div class="variation">
+      <h2 class="variation-title">Variation 3: <span class="accent">Framed Icons</span></h2>
+      <p class="variation-desc">Icons in circular frames. Balanced and polished.</p>
+
+      <div class="features-grid">
+        <div class="feature">
+          <div class="v3-icon-wrapper">
+            <svg class="v3-icon" viewBox="0 0 24 24">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <h3>Instant Generation</h3>
+          <p>Enter a URL, get a QR code. Download PNG or SVG. No signup, no wait.</p>
+        </div>
+
+        <div class="feature">
+          <div class="v3-icon-wrapper">
+            <svg class="v3-icon" viewBox="0 0 24 24">
+              <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+            </svg>
+          </div>
+          <h3>Cloud Storage</h3>
+          <p>Save QR codes to your dashboard. Access from anywhere with magic link login.</p>
+        </div>
+
+        <div class="feature">
+          <div class="v3-icon-wrapper">
+            <svg class="v3-icon" viewBox="0 0 24 24">
+              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+            </svg>
+          </div>
+          <h3>No Limits</h3>
+          <p>Create unlimited QR codes. Download as many times as you want. Forever free.</p>
+        </div>
+
+        <div class="feature">
+          <div class="v3-icon-wrapper">
+            <svg class="v3-icon" viewBox="0 0 24 24">
+              <path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+          </div>
+          <h3>Optional Editing</h3>
+          <p>Need to change where your QR points? Unlock editing for a small one-time fee.</p>
+        </div>
+
+        <div class="feature">
+          <div class="v3-icon-wrapper">
+            <svg class="v3-icon" viewBox="0 0 24 24">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <h3>Scan Analytics</h3>
+          <p>Track how many people scan your QR codes. See what's working.</p>
+        </div>
+
+        <div class="feature">
+          <div class="v3-icon-wrapper">
+            <svg class="v3-icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <h3>Never Expires</h3>
+          <p>Your QR codes work forever. No monthly fees, no surprise charges.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
