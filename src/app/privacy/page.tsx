@@ -131,8 +131,8 @@ export default function PrivacyPage() {
             </ul>
             <p className="mt-4">
               To exercise these rights, contact us at:{" "}
-              <a href="mailto:privacy@heliosinnovations.com" className="text-[#ff4d00] hover:underline">
-                privacy@heliosinnovations.com
+              <a href="mailto:info@heliosinnovations.org" className="text-[#ff4d00] hover:underline">
+                info@heliosinnovations.org
               </a>
             </p>
           </section>
@@ -208,8 +208,8 @@ export default function PrivacyPage() {
             <ul className="list-disc pl-6 space-y-2">
               <li>
                 Email:{" "}
-                <a href="mailto:privacy@heliosinnovations.com" className="text-[#ff4d00] hover:underline">
-                  privacy@heliosinnovations.com
+                <a href="mailto:info@heliosinnovations.org" className="text-[#ff4d00] hover:underline">
+                  info@heliosinnovations.org
                 </a>
               </li>
               <li>

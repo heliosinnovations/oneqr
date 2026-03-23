@@ -60,7 +60,7 @@ You have the right to:
 - **Portability**: Export your data in a machine-readable format
 - **Object**: Opt out of certain data processing activities
 
-To exercise these rights, contact us at: privacy@heliosinnovations.com
+To exercise these rights, contact us at: info@heliosinnovations.org
 
 ## Third-Party Services
 
@@ -100,7 +100,7 @@ We may update this policy from time to time. Changes will be posted on this page
 ## Contact Us
 
 For privacy-related questions or requests:
-- Email: privacy@heliosinnovations.com
+- Email: info@heliosinnovations.org
 - Website: https://oneqr.vercel.app
 
 ---

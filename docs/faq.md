@@ -55,7 +55,7 @@ An account lets you:
 We use magic links—no passwords needed. Enter your email, click the link we send you, and you're in.
 
 ### Can I delete my account?
-Yes. Contact us at support@heliosinnovations.com and we'll delete all your data within 7 days.
+Yes. Contact us at info@heliosinnovations.org and we'll delete all your data within 7 days.
 
 ## Editing & Analytics
 
@@ -86,7 +86,7 @@ We accept credit cards, debit cards, Apple Pay, and Google Pay via Stripe.
 No! All payments are one-time only. No recurring charges, no hidden fees.
 
 ### What if I want a refund?
-If you're not satisfied within 30 days, email us at support@heliosinnovations.com for a full refund.
+If you're not satisfied within 30 days, email us at info@heliosinnovations.org for a full refund.
 
 ### Do you offer discounts for bulk purchases?
 Not yet, but we're working on it! Contact us for custom pricing on large orders.
@@ -138,7 +138,7 @@ If it's an editable QR code, check your dashboard to see what URL it's set to. I
 ## Still Have Questions?
 
 Contact us at:
-- Email: support@heliosinnovations.com
+- Email: info@heliosinnovations.org
 - Website: https://oneqr.vercel.app
 
 We typically respond within 24 hours.

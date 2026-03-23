@@ -131,7 +131,7 @@ export default function FAQPage() {
               <div>
                 <h3 className="text-xl font-semibold mb-2">Can I delete my account?</h3>
                 <p className="text-gray-700">
-                  Yes. Contact us at support@heliosinnovations.com and we&apos;ll delete all your data within 7 days.
+                  Yes. Contact us at info@heliosinnovations.org and we&apos;ll delete all your data within 7 days.
                 </p>
               </div>
             </div>
@@ -198,7 +198,7 @@ export default function FAQPage() {
               <div>
                 <h3 className="text-xl font-semibold mb-2">What if I want a refund?</h3>
                 <p className="text-gray-700">
-                  If you&apos;re not satisfied within 30 days, email us at support@heliosinnovations.com for a full
+                  If you&apos;re not satisfied within 30 days, email us at info@heliosinnovations.org for a full
                   refund.
                 </p>
               </div>
@@ -322,8 +322,8 @@ export default function FAQPage() {
             <ul className="list-disc pl-6 space-y-1 text-gray-700">
               <li>
                 Email:{" "}
-                <a href="mailto:support@heliosinnovations.com" className="text-[#ff4d00] hover:underline">
-                  support@heliosinnovations.com
+                <a href="mailto:info@heliosinnovations.org" className="text-[#ff4d00] hover:underline">
+                  info@heliosinnovations.org
                 </a>
               </li>
               <li>
