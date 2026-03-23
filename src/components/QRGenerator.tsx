@@ -9,6 +9,7 @@ export default function QRGenerator() {
   const [qrSvg, setQrSvg] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [generatedUrl, setGeneratedUrl] = useState<string>("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const printFrameRef = useRef<HTMLIFrameElement>(null);
 
@@ -42,6 +43,7 @@ export default function QRGenerator() {
         errorCorrectionLevel: "M",
       });
       setQrDataUrl(dataUrl);
+      setGeneratedUrl(processedUrl);
 
       // Generate SVG for SVG download
       const svgString = await QRCode.toString(processedUrl, {
@@ -62,7 +64,7 @@ export default function QRGenerator() {
     }
   }, [url]);
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       generateQR();
     }
@@ -100,9 +102,11 @@ export default function QRGenerator() {
     if (printWindow) {
       printWindow.document.write(`
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
           <head>
-            <title>Print QR Code</title>
+            <title>Print QR Code - OneQR</title>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
               body {
                 display: flex;
@@ -125,7 +129,7 @@ export default function QRGenerator() {
             </style>
           </head>
           <body>
-            <img src="${qrDataUrl}" alt="QR Code" />
+            <img src="${qrDataUrl}" alt="QR Code for ${generatedUrl}" />
           </body>
         </html>
       `);
@@ -134,41 +138,69 @@ export default function QRGenerator() {
         printWindow.print();
       };
     }
-  }, [qrDataUrl]);
+  }, [qrDataUrl, generatedUrl]);
 
   return (
-    <div className="relative bg-surface p-8 md:p-12">
+    <div
+      className="relative bg-surface p-8 md:p-12"
+      role="form"
+      aria-label="QR Code Generator"
+    >
       {/* "TRY IT NOW" label */}
-      <div className="absolute -top-3 left-8 bg-accent px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white">
+      <div
+        className="absolute -top-3 left-8 bg-accent px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white"
+        aria-hidden="true"
+      >
         Try it now
       </div>
 
       {/* Input Section */}
       <div className="mb-8">
-        <label className="mb-4 block text-xs uppercase tracking-widest text-muted">
+        <label
+          htmlFor="qr-url-input"
+          className="mb-4 block text-xs uppercase tracking-widest text-muted"
+        >
           Enter Your URL
         </label>
         <input
-          type="text"
+          id="qr-url-input"
+          type="url"
+          inputMode="url"
+          autoComplete="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyDown}
           placeholder="https://yoursite.com"
           className="w-full border-b-2 border-border bg-transparent pb-5 pt-2 font-serif text-xl text-fg outline-none transition-colors placeholder:italic placeholder:text-muted focus:border-accent md:text-2xl"
+          aria-describedby={error ? "qr-error" : undefined}
+          aria-invalid={error ? "true" : "false"}
         />
       </div>
 
       {/* Error Message */}
-      {error && <p className="mb-4 text-sm font-medium text-accent">{error}</p>}
+      {error && (
+        <p
+          id="qr-error"
+          className="mb-4 text-sm font-medium text-accent"
+          role="alert"
+          aria-live="polite"
+        >
+          {error}
+        </p>
+      )}
 
       {/* Generate Button */}
       <button
         onClick={generateQR}
         disabled={isGenerating}
-        className="flex w-full items-center justify-center gap-3 bg-fg px-8 py-5 text-base font-semibold text-bg transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-3 bg-fg px-8 py-5 text-base font-semibold text-bg transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        aria-busy={isGenerating}
       >
         {isGenerating ? (
-          "Generating..."
+          <>
+            <span className="sr-only">Generating QR code, please wait</span>
+            <span aria-hidden="true">Generating...</span>
+          </>
         ) : (
           <>
             Generate QR Code
@@ -178,6 +210,7 @@ export default function QRGenerator() {
               stroke="currentColor"
               strokeWidth="2"
               className="h-5 w-5"
+              aria-hidden="true"
             >
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
@@ -187,21 +220,29 @@ export default function QRGenerator() {
 
       {/* QR Code Display */}
       {qrDataUrl && (
-        <div className="mt-8">
-          {/* QR Code Image */}
-          <div className="mb-6 flex justify-center rounded-none border border-border bg-white p-6">
+        <div className="mt-8" role="region" aria-label="Generated QR Code">
+          {/* QR Code Image - using img for data URL which can't be optimized by Next.js Image */}
+          <figure className="mb-6 flex justify-center rounded-none border border-border bg-white p-6">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={qrDataUrl}
-              alt="Generated QR Code"
+              alt={`QR code linking to ${generatedUrl}`}
               className="h-48 w-48 md:h-56 md:w-56"
+              width={224}
+              height={224}
             />
-          </div>
+          </figure>
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-3 gap-3">
+          <div
+            className="grid grid-cols-3 gap-3"
+            role="group"
+            aria-label="Download and print options"
+          >
             <button
               onClick={downloadPNG}
-              className="flex items-center justify-center gap-2 border border-border bg-transparent px-4 py-3 text-sm font-medium text-fg transition-colors hover:border-fg hover:bg-fg hover:text-bg"
+              className="flex items-center justify-center gap-2 border border-border bg-transparent px-4 py-3 text-sm font-medium text-fg transition-colors hover:border-fg hover:bg-fg hover:text-bg focus:outline-none focus:ring-2 focus:ring-accent"
+              aria-label="Download QR code as PNG image"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -209,6 +250,7 @@ export default function QRGenerator() {
                 stroke="currentColor"
                 strokeWidth="2"
                 className="h-4 w-4"
+                aria-hidden="true"
               >
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="7 10 12 15 17 10" />
@@ -218,7 +260,8 @@ export default function QRGenerator() {
             </button>
             <button
               onClick={downloadSVG}
-              className="flex items-center justify-center gap-2 border border-border bg-transparent px-4 py-3 text-sm font-medium text-fg transition-colors hover:border-fg hover:bg-fg hover:text-bg"
+              className="flex items-center justify-center gap-2 border border-border bg-transparent px-4 py-3 text-sm font-medium text-fg transition-colors hover:border-fg hover:bg-fg hover:text-bg focus:outline-none focus:ring-2 focus:ring-accent"
+              aria-label="Download QR code as SVG vector"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -226,6 +269,7 @@ export default function QRGenerator() {
                 stroke="currentColor"
                 strokeWidth="2"
                 className="h-4 w-4"
+                aria-hidden="true"
               >
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="7 10 12 15 17 10" />
@@ -235,7 +279,8 @@ export default function QRGenerator() {
             </button>
             <button
               onClick={printQR}
-              className="flex items-center justify-center gap-2 border border-border bg-transparent px-4 py-3 text-sm font-medium text-fg transition-colors hover:border-fg hover:bg-fg hover:text-bg"
+              className="flex items-center justify-center gap-2 border border-border bg-transparent px-4 py-3 text-sm font-medium text-fg transition-colors hover:border-fg hover:bg-fg hover:text-bg focus:outline-none focus:ring-2 focus:ring-accent"
+              aria-label="Print QR code"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -243,6 +288,7 @@ export default function QRGenerator() {
                 stroke="currentColor"
                 strokeWidth="2"
                 className="h-4 w-4"
+                aria-hidden="true"
               >
                 <polyline points="6 9 6 2 18 2 18 9" />
                 <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
@@ -260,8 +306,13 @@ export default function QRGenerator() {
       </p>
 
       {/* Hidden canvas for potential future use */}
-      <canvas ref={canvasRef} className="hidden" />
-      <iframe ref={printFrameRef} className="hidden" title="Print Frame" />
+      <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
+      <iframe
+        ref={printFrameRef}
+        className="hidden"
+        title="Print Frame"
+        aria-hidden="true"
+      />
     </div>
   );
 }

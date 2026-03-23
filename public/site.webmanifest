@@ -1,0 +1,22 @@
+{
+  "name": "OneQR - Free QR Code Generator",
+  "short_name": "OneQR",
+  "description": "Generate unlimited QR codes for free. Create, download, and print instantly.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fffef9",
+  "theme_color": "#fffef9",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
