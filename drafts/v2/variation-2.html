@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneQR - Retro-Futuristic Design</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0f23;
+      --fg: #ffffff;
+      --pink: #ff2d92;
+      --purple: #7b2dff;
+      --cyan: #00e5ff;
+      --yellow: #ffe600;
+      --orange: #ff6b35;
+      --gradient-1: linear-gradient(135deg, var(--pink) 0%, var(--purple) 100%);
+      --gradient-2: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%);
+      --gradient-3: linear-gradient(135deg, var(--yellow) 0%, var(--orange) 100%);
+      --surface: #1a1a35;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .syne {
+      font-family: 'Syne', sans-serif;
+    }
+
+    /* Animated gradient orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb-1 {
+      width: 600px;
+      height: 600px;
+      background: var(--pink);
+      top: -200px;
+      right: -100px;
+      animation: float1 20s ease-in-out infinite;
+    }
+
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      background: var(--cyan);
+      bottom: -100px;
+      left: -150px;
+      animation: float2 25s ease-in-out infinite;
+    }
+
+    .orb-3 {
+      width: 400px;
+      height: 400px;
+      background: var(--purple);
+      top: 50%;
+      left: 50%;
+      animation: float3 30s ease-in-out infinite;
+    }
+
+    @keyframes float1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(-50px, 50px) scale(1.1); }
+      66% { transform: translate(30px, -30px) scale(0.9); }
+    }
+
+    @keyframes float2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(80px, -50px) scale(1.15); }
+    }
+
+    @keyframes float3 {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-60%, -40%) scale(1.2); }
+    }
+
+    /* Scanlines overlay */
+    .scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* NAVIGATION */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 16px 24px;
+    }
+
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+      background: rgba(26, 26, 53, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 12px 12px 12px 28px;
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 24px;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--fg);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 100px;
+      opacity: 0.7;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-cta {
+      background: var(--gradient-1);
+      color: white;
+      padding: 12px 28px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 14px;
+      border: none;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .nav-cta:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 40px rgba(255, 45, 146, 0.4);
+    }
+
+    /* HERO SECTION */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 32px;
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-badge .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--cyan);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(48px, 12vw, 140px);
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -4px;
+      margin-bottom: 32px;
+    }
+
+    .hero h1 .gradient {
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero h1 .outline {
+      color: transparent;
+      -webkit-text-stroke: 2px var(--fg);
+    }
+
+    .hero-tagline {
+      font-size: 20px;
+      opacity: 0.7;
+      max-width: 500px;
+      margin-bottom: 48px;
+    }
+
+    /* QR Generator Widget */
+    .qr-generator {
+      background: rgba(26, 26, 53, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 8px;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .qr-input-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .qr-input {
+      flex: 1;
+      padding: 20px 24px;
+      background: transparent;
+      border: none;
+      color: var(--fg);
+      font-family: inherit;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .qr-input::placeholder {
+      opacity: 0.4;
+    }
+
+    .qr-generate-btn {
+      padding: 20px 40px;
+      background: var(--gradient-1);
+      color: white;
+      border: none;
+      border-radius: 18px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .qr-generate-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 10px 40px rgba(255, 45, 146, 0.4);
+    }
+
+    .qr-hint {
+      margin-top: 16px;
+      font-size: 14px;
+      opacity: 0.5;
+    }
+
+    /* Floating QR decorations */
+    .floating-qr {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      z-index: 0;
+    }
+
+    .floating-qr.left {
+      left: 5%;
+      top: 30%;
+      transform: rotate(-12deg);
+      animation: floatQR1 6s ease-in-out infinite;
+    }
+
+    .floating-qr.right {
+      right: 8%;
+      top: 40%;
+      transform: rotate(8deg);
+      animation: floatQR2 7s ease-in-out infinite;
+    }
+
+    @keyframes floatQR1 {
+      0%, 100% { transform: rotate(-12deg) translateY(0); }
+      50% { transform: rotate(-8deg) translateY(-20px); }
+    }
+
+    @keyframes floatQR2 {
+      0%, 100% { transform: rotate(8deg) translateY(0); }
+      50% { transform: rotate(12deg) translateY(-15px); }
+    }
+
+    /* PRICING SECTION */
+    .pricing {
+      padding: 120px 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pricing .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .section-tag {
+      display: inline-block;
+      padding: 8px 20px;
+      background: var(--gradient-2);
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: -2px;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .pricing-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      padding: 48px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .pricing-card.featured {
+      background: var(--gradient-1);
+      border: none;
+    }
+
+    .pricing-card.featured::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.2) 100%);
+    }
+
+    .pricing-card-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .pricing-label-top {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      opacity: 0.7;
+      margin-bottom: 16px;
+    }
+
+    .pricing-price {
+      font-family: 'Syne', sans-serif;
+      font-size: 72px;
+      font-weight: 800;
+      letter-spacing: -3px;
+      margin-bottom: 8px;
+    }
+
+    .pricing-price .currency {
+      font-size: 36px;
+      opacity: 0.7;
+      vertical-align: top;
+    }
+
+    .pricing-label {
+      font-size: 16px;
+      opacity: 0.7;
+      margin-bottom: 32px;
+    }
+
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 32px;
+    }
+
+    .pricing-features li {
+      padding: 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 15px;
+    }
+
+    .pricing-features li::before {
+      content: '✦';
+      color: var(--cyan);
+    }
+
+    .pricing-card.featured .pricing-features li::before {
+      color: var(--yellow);
+    }
+
+    .pricing-btn {
+      width: 100%;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 16px;
+      color: white;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .pricing-btn:hover {
+      background: white;
+      color: var(--bg);
+    }
+
+    .pricing-card.featured .pricing-btn {
+      background: white;
+      color: var(--pink);
+      border-color: white;
+    }
+
+    .pricing-card.featured .pricing-btn:hover {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: var(--bg);
+    }
+
+    /* HOW IT WORKS */
+    .how-it-works {
+      padding: 120px 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .how-it-works .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 64px;
+    }
+
+    .step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      padding: 48px 32px;
+      text-align: center;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .step:hover {
+      transform: translateY(-8px);
+      border-color: var(--pink);
+    }
+
+    .step-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+
+    .step:nth-child(1) .step-icon { background: var(--gradient-1); }
+    .step:nth-child(2) .step-icon { background: var(--gradient-2); }
+    .step:nth-child(3) .step-icon { background: var(--gradient-3); }
+
+    .step-number {
+      position: absolute;
+      top: 24px;
+      right: 32px;
+      font-family: 'Syne', sans-serif;
+      font-size: 64px;
+      font-weight: 800;
+      opacity: 0.1;
+    }
+
+    .step-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .step-desc {
+      opacity: 0.7;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    footer .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--fg);
+      text-decoration: none;
+      font-size: 14px;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+    }
+
+    .footer-links a:hover {
+      opacity: 1;
+    }
+
+    .footer-copy {
+      font-size: 14px;
+      opacity: 0.3;
+    }
+
+    /* ========================================
+       DASHBOARD PAGE
+       ======================================== */
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .dashboard-header {
+      padding: 100px 24px 48px;
+    }
+
+    .dashboard-header .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .dashboard-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: -2px;
+    }
+
+    .dashboard-subtitle {
+      font-size: 16px;
+      opacity: 0.5;
+      margin-top: 8px;
+    }
+
+    .btn-create-new {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 32px;
+      background: var(--gradient-1);
+      color: white;
+      border: none;
+      border-radius: 100px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-create-new:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 40px rgba(255, 45, 146, 0.4);
+    }
+
+    .btn-create-new svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* QR Grid */
+    .qr-grid {
+      padding: 0 24px 80px;
+    }
+
+    .qr-grid .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .qr-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .qr-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--pink);
+    }
+
+    .qr-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .qr-thumb {
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-thumb svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .qr-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .qr-status.paid {
+      background: rgba(0, 229, 255, 0.2);
+      color: var(--cyan);
+    }
+
+    .qr-status.unpaid {
+      background: rgba(255, 45, 146, 0.2);
+      color: var(--pink);
+    }
+
+    .qr-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .qr-url {
+      margin-bottom: 16px;
+    }
+
+    .qr-url-short {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .qr-url-dest {
+      font-size: 14px;
+      opacity: 0.5;
+      margin-top: 4px;
+      word-break: break-all;
+    }
+
+    .qr-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      opacity: 0.5;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .qr-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .qr-action-btn {
+      flex: 1;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .qr-action-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: var(--fg);
+    }
+
+    .qr-action-btn.primary {
+      background: var(--gradient-1);
+      border: none;
+    }
+
+    .qr-action-btn.primary:hover {
+      transform: scale(1.02);
+    }
+
+    /* ========================================
+       EDIT MODAL
+       ======================================== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 15, 35, 0.95);
+      backdrop-filter: blur(20px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      max-width: 480px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      padding: 32px 32px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      background: var(--pink);
+    }
+
+    .modal-body {
+      padding: 32px;
+    }
+
+    /* QR Preview */
+    .modal-qr-preview {
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+
+    .modal-qr-preview svg {
+      width: 140px;
+      height: 140px;
+    }
+
+    /* Paywall */
+    .paywall {
+      background: var(--gradient-1);
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .paywall::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.2) 100%);
+    }
+
+    .paywall-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .paywall-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .paywall-icon svg {
+      width: 28px;
+      height: 28px;
+      stroke: white;
+    }
+
+    .paywall-price {
+      font-family: 'Syne', sans-serif;
+      font-size: 56px;
+      font-weight: 800;
+      letter-spacing: -2px;
+      margin-bottom: 8px;
+    }
+
+    .paywall-label {
+      font-size: 16px;
+      opacity: 0.8;
+      margin-bottom: 28px;
+    }
+
+    .paywall-btn {
+      width: 100%;
+      padding: 18px;
+      background: white;
+      border: none;
+      border-radius: 16px;
+      color: var(--pink);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .paywall-btn:hover {
+      background: var(--yellow);
+      color: var(--bg);
+      transform: scale(1.02);
+    }
+
+    .paywall-alt {
+      margin-top: 20px;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .paywall-alt strong {
+      color: var(--yellow);
+    }
+
+    /* Edit Form (shown after payment) */
+    .edit-form {
+      display: none;
+    }
+
+    .edit-form.active {
+      display: block;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.7;
+      margin-bottom: 12px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 18px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      color: var(--fg);
+      font-family: inherit;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+      margin-bottom: 24px;
+    }
+
+    .form-input:focus {
+      border-color: var(--pink);
+      background: rgba(255, 45, 146, 0.1);
+    }
+
+    .warning-box {
+      background: rgba(255, 107, 53, 0.15);
+      border: 1px solid var(--orange);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .warning-box svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--orange);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .warning-box p {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .warning-box strong {
+      color: var(--orange);
+    }
+
+    .form-submit {
+      width: 100%;
+      padding: 18px;
+      background: var(--gradient-1);
+      border: none;
+      border-radius: 16px;
+      color: white;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .form-submit:hover {
+      transform: scale(1.02);
+      box-shadow: 0 10px 40px rgba(255, 45, 146, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero h1 {
+        letter-spacing: -2px;
+      }
+
+      .floating-qr {
+        display: none;
+      }
+
+      .pricing-grid,
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-header .container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+      }
+
+      footer .container {
+        flex-direction: column;
+        gap: 24px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="scanlines"></div>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="container">
+      <div class="logo">OneQR</div>
+      <ul class="nav-links">
+        <li><a href="#" onclick="showPage('home')">Home</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#" onclick="showPage('dashboard')">Dashboard</a></li>
+      </ul>
+      <button class="nav-cta" onclick="showPage('dashboard')">Dashboard</button>
+    </div>
+  </nav>
+
+  <!-- HOMEPAGE -->
+  <div id="page-home" class="page active">
+    <!-- Hero -->
+    <section class="hero">
+      <!-- Floating QR decorations -->
+      <div class="floating-qr left">
+        <svg viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="41" height="41" fill="white"/>
+          <path fill="#000" d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"/>
+        </svg>
+      </div>
+      <div class="floating-qr right">
+        <svg viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="41" height="41" fill="white"/>
+          <path fill="#7b2dff" d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"/>
+        </svg>
+      </div>
+
+      <div class="hero-badge">
+        <span class="dot"></span>
+        No subscriptions. No tricks.
+      </div>
+
+      <h1>
+        <span class="gradient">QR codes</span><br>
+        <span class="outline">you own</span>
+      </h1>
+
+      <p class="hero-tagline">
+        Generate free. Pay once to edit. Keep forever.
+        The anti-subscription QR generator.
+      </p>
+
+      <div class="qr-generator">
+        <div class="qr-input-group">
+          <input type="text" class="qr-input" placeholder="Paste your URL here...">
+          <button class="qr-generate-btn">Generate ✨</button>
+        </div>
+      </div>
+      <p class="qr-hint">Free forever. Save to dashboard for editing.</p>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Pricing</span>
+          <h2 class="section-title">One price. Forever.</h2>
+        </div>
+
+        <div class="pricing-grid">
+          <div class="pricing-card">
+            <div class="pricing-card-content">
+              <div class="pricing-label-top">Single QR</div>
+              <div class="pricing-price"><span class="currency">$</span>3.99</div>
+              <div class="pricing-label">one-time payment</div>
+              <ul class="pricing-features">
+                <li>Make one QR editable</li>
+                <li>Unlimited future edits</li>
+                <li>No expiration</li>
+                <li>Scan analytics</li>
+              </ul>
+              <button class="pricing-btn">Get Started</button>
+            </div>
+          </div>
+
+          <div class="pricing-card featured">
+            <div class="pricing-card-content">
+              <div class="pricing-label-top">Unlimited</div>
+              <div class="pricing-price"><span class="currency">$</span>9.99</div>
+              <div class="pricing-label">one-time payment</div>
+              <ul class="pricing-features">
+                <li>Unlimited editable QRs</li>
+                <li>Unlimited future edits</li>
+                <li>No expiration</li>
+                <li>Bulk generation</li>
+                <li>Priority support</li>
+              </ul>
+              <button class="pricing-btn">Get Unlimited</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="how-it-works" id="how-it-works">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">How It Works</span>
+          <h2 class="section-title">Three simple steps</h2>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-icon">🔗</div>
+            <h3 class="step-title">Paste Your URL</h3>
+            <p class="step-desc">Drop any link. We generate a QR code instantly. No signup needed.</p>
+          </div>
+
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-icon">💾</div>
+            <h3 class="step-title">Save to Dashboard</h3>
+            <p class="step-desc">Enter email for magic link access. Your codes live in the cloud.</p>
+          </div>
+
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-icon">✏️</div>
+            <h3 class="step-title">Edit Forever</h3>
+            <p class="step-desc">Pay once, change destinations unlimited times. No reprints needed.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="logo">OneQR</div>
+        <ul class="footer-links">
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Support</a></li>
+          <li><a href="#">Twitter</a></li>
+        </ul>
+        <div class="footer-copy">2026 Helios Innovations</div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- DASHBOARD PAGE -->
+  <div id="page-dashboard" class="page">
+    <div class="dashboard-header">
+      <div class="container">
+        <div>
+          <h1 class="dashboard-title">Your QR Codes</h1>
+          <p class="dashboard-subtitle">3 codes saved • 2 active redirects</p>
+        </div>
+        <button class="btn-create-new">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          Create New
+        </button>
+      </div>
+    </div>
+
+    <div class="qr-grid">
+      <div class="container">
+        <div class="qr-card">
+          <div class="qr-card-header">
+            <div class="qr-thumb">
+              <svg viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="41" height="41" fill="white"/>
+                <path fill="#000" d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"/>
+              </svg>
+            </div>
+            <span class="qr-status paid">Active</span>
+          </div>
+          <div class="qr-url">
+            <div class="qr-url-short">oneqr.app/abc123</div>
+            <div class="qr-url-dest">→ myrestaurant.com/menu</div>
+          </div>
+          <div class="qr-meta">
+            <span>Created Mar 15, 2026</span>
+            <span>142 scans</span>
+          </div>
+          <div class="qr-actions">
+            <button class="qr-action-btn primary" onclick="openModal('edit-paid')">Edit</button>
+            <button class="qr-action-btn">Download</button>
+          </div>
+        </div>
+
+        <div class="qr-card">
+          <div class="qr-card-header">
+            <div class="qr-thumb">
+              <svg viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="41" height="41" fill="white"/>
+                <path fill="#000" d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"/>
+              </svg>
+            </div>
+            <span class="qr-status paid">Active</span>
+          </div>
+          <div class="qr-url">
+            <div class="qr-url-short">oneqr.app/xyz789</div>
+            <div class="qr-url-dest">→ mybusiness.com/promo</div>
+          </div>
+          <div class="qr-meta">
+            <span>Created Mar 10, 2026</span>
+            <span>89 scans</span>
+          </div>
+          <div class="qr-actions">
+            <button class="qr-action-btn primary" onclick="openModal('edit-paid')">Edit</button>
+            <button class="qr-action-btn">Download</button>
+          </div>
+        </div>
+
+        <div class="qr-card">
+          <div class="qr-card-header">
+            <div class="qr-thumb">
+              <svg viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="41" height="41" fill="white"/>
+                <path fill="#ccc" d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"/>
+              </svg>
+            </div>
+            <span class="qr-status unpaid">Not Active</span>
+          </div>
+          <div class="qr-url">
+            <div class="qr-url-short" style="opacity: 0.5">Not activated</div>
+            <div class="qr-url-dest">→ event.com/tickets</div>
+          </div>
+          <div class="qr-meta">
+            <span>Created Mar 1, 2026</span>
+            <span>-</span>
+          </div>
+          <div class="qr-actions">
+            <button class="qr-action-btn primary" onclick="openModal('edit-unpaid')">Activate</button>
+            <button class="qr-action-btn">Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="container">
+        <div class="logo">OneQR</div>
+        <ul class="footer-links">
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Support</a></li>
+        </ul>
+        <div class="footer-copy">2026 Helios Innovations</div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- EDIT MODAL - Unpaid (Paywall) -->
+  <div id="modal-edit-unpaid" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Activate QR Code</h3>
+        <button class="modal-close" onclick="closeModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-qr-preview">
+          <svg viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="41" height="41" fill="white"/>
+            <path fill="#ccc" d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"/>
+          </svg>
+        </div>
+
+        <div class="paywall">
+          <div class="paywall-content">
+            <div class="paywall-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <div class="paywall-price">$3.99</div>
+            <div class="paywall-label">to make this QR editable</div>
+            <button class="paywall-btn">Unlock Now ✨</button>
+            <p class="paywall-alt">
+              Or get <strong>unlimited QRs</strong> for $9.99
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT MODAL - Paid (Edit Form) -->
+  <div id="modal-edit-paid" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit QR Code</h3>
+        <button class="modal-close" onclick="closeModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-qr-preview">
+          <svg viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="41" height="41" fill="white"/>
+            <path fill="#000" d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"/>
+          </svg>
+        </div>
+
+        <div class="edit-form active">
+          <label class="form-label">New Destination URL</label>
+          <input type="text" class="form-input" placeholder="https://..." value="https://myrestaurant.com/menu">
+
+          <div class="warning-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <p>
+              <strong>Heads up!</strong> Your old QR won't work after this change. Download and <strong>reprint the new one</strong>.
+            </p>
+          </div>
+
+          <button class="form-submit">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + pageId).classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function openModal(type) {
+      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+      document.getElementById('modal-edit-' + type).classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeModal();
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
+</body>
+</html>
