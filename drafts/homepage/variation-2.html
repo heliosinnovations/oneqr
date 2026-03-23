@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneQR - Variation 2: Friendly/Modern</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --bg-accent: #eff6ff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --accent-light: #dbeafe;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --error: #ef4444;
+            --error-light: #fee2e2;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --gradient-1: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            --gradient-2: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.02);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* Navigation */
+        .nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Page Sections */
+        .page-section {
+            padding: 4rem 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--gradient-1);
+            color: white;
+            padding: 0.375rem 1rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .container-wide {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ============================================
+           PAGE 1: HOMEPAGE
+           ============================================ */
+        .hero {
+            text-align: center;
+            padding: 5rem 2rem;
+            background: var(--gradient-2);
+            border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+            margin-bottom: 3rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hero-badge svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.15;
+            background: linear-gradient(135deg, #0f172a 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .qr-generator {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            max-width: 520px;
+            margin: 0 auto 3rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.625rem;
+            color: var(--text-primary);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper svg {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: var(--text-muted);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: var(--bg-primary);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 4px var(--accent-light);
+        }
+
+        .input-field:disabled {
+            background: var(--bg-tertiary);
+            cursor: not-allowed;
+        }
+
+        .input-error {
+            border-color: var(--error) !important;
+        }
+
+        .input-error:focus {
+            box-shadow: 0 0 0 4px var(--error-light);
+        }
+
+        .error-message {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            color: var(--error);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .error-message svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 1.125rem;
+            font-size: 1rem;
+        }
+
+        .value-props {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .value-prop {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .value-prop:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .value-prop-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 1rem;
+            background: var(--accent-light);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .value-prop-icon svg {
+            width: 28px;
+            height: 28px;
+            color: var(--accent);
+        }
+
+        .value-prop strong {
+            display: block;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .value-prop span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ============================================
+           PAGE 2: QR DISPLAY PAGE
+           ============================================ */
+        .qr-display {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .qr-code-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            display: inline-block;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-code-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-1);
+        }
+
+        .qr-code {
+            width: 220px;
+            height: 220px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .qr-code svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .qr-url {
+            margin-top: 1.5rem;
+            padding: 0.875rem 1.25rem;
+            background: var(--bg-tertiary);
+            border-radius: 100px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+            max-width: 320px;
+            font-weight: 500;
+        }
+
+        .download-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .download-btn {
+            min-width: 120px;
+        }
+
+        .save-prompt {
+            background: var(--accent-light);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            max-width: 420px;
+            margin: 0 auto 2rem;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .save-prompt p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .ad-placeholder {
+            background: var(--bg-tertiary);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            max-width: 728px;
+            margin: 2rem auto 0;
+            text-align: center;
+        }
+
+        .ad-placeholder span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+
+        /* Success/Error States */
+        .success-banner {
+            background: var(--success-light);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #065f46;
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .success-banner svg {
+            flex-shrink: 0;
+        }
+
+        .error-banner {
+            background: var(--error-light);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #991b1b;
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* ============================================
+           PAGE 3: DASHBOARD
+           ============================================ */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .dashboard-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.25rem 1.5rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            flex: 1;
+        }
+
+        .stat-card-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-card-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .qr-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            display: flex;
+            gap: 1.25rem;
+        }
+
+        .qr-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .qr-card-preview {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            padding: 0.5rem;
+        }
+
+        .qr-card-preview svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .qr-card-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .qr-card-info h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .qr-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .qr-card-actions {
+            display: flex;
+            gap: 0.625rem;
+        }
+
+        .qr-card-actions .btn {
+            flex: 1;
+            padding: 0.625rem;
+            font-size: 0.8rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.25rem 0.625rem;
+            border-radius: 100px;
+        }
+
+        .badge-paid {
+            background: var(--success-light);
+            color: #065f46;
+        }
+
+        .badge-locked {
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 5rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: var(--bg-tertiary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--border);
+        }
+
+        .empty-state h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* ============================================
+           PAGE 4: EDIT MODAL
+           ============================================ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            padding: 1.5rem 1.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--bg-tertiary);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 0 1.5rem 1.5rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* Paywall State */
+        .paywall {
+            text-align: center;
+            padding: 1.5rem 0;
+        }
+
+        .paywall-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: var(--accent-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .paywall-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--accent);
+        }
+
+        .paywall h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .paywall p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        .paywall-price-box {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .paywall-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .paywall-price-note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Edit Form State */
+        .warning-box {
+            background: var(--warning-light);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            color: #92400e;
+        }
+
+        .warning-box svg {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            color: var(--warning);
+        }
+
+        .new-qr-preview {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .new-qr-preview p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .new-qr-preview .qr-code {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            padding: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .value-props {
+                grid-template-columns: 1fr;
+                max-width: 300px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .qr-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .qr-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .qr-card-preview {
+                margin: 0 auto;
+            }
+
+            .dashboard-stats {
+                flex-direction: column;
+            }
+
+            .download-options {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .download-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="#" class="logo">OneQR</a>
+            <div class="nav-links">
+                <a href="#homepage">Home</a>
+                <a href="#dashboard">Dashboard</a>
+                <button class="btn btn-primary" style="padding: 0.625rem 1.25rem;">Sign In</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================
+         PAGE 1: HOMEPAGE
+         ============================================ -->
+    <section id="homepage" class="page-section" style="padding-top: 0;">
+        <span class="section-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
+                <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" />
+            </svg>
+            Page 1: Homepage
+        </span>
+
+        <div class="hero">
+            <div class="hero-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5z" clip-rule="evenodd" />
+                </svg>
+                Simple & Honest
+            </div>
+            <h1>QR codes that<br>just work.</h1>
+            <p>No limits. No tricks. No expiring codes. Generate unlimited QR codes for free.</p>
+
+            <div class="qr-generator">
+                <div class="input-group">
+                    <label for="url-input">What do you want to share?</label>
+                    <div class="input-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                        </svg>
+                        <input
+                            type="text"
+                            id="url-input"
+                            class="input-field"
+                            placeholder="Paste a URL or type any text..."
+                        >
+                    </div>
+                </div>
+                <button class="btn btn-primary generate-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5Z" />
+                    </svg>
+                    Generate QR Code
+                </button>
+            </div>
+
+            <!-- Error state example -->
+            <div class="qr-generator" style="margin-bottom: 0; max-width: 520px;">
+                <div class="input-group" style="margin-bottom: 0.5rem;">
+                    <label for="url-input-error">What do you want to share?</label>
+                    <div class="input-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                        </svg>
+                        <input
+                            type="text"
+                            id="url-input-error"
+                            class="input-field input-error"
+                            value="invalid url here"
+                        >
+                    </div>
+                    <p class="error-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                        </svg>
+                        Please enter a valid URL (e.g., https://example.com)
+                    </p>
+                </div>
+                <button class="btn btn-primary generate-btn" disabled style="margin-top: 1rem;">
+                    Generate QR Code
+                </button>
+            </div>
+        </div>
+
+        <div class="value-props">
+            <div class="value-prop">
+                <div class="value-prop-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </div>
+                <strong>Free forever</strong>
+                <span>Unlimited static QR codes</span>
+            </div>
+            <div class="value-prop">
+                <div class="value-prop-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
+                    </svg>
+                </div>
+                <strong>$9.99 to edit</strong>
+                <span>One-time, per QR code</span>
+            </div>
+            <div class="value-prop">
+                <div class="value-prop-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </div>
+                <strong>No subscriptions</strong>
+                <span>No hidden fees ever</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         PAGE 2: QR DISPLAY PAGE
+         ============================================ -->
+    <section id="qr-display" class="page-section">
+        <span class="section-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M3 6a3 3 0 013-3h2.25a3 3 0 013 3v2.25a3 3 0 01-3 3H6a3 3 0 01-3-3V6zm9.75 0a3 3 0 013-3H18a3 3 0 013 3v2.25a3 3 0 01-3 3h-2.25a3 3 0 01-3-3V6zM3 15.75a3 3 0 013-3h2.25a3 3 0 013 3V18a3 3 0 01-3 3H6a3 3 0 01-3-3v-2.25zm9.75 0a3 3 0 013-3H18a3 3 0 013 3V18a3 3 0 01-3 3h-2.25a3 3 0 01-3-3v-2.25z" clip-rule="evenodd" />
+            </svg>
+            Page 2: QR Display
+        </span>
+
+        <div class="qr-display">
+            <div class="success-banner" style="max-width: 420px; margin: 0 auto 2rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+                </svg>
+                Your QR code is ready!
+            </div>
+
+            <div class="qr-code-container">
+                <div class="qr-code">
+                    <!-- QR Code SVG -->
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect fill="white" width="100" height="100"/>
+                        <g fill="#0f172a">
+                            <rect x="4" y="4" width="24" height="24"/>
+                            <rect x="7" y="7" width="18" height="18" fill="white"/>
+                            <rect x="10" y="10" width="12" height="12"/>
+                            <rect x="72" y="4" width="24" height="24"/>
+                            <rect x="75" y="7" width="18" height="18" fill="white"/>
+                            <rect x="78" y="10" width="12" height="12"/>
+                            <rect x="4" y="72" width="24" height="24"/>
+                            <rect x="7" y="75" width="18" height="18" fill="white"/>
+                            <rect x="10" y="78" width="12" height="12"/>
+                            <rect x="32" y="4" width="4" height="4"/>
+                            <rect x="40" y="4" width="4" height="4"/>
+                            <rect x="48" y="4" width="4" height="4"/>
+                            <rect x="36" y="8" width="4" height="4"/>
+                            <rect x="44" y="8" width="4" height="4"/>
+                            <rect x="52" y="8" width="4" height="4"/>
+                            <rect x="32" y="12" width="4" height="4"/>
+                            <rect x="44" y="12" width="4" height="4"/>
+                            <rect x="32" y="32" width="4" height="4"/>
+                            <rect x="40" y="36" width="4" height="4"/>
+                            <rect x="48" y="40" width="4" height="4"/>
+                            <rect x="56" y="44" width="4" height="4"/>
+                            <rect x="64" y="48" width="4" height="4"/>
+                            <rect x="72" y="32" width="4" height="4"/>
+                            <rect x="80" y="36" width="4" height="4"/>
+                            <rect x="88" y="40" width="4" height="4"/>
+                            <rect x="32" y="72" width="4" height="4"/>
+                            <rect x="40" y="76" width="4" height="4"/>
+                            <rect x="48" y="80" width="4" height="4"/>
+                            <rect x="56" y="84" width="4" height="4"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="qr-url">https://example.com/my-page</div>
+            </div>
+
+            <div class="download-options">
+                <button class="btn btn-primary download-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                    Download PNG
+                </button>
+                <button class="btn btn-secondary download-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                    Download SVG
+                </button>
+                <button class="btn btn-secondary download-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247" />
+                    </svg>
+                    Print
+                </button>
+            </div>
+
+            <div class="save-prompt">
+                <p><strong>Want to edit this later?</strong> Save it to your dashboard and unlock editing anytime.</p>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
+                    </svg>
+                    Save to dashboard
+                </button>
+            </div>
+
+            <div class="ad-placeholder">
+                <span>Advertisement</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         PAGE 3: DASHBOARD
+         ============================================ -->
+    <section id="dashboard" class="page-section">
+        <span class="section-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 018.25-8.25.75.75 0 01.75.75v6.75H18a.75.75 0 01.75.75 8.25 8.25 0 01-16.5 0z" clip-rule="evenodd" />
+                <path fill-rule="evenodd" d="M12.75 3a.75.75 0 01.75-.75 8.25 8.25 0 018.25 8.25.75.75 0 01-.75.75h-7.5a.75.75 0 01-.75-.75V3z" clip-rule="evenodd" />
+            </svg>
+            Page 3: Dashboard
+        </span>
+
+        <div class="container-wide">
+            <div class="dashboard-header">
+                <h2>Your QR Codes</h2>
+                <button class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    Create New
+                </button>
+            </div>
+
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-card-value">3</div>
+                    <div class="stat-card-label">Total QR Codes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value">1</div>
+                    <div class="stat-card-label">Editable</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value">2</div>
+                    <div class="stat-card-label">Locked</div>
+                </div>
+            </div>
+
+            <div class="qr-grid">
+                <!-- QR Card - Editable (Paid) -->
+                <div class="qr-card">
+                    <div class="qr-card-preview">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect fill="white" width="100" height="100"/>
+                            <g fill="#0f172a">
+                                <rect x="4" y="4" width="24" height="24"/>
+                                <rect x="7" y="7" width="18" height="18" fill="white"/>
+                                <rect x="10" y="10" width="12" height="12"/>
+                                <rect x="72" y="4" width="24" height="24"/>
+                                <rect x="75" y="7" width="18" height="18" fill="white"/>
+                                <rect x="78" y="10" width="12" height="12"/>
+                                <rect x="4" y="72" width="24" height="24"/>
+                                <rect x="7" y="75" width="18" height="18" fill="white"/>
+                                <rect x="10" y="78" width="12" height="12"/>
+                                <rect x="32" y="32" width="4" height="4"/>
+                                <rect x="40" y="36" width="4" height="4"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="qr-card-content">
+                        <div class="qr-card-info">
+                            <h3>https://mystore.com/products</h3>
+                        </div>
+                        <div class="qr-card-meta">
+                            <span>Mar 15, 2026</span>
+                            <span class="badge badge-paid">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                </svg>
+                                Editable
+                            </span>
+                        </div>
+                        <div class="qr-card-actions">
+                            <button class="btn btn-secondary">Edit</button>
+                            <button class="btn btn-primary">Download</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QR Card - Needs Payment -->
+                <div class="qr-card">
+                    <div class="qr-card-preview">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect fill="white" width="100" height="100"/>
+                            <g fill="#0f172a">
+                                <rect x="4" y="4" width="24" height="24"/>
+                                <rect x="7" y="7" width="18" height="18" fill="white"/>
+                                <rect x="10" y="10" width="12" height="12"/>
+                                <rect x="72" y="4" width="24" height="24"/>
+                                <rect x="75" y="7" width="18" height="18" fill="white"/>
+                                <rect x="78" y="10" width="12" height="12"/>
+                                <rect x="4" y="72" width="24" height="24"/>
+                                <rect x="7" y="75" width="18" height="18" fill="white"/>
+                                <rect x="10" y="78" width="12" height="12"/>
+                                <rect x="36" y="36" width="4" height="4"/>
+                                <rect x="44" y="40" width="4" height="4"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="qr-card-content">
+                        <div class="qr-card-info">
+                            <h3>https://myblog.com/post/123</h3>
+                        </div>
+                        <div class="qr-card-meta">
+                            <span>Mar 10, 2026</span>
+                            <span class="badge badge-locked">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+                                </svg>
+                                $9.99 to edit
+                            </span>
+                        </div>
+                        <div class="qr-card-actions">
+                            <button class="btn btn-secondary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+                                </svg>
+                                Unlock
+                            </button>
+                            <button class="btn btn-primary">Download</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QR Card - Another Example -->
+                <div class="qr-card">
+                    <div class="qr-card-preview">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect fill="white" width="100" height="100"/>
+                            <g fill="#0f172a">
+                                <rect x="4" y="4" width="24" height="24"/>
+                                <rect x="7" y="7" width="18" height="18" fill="white"/>
+                                <rect x="10" y="10" width="12" height="12"/>
+                                <rect x="72" y="4" width="24" height="24"/>
+                                <rect x="75" y="7" width="18" height="18" fill="white"/>
+                                <rect x="78" y="10" width="12" height="12"/>
+                                <rect x="4" y="72" width="24" height="24"/>
+                                <rect x="7" y="75" width="18" height="18" fill="white"/>
+                                <rect x="10" y="78" width="12" height="12"/>
+                                <rect x="40" y="32" width="4" height="4"/>
+                                <rect x="48" y="36" width="4" height="4"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="qr-card-content">
+                        <div class="qr-card-info">
+                            <h3>https://event.com/tickets</h3>
+                        </div>
+                        <div class="qr-card-meta">
+                            <span>Mar 5, 2026</span>
+                            <span class="badge badge-locked">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+                                </svg>
+                                $9.99 to edit
+                            </span>
+                        </div>
+                        <div class="qr-card-actions">
+                            <button class="btn btn-secondary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+                                </svg>
+                                Unlock
+                            </button>
+                            <button class="btn btn-primary">Download</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div style="margin-top: 4rem;">
+                <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">Empty state:</p>
+                <div class="empty-state" style="background: white; border: 1px solid var(--border); border-radius: var(--radius-lg);">
+                    <div class="empty-state-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5Z" />
+                        </svg>
+                    </div>
+                    <h3>No QR codes yet</h3>
+                    <p>Create your first QR code to get started</p>
+                    <button class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Create your first QR
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         PAGE 4: EDIT MODAL
+         ============================================ -->
+    <section id="edit-modal" class="page-section">
+        <span class="section-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
+            </svg>
+            Page 4: Edit Modal
+        </span>
+
+        <div class="container">
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Modal states: Paywall, Edit Form, Success, and Error</p>
+
+            <!-- State 1: Paywall -->
+            <div class="modal" style="position: relative; margin-bottom: 2rem;">
+                <div class="modal-header">
+                    <h3>Unlock Editing</h3>
+                    <button class="modal-close">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="paywall">
+                        <div class="paywall-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                            </svg>
+                        </div>
+                        <h4>Make this QR editable</h4>
+                        <p>Update the destination URL anytime. Pay once, edit forever.</p>
+                        <div class="paywall-price-box">
+                            <div class="paywall-price">$9.99</div>
+                            <div class="paywall-price-note">One-time payment • No subscription</div>
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                            </svg>
+                            Pay $9.99 to unlock
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- State 2: Edit Form (after payment) -->
+            <div class="modal" style="position: relative; margin-bottom: 2rem;">
+                <div class="modal-header">
+                    <h3>Edit QR Code</h3>
+                    <button class="modal-close">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="warning-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                        </svg>
+                        <span><strong>Important:</strong> Changing the URL means your old QR won't work. Download the new QR code after saving.</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Current URL</label>
+                        <div class="input-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                            </svg>
+                            <input type="text" class="input-field" value="https://myblog.com/post/123" disabled>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>New URL</label>
+                        <div class="input-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                            </svg>
+                            <input type="text" class="input-field" placeholder="https://example.com/new-url" value="https://myblog.com/updated-post">
+                        </div>
+                    </div>
+
+                    <div class="new-qr-preview">
+                        <p>Preview of new QR code</p>
+                        <div class="qr-code" style="width: 120px; height: 120px;">
+                            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <rect fill="white" width="100" height="100"/>
+                                <g fill="#0f172a">
+                                    <rect x="4" y="4" width="24" height="24"/>
+                                    <rect x="7" y="7" width="18" height="18" fill="white"/>
+                                    <rect x="10" y="10" width="12" height="12"/>
+                                    <rect x="72" y="4" width="24" height="24"/>
+                                    <rect x="75" y="7" width="18" height="18" fill="white"/>
+                                    <rect x="78" y="10" width="12" height="12"/>
+                                    <rect x="4" y="72" width="24" height="24"/>
+                                    <rect x="7" y="75" width="18" height="18" fill="white"/>
+                                    <rect x="10" y="78" width="12" height="12"/>
+                                    <rect x="44" y="32" width="4" height="4"/>
+                                    <rect x="52" y="40" width="4" height="4"/>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-ghost">Cancel</button>
+                    <button class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+
+            <!-- State 3: Success -->
+            <div class="modal" style="position: relative; margin-bottom: 2rem;">
+                <div class="modal-header">
+                    <h3>Success!</h3>
+                    <button class="modal-close">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="success-banner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+                        </svg>
+                        QR code updated successfully!
+                    </div>
+                    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1.5rem;">Download your new QR code below. Remember, your old QR code will no longer work.</p>
+                    <div style="text-align: center;">
+                        <div class="qr-code" style="width: 160px; height: 160px; margin: 0 auto 1.5rem; padding: 1rem;">
+                            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <rect fill="white" width="100" height="100"/>
+                                <g fill="#0f172a">
+                                    <rect x="4" y="4" width="24" height="24"/>
+                                    <rect x="7" y="7" width="18" height="18" fill="white"/>
+                                    <rect x="10" y="10" width="12" height="12"/>
+                                    <rect x="72" y="4" width="24" height="24"/>
+                                    <rect x="75" y="7" width="18" height="18" fill="white"/>
+                                    <rect x="78" y="10" width="12" height="12"/>
+                                    <rect x="4" y="72" width="24" height="24"/>
+                                    <rect x="7" y="75" width="18" height="18" fill="white"/>
+                                    <rect x="10" y="78" width="12" height="12"/>
+                                    <rect x="44" y="32" width="4" height="4"/>
+                                    <rect x="52" y="40" width="4" height="4"/>
+                                </g>
+                            </svg>
+                        </div>
+                        <button class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            Download New QR
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- State 4: Payment Error -->
+            <div class="modal" style="position: relative;">
+                <div class="modal-header">
+                    <h3>Payment Failed</h3>
+                    <button class="modal-close">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="error-banner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+                        </svg>
+                        Your card was declined. Please try again.
+                    </div>
+                    <div class="paywall" style="padding-top: 0;">
+                        <div class="paywall-price-box">
+                            <div class="paywall-price">$9.99</div>
+                            <div class="paywall-price-note">One-time payment</div>
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%;">
+                            Try Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); background: white;">
+        <p style="font-weight: 600;">OneQR Design Variation 2 — Friendly/Modern</p>
+        <p style="margin-top: 0.5rem;">Soft gradients, rounded corners, friendly personality. Approachable and modern.</p>
+    </footer>
+</body>
+</html>
