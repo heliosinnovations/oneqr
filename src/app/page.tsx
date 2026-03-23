@@ -25,10 +25,10 @@ export default function Home() {
             </li>
             <li>
               <Link
-                href="#pricing"
+                href="#features"
                 className="group relative text-sm font-medium text-fg transition-colors"
               >
-                Pricing
+                Features
                 <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-accent transition-all duration-300 group-hover:w-full" />
               </Link>
             </li>
@@ -47,23 +47,23 @@ export default function Home() {
         <div className="max-w-xl">
           {/* Date/Tagline */}
           <div className="mb-6 text-xs uppercase tracking-[3px] text-muted">
-            Est. 2026 — No Subscriptions
+            Est. 2026 — Completely Free
           </div>
 
           {/* Headline */}
           <h1 className="font-serif text-5xl leading-[1.05] tracking-tight text-fg md:text-6xl lg:text-7xl">
-            The QR code
+            Create, download,
             <br />
-            that&apos;s <span className="italic text-accent">yours</span>
+            and print QR codes.
             <br />
-            forever.
+            <span className="italic text-accent">Free</span> forever.
           </h1>
 
           {/* Description */}
           <p className="mt-8 max-w-[480px] text-xl leading-[1.7] text-muted">
-            Generate free. Pay <strong className="text-fg">$3.99 once</strong>{" "}
-            to edit. Keep your QR code working forever. No monthly fees. No
-            expiring links. Just honest, simple pricing.
+            Generate unlimited QR codes. Download as PNG or SVG. Print and share
+            anywhere. No account required, no credit card, no expiration dates.
+            Completely free.
           </p>
 
           {/* Stats */}
@@ -73,7 +73,7 @@ export default function Home() {
                 &infin;
               </div>
               <div className="mt-1 text-[13px] uppercase tracking-wider text-muted">
-                Edits included
+                QR codes to create
               </div>
             </div>
             <div className="text-left">
@@ -81,15 +81,15 @@ export default function Home() {
                 $0
               </div>
               <div className="mt-1 text-[13px] uppercase tracking-wider text-muted">
-                Monthly fees
+                Forever
               </div>
             </div>
             <div className="text-left">
               <div className="font-serif text-5xl leading-none text-accent">
-                1x
+                0
               </div>
               <div className="mt-1 text-[13px] uppercase tracking-wider text-muted">
-                Payment only
+                Accounts required
               </div>
             </div>
           </div>
@@ -123,11 +123,11 @@ export default function Home() {
               </div>
               <div className="relative z-10">
                 <h3 className="mb-4 font-serif text-[28px]">
-                  Create your <span className="text-accent">QR</span>
+                  Create <span className="text-accent">free</span> QR codes
                 </h3>
                 <p className="text-[15px] leading-[1.7] text-muted">
                   Enter any URL. Your QR code generates instantly. Download as
-                  PNG or SVG. No account required.
+                  PNG or SVG. Print, share, use anywhere. Completely free.
                 </p>
               </div>
             </div>
@@ -142,8 +142,8 @@ export default function Home() {
                   Save to your <span className="text-accent">dashboard</span>
                 </h3>
                 <p className="text-[15px] leading-[1.7] text-muted">
-                  Enter your email for magic link access. Your QR lives in the
-                  cloud, ready whenever you need it.
+                  Want to save your QR codes? Enter your email for free magic
+                  link access. No password, no hassle.
                 </p>
               </div>
             </div>
@@ -155,11 +155,11 @@ export default function Home() {
               </div>
               <div className="relative z-10">
                 <h3 className="mb-4 font-serif text-[28px]">
-                  Edit <span className="text-accent">forever</span>
+                  Need to <span className="text-accent">edit</span> later?
                 </h3>
                 <p className="text-[15px] leading-[1.7] text-muted">
-                  Pay once. Update the destination URL as many times as you
-                  want. The printed QR keeps working.
+                  Unlock editing for any QR code. One small payment unlocks
+                  unlimited edits forever. Your printed QR keeps working.
                 </p>
               </div>
             </div>
@@ -167,89 +167,78 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
+      {/* Features Section */}
       <section
-        id="pricing"
+        id="features"
         className="scroll-mt-20 bg-fg px-6 py-[120px] text-bg lg:px-12"
       >
         <div className="mx-auto max-w-5xl">
           {/* Section Header */}
-          <div className="mb-16 grid gap-12 md:grid-cols-2 md:items-end">
+          <div className="mb-16 text-center">
             <h2 className="font-serif text-[56px] leading-[1.1]">
-              Simple, <span className="italic text-accent">honest</span>
+              Everything you need.
               <br />
-              pricing.
+              <span className="italic text-accent">Nothing</span> you don&apos;t.
             </h2>
-            <p className="text-lg leading-[1.7] opacity-70">
-              Pay once. Edit forever. No subscriptions, no tricks. Your QR code,
-              your rules.
-            </p>
           </div>
 
-          {/* Pricing Cards */}
-          <div className="grid gap-0.5 bg-white/10 md:grid-cols-2">
-            {/* Single QR */}
-            <div className="bg-fg p-12 md:p-14">
-              <div className="mb-6 text-[11px] uppercase tracking-[3px] opacity-50">
-                Single QR Code
-              </div>
-              <div className="mb-2 font-serif text-[72px] leading-none">
-                <span className="align-top text-4xl opacity-60">$</span>3.99
-              </div>
-              <div className="mb-8 text-base opacity-70">One-time payment</div>
-              <ul className="mb-10 space-y-0">
-                <li className="flex items-center gap-4 border-b border-white/10 py-[14px] text-[15px]">
-                  <span className="opacity-50">&rarr;</span> Make one QR
-                  editable
-                </li>
-                <li className="flex items-center gap-4 border-b border-white/10 py-[14px] text-[15px]">
-                  <span className="opacity-50">&rarr;</span> Unlimited future
-                  edits
-                </li>
-                <li className="flex items-center gap-4 border-b border-white/10 py-[14px] text-[15px]">
-                  <span className="opacity-50">&rarr;</span> Never expires
-                </li>
-                <li className="flex items-center gap-4 py-[14px] text-[15px]">
-                  <span className="opacity-50">&rarr;</span> Scan analytics
-                </li>
-              </ul>
-              <button className="w-full bg-bg py-[18px] text-[15px] font-semibold text-fg transition-transform hover:-translate-y-0.5">
-                Get Started
-              </button>
+          {/* Features Grid */}
+          <div className="grid gap-px bg-white/10 md:grid-cols-3">
+            <div className="bg-fg p-10">
+              <div className="mb-4 text-4xl">📱</div>
+              <h3 className="mb-3 font-serif text-xl">Instant Generation</h3>
+              <p className="text-sm leading-relaxed opacity-70">
+                Enter a URL, get a QR code. Download PNG or SVG. No signup, no
+                wait.
+              </p>
             </div>
+            <div className="bg-fg p-10">
+              <div className="mb-4 text-4xl">☁️</div>
+              <h3 className="mb-3 font-serif text-xl">Cloud Storage</h3>
+              <p className="text-sm leading-relaxed opacity-70">
+                Save QR codes to your dashboard. Access from anywhere with magic
+                link login.
+              </p>
+            </div>
+            <div className="bg-fg p-10">
+              <div className="mb-4 text-4xl">♾️</div>
+              <h3 className="mb-3 font-serif text-xl">No Limits</h3>
+              <p className="text-sm leading-relaxed opacity-70">
+                Create unlimited QR codes. Download as many times as you want.
+                Forever free.
+              </p>
+            </div>
+            <div className="bg-fg p-10">
+              <div className="mb-4 text-4xl">✏️</div>
+              <h3 className="mb-3 font-serif text-xl">Optional Editing</h3>
+              <p className="text-sm leading-relaxed opacity-70">
+                Need to change where your QR points? Unlock editing for a small
+                one-time fee.
+              </p>
+            </div>
+            <div className="bg-fg p-10">
+              <div className="mb-4 text-4xl">📊</div>
+              <h3 className="mb-3 font-serif text-xl">Scan Analytics</h3>
+              <p className="text-sm leading-relaxed opacity-70">
+                Track how many people scan your QR codes. See what&apos;s working.
+              </p>
+            </div>
+            <div className="bg-fg p-10">
+              <div className="mb-4 text-4xl">🔒</div>
+              <h3 className="mb-3 font-serif text-xl">Never Expires</h3>
+              <p className="text-sm leading-relaxed opacity-70">
+                Your QR codes work forever. No monthly fees, no surprise charges.
+              </p>
+            </div>
+          </div>
 
-            {/* Unlimited QR */}
-            <div className="bg-accent p-12 md:p-14">
-              <div className="mb-6 text-[11px] uppercase tracking-[3px] opacity-50">
-                Unlimited QR Codes
-              </div>
-              <div className="mb-2 font-serif text-[72px] leading-none">
-                <span className="align-top text-4xl opacity-60">$</span>9.99
-              </div>
-              <div className="mb-8 text-base opacity-70">One-time payment</div>
-              <ul className="mb-10 space-y-0">
-                <li className="flex items-center gap-4 border-b border-white/10 py-[14px] text-[15px]">
-                  <span className="opacity-50">&rarr;</span> All QR codes
-                  editable
-                </li>
-                <li className="flex items-center gap-4 border-b border-white/10 py-[14px] text-[15px]">
-                  <span className="opacity-50">&rarr;</span> Unlimited future
-                  edits
-                </li>
-                <li className="flex items-center gap-4 border-b border-white/10 py-[14px] text-[15px]">
-                  <span className="opacity-50">&rarr;</span> Never expires
-                </li>
-                <li className="flex items-center gap-4 border-b border-white/10 py-[14px] text-[15px]">
-                  <span className="opacity-50">&rarr;</span> Bulk generation
-                </li>
-                <li className="flex items-center gap-4 py-[14px] text-[15px]">
-                  <span className="opacity-50">&rarr;</span> Priority support
-                </li>
-              </ul>
-              <button className="w-full bg-fg py-[18px] text-[15px] font-semibold text-bg transition-transform hover:-translate-y-0.5">
-                Get Unlimited
-              </button>
-            </div>
+          {/* Subtle pricing mention */}
+          <div className="mt-16 border-t border-white/10 pt-12 text-center">
+            <p className="text-lg leading-relaxed opacity-70">
+              Editing unlocks at $3.99 per QR or $9.99 for unlimited.
+              <br />
+              <span className="text-sm opacity-50">One-time payment. No subscriptions.</span>
+            </p>
           </div>
         </div>
       </section>
