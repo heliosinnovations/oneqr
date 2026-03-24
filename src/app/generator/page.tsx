@@ -12,6 +12,28 @@ type CornerType = "square" | "rounded" | "extra" | "dot";
 type FormatType = "png" | "svg" | "pdf";
 type SizeType = 256 | 512 | 1024 | 2048;
 
+// Resolution snap points for export
+const RESOLUTION_SNAP_POINTS = [200, 500, 1000, 1500, 2000] as const;
+type ResolutionType = (typeof RESOLUTION_SNAP_POINTS)[number];
+
+// File size estimates for each resolution (in KB)
+const FILE_SIZE_ESTIMATES: Record<ResolutionType, string> = {
+  200: "~5",
+  500: "~15",
+  1000: "~45",
+  1500: "~95",
+  2000: "~160",
+};
+
+// Calculate file size estimate based on resolution
+const estimateFileSize = (resolution: number): string => {
+  // Find the closest snap point
+  const closest = RESOLUTION_SNAP_POINTS.reduce((prev, curr) =>
+    Math.abs(curr - resolution) < Math.abs(prev - resolution) ? curr : prev
+  );
+  return FILE_SIZE_ESTIMATES[closest];
+};
+
 // Preset colors
 const COLOR_PRESETS = [
   { color: "#1a1a1a", name: "Black" },
@@ -81,6 +103,7 @@ export default function GeneratorPage() {
   const [errorLevel, setErrorLevel] = useState<ErrorLevelType>("M");
   const [exportFormat, setExportFormat] = useState<FormatType>("png");
   const [exportSize, setExportSize] = useState<SizeType>(512);
+  const [exportResolution, setExportResolution] = useState<number>(1000);
   const [dpi, setDpi] = useState(150);
 
   // Toast state - support multiple toasts with IDs
@@ -153,7 +176,7 @@ export default function GeneratorPage() {
 
     try {
       const dataUrl = await QRCode.toDataURL(processedUrl, {
-        width: exportSize,
+        width: exportResolution,
         margin: 2,
         color: {
           dark: fgColor,
@@ -168,7 +191,7 @@ export default function GeneratorPage() {
     } finally {
       setIsGenerating(false);
     }
-  }, [url, exportSize, fgColor, bgColor, errorLevel, showToast]);
+  }, [url, exportResolution, fgColor, bgColor, errorLevel, showToast]);
 
   // Handle template selection
   const setTemplate = (templateId: string) => {
@@ -211,6 +234,30 @@ export default function GeneratorPage() {
     }
   };
 
+  // Handle resolution slider with snap behavior
+  const handleResolutionChange = (value: number) => {
+    // Snap to nearest point if within 75px
+    const closest = RESOLUTION_SNAP_POINTS.reduce((prev, curr) =>
+      Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
+    );
+
+    if (Math.abs(value - closest) < 75) {
+      setExportResolution(closest);
+    } else {
+      setExportResolution(value);
+    }
+  };
+
+  // Calculate slider track percentage
+  const getSliderTrackPercentage = (value: number): number => {
+    return ((value - 200) / (2000 - 200)) * 100;
+  };
+
+  // Get snap point position as percentage
+  const getSnapPointPosition = (snapValue: number): number => {
+    return ((snapValue - 200) / (2000 - 200)) * 100;
+  };
+
   // Zoom controls
   const zoomIn = () => {
     if (zoomLevel < 200) setZoomLevel((z) => z + 25);
@@ -232,18 +279,47 @@ export default function GeneratorPage() {
     }
   };
 
-  // Download QR code
-  const downloadQR = () => {
-    if (!qrDataUrl) return;
+  // Download QR code at specified resolution
+  const downloadQR = useCallback(async () => {
+    if (!generatedUrl) return;
 
-    const link = document.createElement("a");
-    link.href = qrDataUrl;
-    link.download = `qr-code.${exportFormat}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast("QR Code downloaded successfully!", "success");
-  };
+    setIsGenerating(true);
+    try {
+      // Generate QR at export resolution
+      const dataUrl = await QRCode.toDataURL(generatedUrl, {
+        width: exportResolution,
+        margin: 2,
+        color: {
+          dark: fgColor,
+          light: bgColor,
+        },
+        errorCorrectionLevel: errorLevel,
+      });
+
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = `qr-code-${exportResolution}px.${exportFormat}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast(
+        `QR Code downloaded (${exportResolution}×${exportResolution}px)!`,
+        "success"
+      );
+    } catch {
+      showToast("Failed to download QR code", "error");
+    } finally {
+      setIsGenerating(false);
+    }
+  }, [
+    generatedUrl,
+    exportResolution,
+    fgColor,
+    bgColor,
+    errorLevel,
+    exportFormat,
+    showToast,
+  ]);
 
   // Calculate contrast ratio
   const getContrastRatio = (fg: string, bg: string): number => {
@@ -279,7 +355,7 @@ export default function GeneratorPage() {
       setIsGenerating(true);
       try {
         const dataUrl = await QRCode.toDataURL(generatedUrl, {
-          width: exportSize,
+          width: exportResolution,
           margin: 2,
           color: {
             dark: fgColor,
@@ -297,7 +373,7 @@ export default function GeneratorPage() {
 
     regenerate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fgColor, bgColor, exportSize, errorLevel]);
+  }, [fgColor, bgColor, exportResolution, errorLevel]);
 
   // Initial QR generation
   useEffect(() => {
@@ -1153,8 +1229,8 @@ export default function GeneratorPage() {
               {activeTab === "export" && (
                 <div className="p-5">
                   {/* Export Format */}
-                  <div className="mb-5">
-                    <label className="mb-2 block text-xs font-semibold">
+                  <div className="mb-6">
+                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
                       Export Format
                     </label>
                     <div className="grid grid-cols-3 gap-3">
@@ -1163,19 +1239,19 @@ export default function GeneratorPage() {
                           {
                             value: "png",
                             label: "PNG",
-                            info: "~12 KB • Raster",
+                            info: "Raster",
                             recommended: true,
                           },
                           {
                             value: "svg",
                             label: "SVG",
-                            info: "~4 KB • Vector",
+                            info: "Vector",
                             recommended: false,
                           },
                           {
                             value: "pdf",
                             label: "PDF",
-                            info: "~8 KB • Print",
+                            info: "Print",
                             recommended: false,
                           },
                         ] as const
@@ -1183,7 +1259,7 @@ export default function GeneratorPage() {
                         <button
                           key={format.value}
                           onClick={() => setExportFormat(format.value)}
-                          className={`relative rounded-md border p-4 text-center transition-all ${
+                          className={`relative rounded-md border-2 p-4 text-center transition-all ${
                             exportFormat === format.value
                               ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)]"
                               : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)]"
@@ -1205,69 +1281,196 @@ export default function GeneratorPage() {
                     </div>
                   </div>
 
-                  {/* Quality (DPI) - only for PNG */}
-                  {exportFormat === "png" && (
-                    <div className="mb-5">
-                      <div className="mb-2 flex items-center justify-between">
-                        <label className="text-xs font-medium">
-                          Quality (DPI)
-                        </label>
-                        <span className="text-xs font-semibold text-[var(--pro-accent)]">
-                          {dpi} DPI
+                  {/* HIGH-RESOLUTION EXPORT CONTROLS */}
+                  <div className="mb-6 rounded-xl border border-[var(--pro-border)] bg-gradient-to-br from-[var(--pro-surface)] to-[var(--pro-surface-hover)] p-5">
+                    {/* Resolution Header with Live Display */}
+                    <div className="mb-4 flex items-center justify-between">
+                      <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
+                        <svg
+                          className="h-4 w-4 text-[var(--pro-accent)]"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                          />
+                        </svg>
+                        Resolution
+                      </label>
+                      {/* Large Resolution Display */}
+                      <div className="text-right">
+                        <span className="text-3xl font-bold text-[var(--pro-accent)] transition-transform">
+                          {exportResolution}
+                        </span>
+                        <span className="text-lg text-[var(--pro-muted)]">
+                          px
                         </span>
                       </div>
+                    </div>
+
+                    {/* Slider Container */}
+                    <div className="relative mb-6 pb-8 pt-2">
+                      {/* Slider Track Background */}
+                      <div className="absolute left-0 right-0 top-[18px] h-2 rounded-full bg-[var(--pro-muted-light)]" />
+
+                      {/* Active Track */}
+                      <div
+                        className="absolute left-0 top-[18px] h-2 rounded-full bg-[var(--pro-accent)]"
+                        style={{
+                          width: `${getSliderTrackPercentage(exportResolution)}%`,
+                        }}
+                      />
+
+                      {/* Snap Points */}
+                      <div className="absolute left-0 right-0 top-[18px]">
+                        {RESOLUTION_SNAP_POINTS.map((snapValue) => (
+                          <div
+                            key={snapValue}
+                            className={`absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full transition-colors ${
+                              snapValue <= exportResolution
+                                ? "bg-[var(--pro-accent)]"
+                                : "bg-[var(--pro-muted-light)]"
+                            }`}
+                            style={{
+                              left: `${getSnapPointPosition(snapValue)}%`,
+                              top: "50%",
+                            }}
+                          />
+                        ))}
+                      </div>
+
+                      {/* Slider Input */}
                       <input
                         type="range"
-                        min="72"
-                        max="300"
-                        value={dpi}
-                        onChange={(e) => setDpi(Number(e.target.value))}
-                        className="h-1 w-full cursor-pointer appearance-none rounded-full bg-[var(--pro-border)] accent-[var(--pro-accent)]"
+                        min="200"
+                        max="2000"
+                        step="1"
+                        value={exportResolution}
+                        onChange={(e) =>
+                          handleResolutionChange(Number(e.target.value))
+                        }
+                        className="relative z-10 h-2 w-full cursor-pointer appearance-none rounded-full bg-transparent [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-[var(--pro-accent)] [&::-moz-range-thumb]:shadow-[0_2px_8px_rgba(37,99,235,0.3)] [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-[var(--pro-accent)] [&::-webkit-slider-thumb]:shadow-[0_2px_8px_rgba(37,99,235,0.3)] [&::-webkit-slider-thumb]:transition-transform hover:[&::-webkit-slider-thumb]:scale-110"
                       />
-                      <div className="mt-1 flex justify-between text-[10px] text-[var(--pro-muted)]">
-                        <span>72 (Web)</span>
-                        <span>150 (Standard)</span>
-                        <span>300 (Print)</span>
+
+                      {/* Labels below */}
+                      <div className="absolute left-0 right-0 top-10 flex justify-between px-0">
+                        <span className="text-center text-[11px]">
+                          <span className="text-[var(--pro-muted)]">200px</span>
+                          <br />
+                          <span className="text-[10px] text-[var(--pro-muted)]">
+                            Web
+                          </span>
+                        </span>
+                        <span className="text-center text-[11px] text-[var(--pro-muted)]">
+                          500px
+                        </span>
+                        <span
+                          className={`text-center text-[11px] font-semibold ${exportResolution === 1000 ? "text-[var(--pro-accent)]" : "text-[var(--pro-muted)]"}`}
+                        >
+                          1000px
+                          <br />
+                          <span className="text-[10px]">Default</span>
+                        </span>
+                        <span className="text-center text-[11px] text-[var(--pro-muted)]">
+                          1500px
+                        </span>
+                        <span className="text-center text-[11px]">
+                          <span className="text-[var(--pro-muted)]">
+                            2000px
+                          </span>
+                          <br />
+                          <span className="text-[10px] text-[var(--pro-muted)]">
+                            Print
+                          </span>
+                        </span>
                       </div>
                     </div>
-                  )}
 
-                  {/* Output Size */}
-                  <div>
-                    <label className="mb-2 block text-xs font-semibold">
-                      Output Size
-                    </label>
-                    <div className="grid grid-cols-4 gap-2">
-                      {([256, 512, 1024, 2048] as SizeType[]).map((size) => (
-                        <button
-                          key={size}
-                          onClick={() => setExportSize(size)}
-                          className={`rounded-md border p-3 text-center transition-all ${
-                            exportSize === size
-                              ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)]"
-                              : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
-                          }`}
-                        >
-                          <div className="text-xs font-semibold">{size}</div>
-                          <span
-                            className={`text-xs ${
-                              exportSize === size
-                                ? "text-[var(--pro-accent)]"
-                                : "text-[var(--pro-muted)]"
-                            }`}
+                    {/* File Size Estimator */}
+                    <div className="flex items-center justify-between rounded-lg border border-[var(--pro-border)] bg-white p-3">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--pro-accent-light)]">
+                          <svg
+                            className="h-5 w-5 text-[var(--pro-accent)]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                           >
-                            {size === 256
-                              ? "Small"
-                              : size === 512
-                                ? "Medium"
-                                : size === 1024
-                                  ? "Large"
-                                  : "XL"}
-                          </span>
-                        </button>
-                      ))}
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold text-[var(--pro-fg)]">
+                            Estimated File Size
+                          </div>
+                          <div className="text-xs text-[var(--pro-muted)]">
+                            Based on {exportResolution}×{exportResolution}px PNG
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-2xl font-bold text-[var(--pro-fg)]">
+                          {estimateFileSize(exportResolution)}
+                        </span>
+                        <span className="text-sm text-[var(--pro-muted)]">
+                          {" "}
+                          KB
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Size Guide Tooltip */}
+                    <div className="mt-3 flex items-start gap-2 text-xs text-[var(--pro-muted)]">
+                      <svg
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--pro-accent)]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span>
+                        <strong>Tip:</strong> Use 200-500px for web/social,
+                        1000px for general use, 1500-2000px for print materials.
+                      </span>
                     </div>
                   </div>
+
+                  {/* Download Button */}
+                  <button
+                    onClick={downloadQR}
+                    disabled={isGenerating || !generatedUrl}
+                    className="flex w-full items-center justify-center gap-2 rounded-md bg-[var(--pro-accent)] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--pro-accent-hover)] disabled:cursor-not-allowed disabled:bg-[var(--pro-muted-light)]"
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      />
+                    </svg>
+                    Download QR Code ({exportResolution}×{exportResolution}px)
+                  </button>
                 </div>
               )}
             </div>
