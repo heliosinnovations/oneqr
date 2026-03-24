@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Issue #44 - Advanced Design Customization | Variation 2: Expanded Visual</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --white: #ffffff;
+      --success: #10b981;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+      font-family: 'DM Serif Display', serif;
+    }
+
+    /* Sticky Header */
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sticky-header h1 {
+      font-size: 1.25rem;
+    }
+
+    .header-badge {
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 0.625rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 4px 10px;
+      margin-left: 12px;
+    }
+
+    .preview-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .preview-toggle:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .preview-toggle svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Main Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      min-height: calc(100vh - 65px);
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: auto;
+        max-height: 60vh;
+        border-top: 1px solid var(--border);
+        border-left: none;
+        transform: translateY(calc(100% - 60px));
+        transition: transform 0.3s ease;
+      }
+      .sidebar.open {
+        transform: translateY(0);
+      }
+      .sidebar-handle {
+        display: flex;
+      }
+    }
+
+    /* Main Content */
+    .main-content {
+      padding: 32px;
+      overflow-y: auto;
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title h2 {
+      font-size: 1.5rem;
+      font-family: 'DM Serif Display', serif;
+    }
+
+    .section-title .icon {
+      width: 32px;
+      height: 32px;
+      background: var(--accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+
+    .section-title .icon svg {
+      width: 18px;
+      height: 18px;
+      color: var(--accent);
+    }
+
+    .section-count {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* Pattern Gallery - Large Cards */
+    .pattern-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 16px;
+    }
+
+    .pattern-card {
+      background: var(--white);
+      border: 2px solid var(--border);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .pattern-card:hover {
+      border-color: var(--fg);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .pattern-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .pattern-card.selected::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 50%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' stroke-width='3'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7'/%3E%3C/svg%3E");
+      background-size: 12px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .pattern-card-preview {
+      aspect-ratio: 1;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 3px;
+      margin-bottom: 12px;
+      padding: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .pattern-card-preview .cell {
+      background: var(--fg);
+    }
+
+    .pattern-card-preview .cell.dot { border-radius: 50%; }
+    .pattern-card-preview .cell.square { border-radius: 0; }
+    .pattern-card-preview .cell.rounded { border-radius: 25%; }
+    .pattern-card-preview .cell.vertical { transform: scaleX(0.35); border-radius: 1px; }
+    .pattern-card-preview .cell.horizontal { transform: scaleY(0.35); border-radius: 1px; }
+    .pattern-card-preview .cell.diagonal { transform: rotate(45deg) scale(0.6); }
+
+    .pattern-card-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .pattern-card-desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    /* Eye Style Cards */
+    .eye-subsection {
+      margin-bottom: 24px;
+    }
+
+    .eye-subsection:last-child {
+      margin-bottom: 0;
+    }
+
+    .subsection-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .subsection-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .eye-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 12px;
+    }
+
+    .eye-card {
+      background: var(--white);
+      border: 2px solid var(--border);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .eye-card:hover {
+      border-color: var(--fg);
+    }
+
+    .eye-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .eye-card-preview {
+      width: 48px;
+      height: 48px;
+      position: relative;
+    }
+
+    .eye-frame-preview {
+      width: 100%;
+      height: 100%;
+      border: 5px solid var(--fg);
+      position: absolute;
+    }
+
+    .eye-frame-preview.square { border-radius: 0; }
+    .eye-frame-preview.rounded { border-radius: 8px; }
+    .eye-frame-preview.circle { border-radius: 50%; }
+    .eye-frame-preview.left-leaf { border-radius: 0 50% 0 50%; }
+    .eye-frame-preview.right-leaf { border-radius: 50% 0 50% 0; }
+
+    .eye-ball-preview {
+      width: 18px;
+      height: 18px;
+      background: var(--fg);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .eye-ball-preview.square { border-radius: 0; }
+    .eye-ball-preview.rounded { border-radius: 3px; }
+    .eye-ball-preview.circle { border-radius: 50%; }
+    .eye-ball-preview.diamond { transform: translate(-50%, -50%) rotate(45deg); }
+
+    .eye-card-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .eye-card.selected .eye-card-label {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Gradient Builder Section */
+    .gradient-builder {
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 24px;
+    }
+
+    .gradient-type-selector {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .gradient-type-option {
+      border: 2px solid var(--border);
+      background: var(--white);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .gradient-type-option:hover {
+      border-color: var(--fg);
+    }
+
+    .gradient-type-option.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .gradient-type-icon {
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    .gradient-type-icon.solid { background: var(--fg); }
+    .gradient-type-icon.linear-h { background: linear-gradient(90deg, #ff4d00, #ffc107); }
+    .gradient-type-icon.linear-v { background: linear-gradient(180deg, #ff4d00, #ffc107); }
+    .gradient-type-icon.linear-d { background: linear-gradient(135deg, #ff4d00, #ffc107); }
+    .gradient-type-icon.radial { background: radial-gradient(circle, #ffc107, #ff4d00); }
+
+    .gradient-type-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Color Picker Row */
+    .color-pickers-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .color-picker-box {
+      background: var(--surface);
+      padding: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .color-picker-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .color-picker-input {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 8px;
+    }
+
+    .color-picker-input input[type="color"] {
+      width: 40px;
+      height: 40px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .color-picker-input input[type="text"] {
+      flex: 1;
+      border: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      outline: none;
+      background: transparent;
+    }
+
+    /* Direction Options */
+    .direction-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .direction-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .direction-options {
+      display: flex;
+      gap: 8px;
+    }
+
+    .direction-option {
+      width: 44px;
+      height: 44px;
+      border: 2px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .direction-option:hover {
+      border-color: var(--fg);
+    }
+
+    .direction-option.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .direction-option svg {
+      width: 20px;
+      height: 20px;
+      color: var(--muted);
+    }
+
+    .direction-option.selected svg {
+      color: var(--accent);
+    }
+
+    /* Gradient Preview Large */
+    .gradient-preview-large {
+      height: 60px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    /* Apply Targets */
+    .apply-targets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .apply-target {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.8125rem;
+    }
+
+    .apply-target:hover {
+      border-color: var(--fg);
+    }
+
+    .apply-target.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .apply-target .checkbox {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .apply-target.active .checkbox {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .apply-target.active .checkbox svg {
+      color: white;
+    }
+
+    /* Sidebar - Live Preview */
+    .sidebar {
+      background: var(--white);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-handle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .sidebar-handle-bar {
+      width: 40px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-header h3 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.625rem;
+      font-weight: 600;
+      color: var(--success);
+      background: #d1fae5;
+      padding: 4px 8px;
+      border-radius: 2px;
+    }
+
+    .live-badge .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .sidebar-preview {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      background: var(--surface);
+    }
+
+    .qr-preview-box {
+      width: 200px;
+      height: 200px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 16px;
+      position: relative;
+    }
+
+    .qr-preview-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .qr-eye {
+      position: absolute;
+      width: 42px;
+      height: 42px;
+    }
+
+    .qr-eye.tl { top: 0; left: 0; }
+    .qr-eye.tr { top: 0; right: 0; }
+    .qr-eye.bl { bottom: 0; left: 0; }
+
+    .qr-eye .frame {
+      width: 100%;
+      height: 100%;
+      border: 5px solid var(--fg);
+      border-radius: 4px;
+      position: absolute;
+    }
+
+    .qr-eye .ball {
+      width: 16px;
+      height: 16px;
+      background: var(--fg);
+      border-radius: 2px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .qr-body {
+      position: absolute;
+      inset: 28px;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 3px;
+    }
+
+    .qr-body .cell {
+      background: var(--fg);
+      border-radius: 50%;
+    }
+
+    .sidebar-actions {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 20px;
+      background: var(--fg);
+      color: var(--white);
+      border: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent);
+    }
+
+    .btn-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--white);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--fg);
+    }
+
+    /* Selection Summary */
+    .selection-summary {
+      padding: 16px 20px;
+      background: var(--surface);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .selection-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+
+    .selection-item strong {
+      color: var(--fg);
+    }
+
+    /* Footer */
+    .info-footer {
+      padding: 12px 20px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      .main-content {
+        padding: 20px;
+      }
+
+      .pattern-gallery {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .gradient-type-selector {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .color-pickers-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="sticky-header">
+    <div style="display: flex; align-items: center;">
+      <h1>Advanced Design Customization</h1>
+      <span class="header-badge">Issue #44</span>
+    </div>
+    <button class="preview-toggle" onclick="toggleSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <rect x="7" y="7" width="10" height="10"/>
+      </svg>
+      Preview
+    </button>
+  </header>
+
+  <div class="layout">
+    <main class="main-content">
+      <!-- Body Pattern Section -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+            </div>
+            <h2>Body Pattern</h2>
+          </div>
+          <span class="section-count">6 styles available</span>
+        </div>
+
+        <div class="pattern-gallery">
+          <div class="pattern-card" onclick="selectPattern(this, 'square')">
+            <div class="pattern-card-preview">
+              <div class="cell square"></div><div class="cell square"></div><div></div><div class="cell square"></div><div class="cell square"></div><div></div>
+              <div class="cell square"></div><div></div><div class="cell square"></div><div></div><div class="cell square"></div><div class="cell square"></div>
+              <div></div><div class="cell square"></div><div class="cell square"></div><div class="cell square"></div><div></div><div class="cell square"></div>
+              <div class="cell square"></div><div class="cell square"></div><div></div><div class="cell square"></div><div class="cell square"></div><div></div>
+              <div></div><div class="cell square"></div><div class="cell square"></div><div></div><div class="cell square"></div><div class="cell square"></div>
+              <div class="cell square"></div><div></div><div class="cell square"></div><div class="cell square"></div><div></div><div class="cell square"></div>
+            </div>
+            <div class="pattern-card-label">Standard Squares</div>
+            <div class="pattern-card-desc">Classic QR code look</div>
+          </div>
+
+          <div class="pattern-card selected" onclick="selectPattern(this, 'dots')">
+            <div class="pattern-card-preview">
+              <div class="cell dot"></div><div class="cell dot"></div><div></div><div class="cell dot"></div><div class="cell dot"></div><div></div>
+              <div class="cell dot"></div><div></div><div class="cell dot"></div><div></div><div class="cell dot"></div><div class="cell dot"></div>
+              <div></div><div class="cell dot"></div><div class="cell dot"></div><div class="cell dot"></div><div></div><div class="cell dot"></div>
+              <div class="cell dot"></div><div class="cell dot"></div><div></div><div class="cell dot"></div><div class="cell dot"></div><div></div>
+              <div></div><div class="cell dot"></div><div class="cell dot"></div><div></div><div class="cell dot"></div><div class="cell dot"></div>
+              <div class="cell dot"></div><div></div><div class="cell dot"></div><div class="cell dot"></div><div></div><div class="cell dot"></div>
+            </div>
+            <div class="pattern-card-label">Circular Dots</div>
+            <div class="pattern-card-desc">Modern & friendly</div>
+          </div>
+
+          <div class="pattern-card" onclick="selectPattern(this, 'rounded')">
+            <div class="pattern-card-preview">
+              <div class="cell rounded"></div><div class="cell rounded"></div><div></div><div class="cell rounded"></div><div class="cell rounded"></div><div></div>
+              <div class="cell rounded"></div><div></div><div class="cell rounded"></div><div></div><div class="cell rounded"></div><div class="cell rounded"></div>
+              <div></div><div class="cell rounded"></div><div class="cell rounded"></div><div class="cell rounded"></div><div></div><div class="cell rounded"></div>
+              <div class="cell rounded"></div><div class="cell rounded"></div><div></div><div class="cell rounded"></div><div class="cell rounded"></div><div></div>
+              <div></div><div class="cell rounded"></div><div class="cell rounded"></div><div></div><div class="cell rounded"></div><div class="cell rounded"></div>
+              <div class="cell rounded"></div><div></div><div class="cell rounded"></div><div class="cell rounded"></div><div></div><div class="cell rounded"></div>
+            </div>
+            <div class="pattern-card-label">Rounded Squares</div>
+            <div class="pattern-card-desc">Soft, approachable</div>
+          </div>
+
+          <div class="pattern-card" onclick="selectPattern(this, 'vertical')">
+            <div class="pattern-card-preview">
+              <div class="cell vertical"></div><div class="cell vertical"></div><div></div><div class="cell vertical"></div><div class="cell vertical"></div><div></div>
+              <div class="cell vertical"></div><div></div><div class="cell vertical"></div><div></div><div class="cell vertical"></div><div class="cell vertical"></div>
+              <div></div><div class="cell vertical"></div><div class="cell vertical"></div><div class="cell vertical"></div><div></div><div class="cell vertical"></div>
+              <div class="cell vertical"></div><div class="cell vertical"></div><div></div><div class="cell vertical"></div><div class="cell vertical"></div><div></div>
+              <div></div><div class="cell vertical"></div><div class="cell vertical"></div><div></div><div class="cell vertical"></div><div class="cell vertical"></div>
+              <div class="cell vertical"></div><div></div><div class="cell vertical"></div><div class="cell vertical"></div><div></div><div class="cell vertical"></div>
+            </div>
+            <div class="pattern-card-label">Vertical Lines</div>
+            <div class="pattern-card-desc">Tall & elegant</div>
+          </div>
+
+          <div class="pattern-card" onclick="selectPattern(this, 'horizontal')">
+            <div class="pattern-card-preview">
+              <div class="cell horizontal"></div><div class="cell horizontal"></div><div></div><div class="cell horizontal"></div><div class="cell horizontal"></div><div></div>
+              <div class="cell horizontal"></div><div></div><div class="cell horizontal"></div><div></div><div class="cell horizontal"></div><div class="cell horizontal"></div>
+              <div></div><div class="cell horizontal"></div><div class="cell horizontal"></div><div class="cell horizontal"></div><div></div><div class="cell horizontal"></div>
+              <div class="cell horizontal"></div><div class="cell horizontal"></div><div></div><div class="cell horizontal"></div><div class="cell horizontal"></div><div></div>
+              <div></div><div class="cell horizontal"></div><div class="cell horizontal"></div><div></div><div class="cell horizontal"></div><div class="cell horizontal"></div>
+              <div class="cell horizontal"></div><div></div><div class="cell horizontal"></div><div class="cell horizontal"></div><div></div><div class="cell horizontal"></div>
+            </div>
+            <div class="pattern-card-label">Horizontal Lines</div>
+            <div class="pattern-card-desc">Wide & stable</div>
+          </div>
+
+          <div class="pattern-card" onclick="selectPattern(this, 'diagonal')">
+            <div class="pattern-card-preview">
+              <div class="cell diagonal"></div><div class="cell diagonal"></div><div></div><div class="cell diagonal"></div><div class="cell diagonal"></div><div></div>
+              <div class="cell diagonal"></div><div></div><div class="cell diagonal"></div><div></div><div class="cell diagonal"></div><div class="cell diagonal"></div>
+              <div></div><div class="cell diagonal"></div><div class="cell diagonal"></div><div class="cell diagonal"></div><div></div><div class="cell diagonal"></div>
+              <div class="cell diagonal"></div><div class="cell diagonal"></div><div></div><div class="cell diagonal"></div><div class="cell diagonal"></div><div></div>
+              <div></div><div class="cell diagonal"></div><div class="cell diagonal"></div><div></div><div class="cell diagonal"></div><div class="cell diagonal"></div>
+              <div class="cell diagonal"></div><div></div><div class="cell diagonal"></div><div class="cell diagonal"></div><div></div><div class="cell diagonal"></div>
+            </div>
+            <div class="pattern-card-label">Diagonal Lines</div>
+            <div class="pattern-card-desc">Dynamic & unique</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Corner Styles Section -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="4"/>
+              </svg>
+            </div>
+            <h2>Corner Styles</h2>
+          </div>
+          <span class="section-count">Eye frame & center</span>
+        </div>
+
+        <div class="eye-subsection">
+          <div class="subsection-label">Corner Frame Style</div>
+          <div class="eye-gallery">
+            <div class="eye-card selected" onclick="selectEyeFrame(this, 'square')">
+              <div class="eye-card-preview">
+                <div class="eye-frame-preview square"></div>
+              </div>
+              <span class="eye-card-label">Square</span>
+            </div>
+            <div class="eye-card" onclick="selectEyeFrame(this, 'rounded')">
+              <div class="eye-card-preview">
+                <div class="eye-frame-preview rounded"></div>
+              </div>
+              <span class="eye-card-label">Rounded</span>
+            </div>
+            <div class="eye-card" onclick="selectEyeFrame(this, 'circle')">
+              <div class="eye-card-preview">
+                <div class="eye-frame-preview circle"></div>
+              </div>
+              <span class="eye-card-label">Circle</span>
+            </div>
+            <div class="eye-card" onclick="selectEyeFrame(this, 'left-leaf')">
+              <div class="eye-card-preview">
+                <div class="eye-frame-preview left-leaf"></div>
+              </div>
+              <span class="eye-card-label">Left Leaf</span>
+            </div>
+            <div class="eye-card" onclick="selectEyeFrame(this, 'right-leaf')">
+              <div class="eye-card-preview">
+                <div class="eye-frame-preview right-leaf"></div>
+              </div>
+              <span class="eye-card-label">Right Leaf</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="eye-subsection">
+          <div class="subsection-label">Corner Center Style</div>
+          <div class="eye-gallery">
+            <div class="eye-card selected" onclick="selectEyeBall(this, 'square')">
+              <div class="eye-card-preview">
+                <div class="eye-ball-preview square"></div>
+              </div>
+              <span class="eye-card-label">Square</span>
+            </div>
+            <div class="eye-card" onclick="selectEyeBall(this, 'rounded')">
+              <div class="eye-card-preview">
+                <div class="eye-ball-preview rounded"></div>
+              </div>
+              <span class="eye-card-label">Rounded</span>
+            </div>
+            <div class="eye-card" onclick="selectEyeBall(this, 'circle')">
+              <div class="eye-card-preview">
+                <div class="eye-ball-preview circle"></div>
+              </div>
+              <span class="eye-card-label">Circle</span>
+            </div>
+            <div class="eye-card" onclick="selectEyeBall(this, 'diamond')">
+              <div class="eye-card-preview">
+                <div class="eye-ball-preview diamond"></div>
+              </div>
+              <span class="eye-card-label">Diamond</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Gradient Section -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="20" rx="2"/>
+                <path d="M2 12h20"/>
+              </svg>
+            </div>
+            <h2>Gradient Colors</h2>
+          </div>
+          <span class="section-count">Solid or gradient fill</span>
+        </div>
+
+        <div class="gradient-builder">
+          <div class="gradient-type-selector">
+            <div class="gradient-type-option selected" onclick="selectGradientType(this, 'solid')">
+              <div class="gradient-type-icon solid"></div>
+              <span class="gradient-type-label">Solid</span>
+            </div>
+            <div class="gradient-type-option" onclick="selectGradientType(this, 'linear-h')">
+              <div class="gradient-type-icon linear-h"></div>
+              <span class="gradient-type-label">Horizontal</span>
+            </div>
+            <div class="gradient-type-option" onclick="selectGradientType(this, 'linear-v')">
+              <div class="gradient-type-icon linear-v"></div>
+              <span class="gradient-type-label">Vertical</span>
+            </div>
+            <div class="gradient-type-option" onclick="selectGradientType(this, 'radial')">
+              <div class="gradient-type-icon radial"></div>
+              <span class="gradient-type-label">Radial</span>
+            </div>
+          </div>
+
+          <div class="color-pickers-row">
+            <div class="color-picker-box">
+              <div class="color-picker-label">Start Color</div>
+              <div class="color-picker-input">
+                <input type="color" value="#ff4d00" id="startColor">
+                <input type="text" value="#FF4D00" maxlength="7">
+              </div>
+            </div>
+            <div class="color-picker-box">
+              <div class="color-picker-label">End Color</div>
+              <div class="color-picker-input">
+                <input type="color" value="#ffc107" id="endColor">
+                <input type="text" value="#FFC107" maxlength="7">
+              </div>
+            </div>
+          </div>
+
+          <div class="direction-row">
+            <span class="direction-label">Direction</span>
+            <div class="direction-options">
+              <button class="direction-option selected" onclick="selectDirection(this, '0deg')" title="Left to Right">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+              <button class="direction-option" onclick="selectDirection(this, '90deg')" title="Top to Bottom">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12l7 7 7-7"/>
+                </svg>
+              </button>
+              <button class="direction-option" onclick="selectDirection(this, '135deg')" title="Diagonal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 17L17 7M17 7H10M17 7v7"/>
+                </svg>
+              </button>
+              <button class="direction-option" onclick="selectDirection(this, 'radial')" title="Radial Center">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="9"/>
+                  <circle cx="12" cy="12" r="4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="gradient-preview-large" style="background: linear-gradient(90deg, #ff4d00, #ffc107)"></div>
+
+          <div class="apply-targets">
+            <div class="apply-target active" onclick="toggleTarget(this)">
+              <span class="checkbox">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </span>
+              Apply to Body
+            </div>
+            <div class="apply-target" onclick="toggleTarget(this)">
+              <span class="checkbox">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </span>
+              Apply to Eye Frames
+            </div>
+            <div class="apply-target" onclick="toggleTarget(this)">
+              <span class="checkbox">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </span>
+              Apply to Eye Balls
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-handle" onclick="toggleSidebar()">
+        <div class="sidebar-handle-bar"></div>
+      </div>
+
+      <div class="sidebar-header">
+        <h3>Live Preview</h3>
+        <span class="live-badge">
+          <span class="dot"></span>
+          Auto-updating
+        </span>
+      </div>
+
+      <div class="sidebar-preview">
+        <div class="qr-preview-box">
+          <div class="qr-preview-inner">
+            <div class="qr-eye tl">
+              <div class="frame"></div>
+              <div class="ball"></div>
+            </div>
+            <div class="qr-eye tr">
+              <div class="frame"></div>
+              <div class="ball"></div>
+            </div>
+            <div class="qr-eye bl">
+              <div class="frame"></div>
+              <div class="ball"></div>
+            </div>
+            <div class="qr-body">
+              <div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div></div><div class="cell"></div>
+              <div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div></div>
+              <div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+              <div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div></div>
+              <div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div></div><div class="cell"></div><div></div><div class="cell"></div>
+              <div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div></div>
+              <div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div></div><div class="cell"></div>
+              <div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="selection-summary">
+        <div class="selection-item">
+          <span>Pattern</span>
+          <strong>Circular Dots</strong>
+        </div>
+        <div class="selection-item">
+          <span>Corner Frame</span>
+          <strong>Square</strong>
+        </div>
+        <div class="selection-item">
+          <span>Corner Center</span>
+          <strong>Square</strong>
+        </div>
+        <div class="selection-item">
+          <span>Gradient</span>
+          <strong>Solid</strong>
+        </div>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+          Generate & Download
+        </button>
+        <button class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/>
+          </svg>
+          Reset to Defaults
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="info-footer">
+    Variation 2: Expanded Visual Layout - Spacious design with large previews and comprehensive controls
+  </footer>
+
+  <script>
+    function selectPattern(el, type) {
+      document.querySelectorAll('.pattern-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function selectEyeFrame(el, type) {
+      el.closest('.eye-subsection').querySelectorAll('.eye-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function selectEyeBall(el, type) {
+      el.closest('.eye-subsection').querySelectorAll('.eye-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function selectGradientType(el, type) {
+      document.querySelectorAll('.gradient-type-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function selectDirection(el, dir) {
+      document.querySelectorAll('.direction-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function toggleTarget(el) {
+      el.classList.toggle('active');
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

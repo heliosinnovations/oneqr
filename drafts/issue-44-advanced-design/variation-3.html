@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Issue #44 - Advanced Design Customization | Variation 3: Minimal Essentials</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-light: #fff0e6;
+      --muted: #888;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --white: #ffffff;
+      --success: #10b981;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+      font-family: 'DM Serif Display', serif;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--fg);
+      color: var(--white);
+      font-size: 0.5625rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      padding: 4px 10px;
+      margin-bottom: 8px;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      margin-bottom: 2px;
+    }
+
+    .header p {
+      font-size: 0.8125rem;
+      color: var(--muted);
+    }
+
+    /* QR Preview - Prominent at top */
+    .preview-section {
+      background: var(--white);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .preview-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.625rem;
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .live-indicator .pulse {
+      width: 6px;
+      height: 6px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.9); }
+    }
+
+    .preview-body {
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .qr-mock {
+      width: 140px;
+      height: 140px;
+      position: relative;
+      background: var(--white);
+    }
+
+    .qr-eye {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+    }
+
+    .qr-eye.tl { top: 0; left: 0; }
+    .qr-eye.tr { top: 0; right: 0; }
+    .qr-eye.bl { bottom: 0; left: 0; }
+
+    .qr-eye .frame {
+      width: 100%;
+      height: 100%;
+      border: 4px solid var(--fg);
+      border-radius: 3px;
+      position: absolute;
+    }
+
+    .qr-eye .ball {
+      width: 12px;
+      height: 12px;
+      background: var(--fg);
+      border-radius: 2px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .qr-body {
+      position: absolute;
+      inset: 22px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+
+    .qr-body .cell {
+      background: var(--fg);
+      border-radius: 50%;
+    }
+
+    /* Control Sections - Minimal style */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .control-row {
+      background: var(--white);
+      border: 1px solid var(--border);
+    }
+
+    .control-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      cursor: pointer;
+    }
+
+    .control-header:hover {
+      background: var(--surface);
+    }
+
+    .control-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+
+    .control-title .icon {
+      width: 20px;
+      height: 20px;
+      color: var(--muted);
+    }
+
+    .control-value {
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .control-value svg {
+      width: 14px;
+      height: 14px;
+      color: var(--muted);
+    }
+
+    .control-body {
+      display: none;
+      padding: 14px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .control-body.open {
+      display: block;
+    }
+
+    /* Inline Pattern Selector */
+    .inline-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .inline-option {
+      width: 48px;
+      height: 48px;
+      border: 2px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+    }
+
+    .inline-option:hover {
+      border-color: var(--fg);
+    }
+
+    .inline-option.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .inline-option .pattern-mini {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+    }
+
+    .inline-option .pattern-mini .cell {
+      background: var(--fg);
+    }
+
+    .inline-option .pattern-mini .cell.dot { border-radius: 50%; }
+    .inline-option .pattern-mini .cell.square { border-radius: 0; }
+    .inline-option .pattern-mini .cell.rounded { border-radius: 20%; }
+    .inline-option .pattern-mini .cell.vertical { transform: scaleX(0.4); border-radius: 1px; }
+    .inline-option .pattern-mini .cell.horizontal { transform: scaleY(0.4); border-radius: 1px; }
+    .inline-option .pattern-mini .cell.diagonal { transform: rotate(45deg) scale(0.65); }
+
+    /* Eye mini preview */
+    .eye-mini {
+      width: 24px;
+      height: 24px;
+      position: relative;
+    }
+
+    .eye-mini .frame {
+      width: 100%;
+      height: 100%;
+      border: 3px solid var(--fg);
+      position: absolute;
+    }
+
+    .eye-mini .frame.square { border-radius: 0; }
+    .eye-mini .frame.rounded { border-radius: 4px; }
+    .eye-mini .frame.circle { border-radius: 50%; }
+    .eye-mini .frame.left-leaf { border-radius: 0 50% 0 50%; }
+    .eye-mini .frame.right-leaf { border-radius: 50% 0 50% 0; }
+
+    .eye-mini .ball {
+      width: 8px;
+      height: 8px;
+      background: var(--fg);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .eye-mini .ball.square { border-radius: 0; }
+    .eye-mini .ball.rounded { border-radius: 2px; }
+    .eye-mini .ball.circle { border-radius: 50%; }
+    .eye-mini .ball.diamond { transform: translate(-50%, -50%) rotate(45deg); }
+
+    /* Eye sections in control */
+    .eye-section-row {
+      margin-bottom: 12px;
+    }
+
+    .eye-section-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .mini-label {
+      font-size: 0.625rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    /* Gradient Mini */
+    .gradient-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .gradient-types-mini {
+      display: flex;
+      gap: 6px;
+    }
+
+    .gradient-type-mini {
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s;
+      border-radius: 4px;
+    }
+
+    .gradient-type-mini:hover {
+      border-color: var(--fg);
+    }
+
+    .gradient-type-mini.selected {
+      border-color: var(--accent);
+    }
+
+    .gradient-type-mini.solid { background: var(--fg); }
+    .gradient-type-mini.linear { background: linear-gradient(90deg, #ff4d00, #ffc107); }
+    .gradient-type-mini.radial { background: radial-gradient(circle, #ffc107, #ff4d00); }
+
+    /* Color inputs inline */
+    .color-inputs-inline {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .color-input-mini {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      border: 1px solid var(--border);
+      background: var(--white);
+      padding: 4px 6px;
+    }
+
+    .color-input-mini input[type="color"] {
+      width: 24px;
+      height: 24px;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      border-radius: 2px;
+    }
+
+    .color-input-mini input[type="text"] {
+      width: 60px;
+      border: none;
+      font-family: monospace;
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      background: transparent;
+      outline: none;
+    }
+
+    /* Apply targets mini */
+    .apply-mini {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .apply-chip-mini {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      font-size: 0.625rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .apply-chip-mini:hover {
+      border-color: var(--fg);
+    }
+
+    .apply-chip-mini.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .apply-chip-mini .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+    }
+
+    .apply-chip-mini.active .dot {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* Action Button */
+    .action-section {
+      margin-top: 20px;
+    }
+
+    .btn-generate {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px;
+      background: var(--fg);
+      color: var(--white);
+      border: none;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-generate:hover {
+      background: var(--accent);
+    }
+
+    .btn-generate svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Quick presets */
+    .quick-presets {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .preset-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      font-size: 0.6875rem;
+      text-align: center;
+      transition: all 0.15s;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--fg);
+      background: var(--surface);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 20px;
+      padding: 12px;
+      background: var(--surface);
+      text-align: center;
+      font-size: 0.6875rem;
+      color: var(--muted);
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 400px) {
+      .container {
+        padding: 16px;
+      }
+
+      .inline-option {
+        width: 44px;
+        height: 44px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <span class="badge">Advanced Design</span>
+      <h1>QR Style</h1>
+      <p>Issue #44 - Customize your QR code</p>
+    </header>
+
+    <!-- Prominent Preview -->
+    <div class="preview-section">
+      <div class="preview-header">
+        <span class="preview-label">Live Preview</span>
+        <span class="live-indicator">
+          <span class="pulse"></span>
+          Auto-updating
+        </span>
+      </div>
+      <div class="preview-body">
+        <div class="qr-mock">
+          <div class="qr-eye tl">
+            <div class="frame"></div>
+            <div class="ball"></div>
+          </div>
+          <div class="qr-eye tr">
+            <div class="frame"></div>
+            <div class="ball"></div>
+          </div>
+          <div class="qr-eye bl">
+            <div class="frame"></div>
+            <div class="ball"></div>
+          </div>
+          <div class="qr-body">
+            <div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div></div>
+            <div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div>
+            <div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div></div><div class="cell"></div><div></div>
+            <div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Minimal Controls -->
+    <div class="controls">
+      <!-- Body Pattern -->
+      <div class="control-row">
+        <div class="control-header" onclick="toggleControl(this)">
+          <div class="control-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+            </svg>
+            Body Pattern
+          </div>
+          <span class="control-value">
+            Dots
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </span>
+        </div>
+        <div class="control-body">
+          <div class="inline-options">
+            <div class="inline-option" onclick="selectPattern(this, 'square')">
+              <div class="pattern-mini">
+                <div class="cell square"></div><div class="cell square"></div><div></div><div class="cell square"></div>
+                <div class="cell square"></div><div></div><div class="cell square"></div><div class="cell square"></div>
+                <div></div><div class="cell square"></div><div class="cell square"></div><div></div>
+                <div class="cell square"></div><div class="cell square"></div><div></div><div class="cell square"></div>
+              </div>
+            </div>
+            <div class="inline-option selected" onclick="selectPattern(this, 'dots')">
+              <div class="pattern-mini">
+                <div class="cell dot"></div><div class="cell dot"></div><div></div><div class="cell dot"></div>
+                <div class="cell dot"></div><div></div><div class="cell dot"></div><div class="cell dot"></div>
+                <div></div><div class="cell dot"></div><div class="cell dot"></div><div></div>
+                <div class="cell dot"></div><div class="cell dot"></div><div></div><div class="cell dot"></div>
+              </div>
+            </div>
+            <div class="inline-option" onclick="selectPattern(this, 'rounded')">
+              <div class="pattern-mini">
+                <div class="cell rounded"></div><div class="cell rounded"></div><div></div><div class="cell rounded"></div>
+                <div class="cell rounded"></div><div></div><div class="cell rounded"></div><div class="cell rounded"></div>
+                <div></div><div class="cell rounded"></div><div class="cell rounded"></div><div></div>
+                <div class="cell rounded"></div><div class="cell rounded"></div><div></div><div class="cell rounded"></div>
+              </div>
+            </div>
+            <div class="inline-option" onclick="selectPattern(this, 'vertical')">
+              <div class="pattern-mini">
+                <div class="cell vertical"></div><div class="cell vertical"></div><div></div><div class="cell vertical"></div>
+                <div class="cell vertical"></div><div></div><div class="cell vertical"></div><div class="cell vertical"></div>
+                <div></div><div class="cell vertical"></div><div class="cell vertical"></div><div></div>
+                <div class="cell vertical"></div><div class="cell vertical"></div><div></div><div class="cell vertical"></div>
+              </div>
+            </div>
+            <div class="inline-option" onclick="selectPattern(this, 'horizontal')">
+              <div class="pattern-mini">
+                <div class="cell horizontal"></div><div class="cell horizontal"></div><div></div><div class="cell horizontal"></div>
+                <div class="cell horizontal"></div><div></div><div class="cell horizontal"></div><div class="cell horizontal"></div>
+                <div></div><div class="cell horizontal"></div><div class="cell horizontal"></div><div></div>
+                <div class="cell horizontal"></div><div class="cell horizontal"></div><div></div><div class="cell horizontal"></div>
+              </div>
+            </div>
+            <div class="inline-option" onclick="selectPattern(this, 'diagonal')">
+              <div class="pattern-mini">
+                <div class="cell diagonal"></div><div class="cell diagonal"></div><div></div><div class="cell diagonal"></div>
+                <div class="cell diagonal"></div><div></div><div class="cell diagonal"></div><div class="cell diagonal"></div>
+                <div></div><div class="cell diagonal"></div><div class="cell diagonal"></div><div></div>
+                <div class="cell diagonal"></div><div class="cell diagonal"></div><div></div><div class="cell diagonal"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Corner Styles -->
+      <div class="control-row">
+        <div class="control-header" onclick="toggleControl(this)">
+          <div class="control-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <circle cx="12" cy="12" r="4"/>
+            </svg>
+            Corner Styles
+          </div>
+          <span class="control-value">
+            Square / Square
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </span>
+        </div>
+        <div class="control-body">
+          <div class="eye-section-row">
+            <div class="mini-label">Frame Style</div>
+            <div class="inline-options">
+              <div class="inline-option selected" onclick="selectEyeFrame(this)">
+                <div class="eye-mini"><div class="frame square"></div></div>
+              </div>
+              <div class="inline-option" onclick="selectEyeFrame(this)">
+                <div class="eye-mini"><div class="frame rounded"></div></div>
+              </div>
+              <div class="inline-option" onclick="selectEyeFrame(this)">
+                <div class="eye-mini"><div class="frame circle"></div></div>
+              </div>
+              <div class="inline-option" onclick="selectEyeFrame(this)">
+                <div class="eye-mini"><div class="frame left-leaf"></div></div>
+              </div>
+              <div class="inline-option" onclick="selectEyeFrame(this)">
+                <div class="eye-mini"><div class="frame right-leaf"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="eye-section-row">
+            <div class="mini-label">Center Style</div>
+            <div class="inline-options">
+              <div class="inline-option selected" onclick="selectEyeBall(this)">
+                <div class="eye-mini"><div class="ball square"></div></div>
+              </div>
+              <div class="inline-option" onclick="selectEyeBall(this)">
+                <div class="eye-mini"><div class="ball rounded"></div></div>
+              </div>
+              <div class="inline-option" onclick="selectEyeBall(this)">
+                <div class="eye-mini"><div class="ball circle"></div></div>
+              </div>
+              <div class="inline-option" onclick="selectEyeBall(this)">
+                <div class="eye-mini"><div class="ball diamond"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gradient Colors -->
+      <div class="control-row">
+        <div class="control-header" onclick="toggleControl(this)">
+          <div class="control-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="2"/>
+              <path d="M2 12h20"/>
+            </svg>
+            Gradient Colors
+          </div>
+          <span class="control-value">
+            Solid
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </span>
+        </div>
+        <div class="control-body">
+          <div class="gradient-row">
+            <div class="gradient-types-mini">
+              <div class="gradient-type-mini solid selected" onclick="selectGradient(this, 'solid')" title="Solid"></div>
+              <div class="gradient-type-mini linear" onclick="selectGradient(this, 'linear')" title="Linear"></div>
+              <div class="gradient-type-mini radial" onclick="selectGradient(this, 'radial')" title="Radial"></div>
+            </div>
+            <div class="color-inputs-inline">
+              <div class="color-input-mini">
+                <input type="color" value="#ff4d00">
+                <input type="text" value="#FF4D00" maxlength="7">
+              </div>
+              <div class="color-input-mini">
+                <input type="color" value="#ffc107">
+                <input type="text" value="#FFC107" maxlength="7">
+              </div>
+            </div>
+          </div>
+          <div class="apply-mini">
+            <div class="apply-chip-mini active" onclick="toggleApply(this)">
+              <span class="dot"></span>
+              Body
+            </div>
+            <div class="apply-chip-mini" onclick="toggleApply(this)">
+              <span class="dot"></span>
+              Eye Frames
+            </div>
+            <div class="apply-chip-mini" onclick="toggleApply(this)">
+              <span class="dot"></span>
+              Eye Balls
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-section">
+      <button class="btn-generate">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+        </svg>
+        Generate & Download
+      </button>
+
+      <div class="quick-presets">
+        <button class="preset-btn" onclick="applyPreset('classic')">Classic</button>
+        <button class="preset-btn" onclick="applyPreset('modern')">Modern</button>
+        <button class="preset-btn" onclick="applyPreset('playful')">Playful</button>
+        <button class="preset-btn" onclick="applyPreset('elegant')">Elegant</button>
+      </div>
+    </div>
+
+    <footer class="footer">
+      Variation 3: Minimal Essentials - Streamlined controls with inline selections
+    </footer>
+  </div>
+
+  <script>
+    function toggleControl(header) {
+      const body = header.nextElementSibling;
+      const isOpen = body.classList.contains('open');
+
+      // Close all
+      document.querySelectorAll('.control-body').forEach(b => b.classList.remove('open'));
+
+      // Toggle current
+      if (!isOpen) {
+        body.classList.add('open');
+      }
+    }
+
+    function selectPattern(el, type) {
+      el.closest('.inline-options').querySelectorAll('.inline-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      // Update control value
+      const labels = { square: 'Squares', dots: 'Dots', rounded: 'Rounded', vertical: 'Vertical', horizontal: 'Horizontal', diagonal: 'Diagonal' };
+      el.closest('.control-row').querySelector('.control-value').childNodes[0].textContent = labels[type] + ' ';
+    }
+
+    function selectEyeFrame(el) {
+      el.closest('.eye-section-row').querySelectorAll('.inline-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function selectEyeBall(el) {
+      el.closest('.eye-section-row').querySelectorAll('.inline-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function selectGradient(el, type) {
+      document.querySelectorAll('.gradient-type-mini').forEach(g => g.classList.remove('selected'));
+      el.classList.add('selected');
+      // Update control value
+      const labels = { solid: 'Solid', linear: 'Linear', radial: 'Radial' };
+      el.closest('.control-row').querySelector('.control-value').childNodes[0].textContent = labels[type] + ' ';
+    }
+
+    function toggleApply(el) {
+      el.classList.toggle('active');
+    }
+
+    function applyPreset(name) {
+      // Quick preset application (visual feedback)
+      alert('Applying preset: ' + name);
+    }
+  </script>
+</body>
+</html>
