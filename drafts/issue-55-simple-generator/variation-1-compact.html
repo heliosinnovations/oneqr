@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SimpleQRGenerator - Variation 1: Compact Vertical Stack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .serif {
+      font-family: 'DM Serif Display', serif;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    /* Component Card */
+    .qr-generator {
+      background: var(--surface);
+      padding: 2rem;
+    }
+
+    /* URL Input Section */
+    .input-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .input-field-container {
+      flex: 1;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .url-input {
+      width: 100%;
+      border: none;
+      border-bottom: 2px solid var(--border);
+      background: transparent;
+      padding: 0.75rem 0;
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      color: var(--fg);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .url-input::placeholder {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .url-input:focus {
+      border-color: var(--accent);
+    }
+
+    .more-link {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.8125rem;
+      color: var(--muted);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+
+    .more-link:hover {
+      color: var(--accent);
+    }
+
+    .more-link svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* QR Preview Section */
+    .preview-section {
+      background: white;
+      border: 1px solid var(--border);
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .qr-placeholder {
+      width: 180px;
+      height: 180px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-placeholder svg {
+      width: 80px;
+      height: 80px;
+      color: var(--border);
+    }
+
+    .qr-preview {
+      width: 180px;
+      height: 180px;
+    }
+
+    .qr-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Actions Section */
+    .actions-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .download-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--fg);
+      color: var(--bg);
+      border: none;
+      padding: 1rem 1.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .download-btn:hover {
+      background: var(--accent);
+    }
+
+    .download-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Empty State */
+    .empty-state .preview-section {
+      background: var(--surface);
+      border-style: dashed;
+    }
+
+    .empty-hint {
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+
+    .empty-hint p {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* Loading State */
+    .loading .qr-placeholder {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* State Labels */
+    .state-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      padding: 0.5rem 1rem;
+      background: var(--accent-light);
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+
+    /* Demo Controls */
+    .demo-controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      justify-content: center;
+    }
+
+    .demo-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: white;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .demo-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .demo-btn.active {
+      background: var(--fg);
+      color: white;
+      border-color: var(--fg);
+    }
+
+    /* Design Notes */
+    .design-notes {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: #f8f8f8;
+      border-left: 3px solid var(--accent);
+      font-size: 0.8125rem;
+    }
+
+    .design-notes h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .design-notes ul {
+      margin: 0.5rem 0;
+      padding-left: 1.25rem;
+    }
+
+    .design-notes li {
+      margin-bottom: 0.25rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Demo Controls -->
+    <div class="demo-controls">
+      <button class="demo-btn active" onclick="showState('empty')">Empty</button>
+      <button class="demo-btn" onclick="showState('loading')">Loading</button>
+      <button class="demo-btn" onclick="showState('success')">Success</button>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="qr-generator empty-state">
+      <span class="state-label">Empty State</span>
+
+      <div class="input-section">
+        <div class="input-wrapper">
+          <div class="input-field-container">
+            <label class="input-label" for="url-empty">Enter URL</label>
+            <input
+              type="url"
+              id="url-empty"
+              class="url-input"
+              placeholder="https://yoursite.com"
+            >
+          </div>
+          <a href="#" class="more-link">
+            More options
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="preview-section">
+        <div class="qr-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+            <rect x="14" y="14" width="4" height="4"/>
+            <rect x="17" y="17" width="4" height="4"/>
+          </svg>
+        </div>
+      </div>
+      <div class="empty-hint">
+        <p>Enter a URL above to generate your QR code</p>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state" class="qr-generator loading" style="display: none;">
+      <span class="state-label">Loading State</span>
+
+      <div class="input-section">
+        <div class="input-wrapper">
+          <div class="input-field-container">
+            <label class="input-label" for="url-loading">Enter URL</label>
+            <input
+              type="url"
+              id="url-loading"
+              class="url-input"
+              value="https://example.com"
+              readonly
+            >
+          </div>
+          <a href="#" class="more-link">
+            More options
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="preview-section">
+        <div class="qr-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+            <rect x="14" y="14" width="4" height="4"/>
+            <rect x="17" y="17" width="4" height="4"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success State -->
+    <div id="success-state" class="qr-generator" style="display: none;">
+      <span class="state-label">Success State</span>
+
+      <div class="input-section">
+        <div class="input-wrapper">
+          <div class="input-field-container">
+            <label class="input-label" for="url-success">Enter URL</label>
+            <input
+              type="url"
+              id="url-success"
+              class="url-input"
+              value="https://example.com"
+            >
+          </div>
+          <a href="#" class="more-link">
+            More options
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="preview-section">
+        <div class="qr-preview">
+          <!-- Sample QR Code SVG -->
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100" height="100" fill="white"/>
+            <!-- QR Pattern (simplified representation) -->
+            <g fill="#1a1a1a">
+              <!-- Position Detection Patterns -->
+              <rect x="4" y="4" width="20" height="20"/>
+              <rect x="7" y="7" width="14" height="14" fill="white"/>
+              <rect x="10" y="10" width="8" height="8"/>
+
+              <rect x="76" y="4" width="20" height="20"/>
+              <rect x="79" y="7" width="14" height="14" fill="white"/>
+              <rect x="82" y="10" width="8" height="8"/>
+
+              <rect x="4" y="76" width="20" height="20"/>
+              <rect x="7" y="79" width="14" height="14" fill="white"/>
+              <rect x="10" y="82" width="8" height="8"/>
+
+              <!-- Data modules (simplified) -->
+              <rect x="28" y="4" width="4" height="4"/>
+              <rect x="36" y="4" width="4" height="4"/>
+              <rect x="44" y="4" width="4" height="4"/>
+              <rect x="52" y="4" width="4" height="4"/>
+              <rect x="60" y="4" width="4" height="4"/>
+
+              <rect x="28" y="12" width="4" height="4"/>
+              <rect x="40" y="12" width="4" height="4"/>
+              <rect x="52" y="12" width="4" height="4"/>
+              <rect x="64" y="12" width="4" height="4"/>
+
+              <rect x="32" y="20" width="4" height="4"/>
+              <rect x="44" y="20" width="4" height="4"/>
+              <rect x="56" y="20" width="4" height="4"/>
+
+              <rect x="28" y="28" width="4" height="4"/>
+              <rect x="36" y="28" width="4" height="4"/>
+              <rect x="48" y="28" width="4" height="4"/>
+              <rect x="60" y="28" width="4" height="4"/>
+              <rect x="68" y="28" width="4" height="4"/>
+              <rect x="76" y="28" width="4" height="4"/>
+              <rect x="88" y="28" width="4" height="4"/>
+
+              <rect x="4" y="36" width="4" height="4"/>
+              <rect x="16" y="36" width="4" height="4"/>
+              <rect x="28" y="36" width="4" height="4"/>
+              <rect x="40" y="36" width="4" height="4"/>
+              <rect x="52" y="36" width="4" height="4"/>
+              <rect x="64" y="36" width="4" height="4"/>
+              <rect x="76" y="36" width="4" height="4"/>
+              <rect x="88" y="36" width="4" height="4"/>
+
+              <rect x="4" y="44" width="4" height="4"/>
+              <rect x="12" y="44" width="4" height="4"/>
+              <rect x="24" y="44" width="4" height="4"/>
+              <rect x="36" y="44" width="4" height="4"/>
+              <rect x="48" y="44" width="4" height="4"/>
+              <rect x="60" y="44" width="4" height="4"/>
+              <rect x="72" y="44" width="4" height="4"/>
+              <rect x="84" y="44" width="4" height="4"/>
+
+              <rect x="8" y="52" width="4" height="4"/>
+              <rect x="20" y="52" width="4" height="4"/>
+              <rect x="32" y="52" width="4" height="4"/>
+              <rect x="44" y="52" width="4" height="4"/>
+              <rect x="56" y="52" width="4" height="4"/>
+              <rect x="68" y="52" width="4" height="4"/>
+              <rect x="80" y="52" width="4" height="4"/>
+              <rect x="92" y="52" width="4" height="4"/>
+
+              <rect x="4" y="60" width="4" height="4"/>
+              <rect x="16" y="60" width="4" height="4"/>
+              <rect x="28" y="60" width="4" height="4"/>
+              <rect x="40" y="60" width="4" height="4"/>
+              <rect x="52" y="60" width="4" height="4"/>
+              <rect x="64" y="60" width="4" height="4"/>
+              <rect x="76" y="60" width="4" height="4"/>
+
+              <rect x="28" y="68" width="4" height="4"/>
+              <rect x="36" y="68" width="4" height="4"/>
+              <rect x="48" y="68" width="4" height="4"/>
+              <rect x="60" y="68" width="4" height="4"/>
+              <rect x="72" y="68" width="4" height="4"/>
+              <rect x="84" y="68" width="4" height="4"/>
+
+              <rect x="28" y="76" width="4" height="4"/>
+              <rect x="40" y="76" width="4" height="4"/>
+              <rect x="52" y="76" width="4" height="4"/>
+              <rect x="64" y="76" width="4" height="4"/>
+              <rect x="76" y="76" width="4" height="4"/>
+              <rect x="88" y="76" width="4" height="4"/>
+
+              <rect x="32" y="84" width="4" height="4"/>
+              <rect x="44" y="84" width="4" height="4"/>
+              <rect x="56" y="84" width="4" height="4"/>
+              <rect x="68" y="84" width="4" height="4"/>
+              <rect x="80" y="84" width="4" height="4"/>
+              <rect x="92" y="84" width="4" height="4"/>
+
+              <rect x="28" y="92" width="4" height="4"/>
+              <rect x="36" y="92" width="4" height="4"/>
+              <rect x="48" y="92" width="4" height="4"/>
+              <rect x="60" y="92" width="4" height="4"/>
+              <rect x="72" y="92" width="4" height="4"/>
+              <rect x="84" y="92" width="4" height="4"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="actions-section">
+        <button class="download-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+          Download PNG
+        </button>
+        <a href="#" class="more-link">
+          More options
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Design Notes -->
+    <div class="design-notes">
+      <h3>Variation 1: Compact Vertical Stack</h3>
+      <ul>
+        <li><strong>Layout:</strong> Single column, stacked vertically</li>
+        <li><strong>Style:</strong> Minimal, clean, focused</li>
+        <li><strong>Input:</strong> Full-width with "More options" link inline to right</li>
+        <li><strong>Preview:</strong> Centered QR code in bordered container</li>
+        <li><strong>Actions:</strong> Full-width download button + subtle "More options" link</li>
+        <li><strong>Best for:</strong> Mobile-first, simple use cases</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    function showState(state) {
+      document.getElementById('empty-state').style.display = 'none';
+      document.getElementById('loading-state').style.display = 'none';
+      document.getElementById('success-state').style.display = 'none';
+
+      document.getElementById(state + '-state').style.display = 'block';
+
+      document.querySelectorAll('.demo-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>
