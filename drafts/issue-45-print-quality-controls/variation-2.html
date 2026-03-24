@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Print Quality Controls - Variation 2: Expanded Professional</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --pro-bg: #f8f9fa;
+      --pro-fg: #1a1a1a;
+      --pro-accent: #2563eb;
+      --pro-accent-hover: #1d4ed8;
+      --pro-accent-light: #eff6ff;
+      --pro-muted: #6b7280;
+      --pro-muted-light: #e5e7eb;
+      --pro-border: #e5e7eb;
+      --pro-border-dark: #d1d5db;
+      --pro-surface: #ffffff;
+      --pro-surface-hover: #f9fafb;
+      --pro-success: #059669;
+      --pro-success-light: #d1fae5;
+      --pro-warning: #d97706;
+      --pro-warning-light: #fef3c7;
+      --pro-error: #dc2626;
+      --pro-error-light: #fee2e2;
+    }
+
+    .resolution-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(to right, var(--pro-accent) 44%, var(--pro-muted-light) 44%);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .resolution-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--pro-accent);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+      border: 3px solid white;
+    }
+
+    .dpi-card {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .dpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .dpi-card.selected {
+      background: var(--pro-accent-light);
+      border-color: var(--pro-accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .dpi-card.selected .dpi-value {
+      color: var(--pro-accent);
+    }
+
+    .dpi-card.selected .dpi-badge {
+      background: var(--pro-accent);
+      color: white;
+    }
+
+    .checklist-item {
+      transition: all 0.2s ease;
+    }
+
+    .checklist-item.valid {
+      color: var(--pro-success);
+    }
+
+    .checklist-item.warning {
+      color: var(--pro-warning);
+    }
+
+    .checklist-item.invalid {
+      color: var(--pro-error);
+    }
+
+    .size-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-slide-in {
+      animation: slideIn 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-[var(--pro-bg)] min-h-screen p-4 md:p-8">
+  <!-- Design Info Banner -->
+  <div class="max-w-2xl mx-auto mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+    <h1 class="text-lg font-semibold text-blue-900 mb-1">Variation 2: Expanded Professional View</h1>
+    <p class="text-sm text-blue-700">
+      <strong>Design Approach:</strong> Data-rich, professional layout with detailed information cards.
+      Includes print quality checklist and visual size guide for print professionals.
+    </p>
+    <ul class="mt-2 text-xs text-blue-600 space-y-1">
+      <li>- DPI options as detailed cards with use-case descriptions</li>
+      <li>- Large physical size calculator with visual preview</li>
+      <li>- Print quality checklist with real-time validation</li>
+      <li>- Detailed scanning distance guide</li>
+      <li>- Best for: Professional designers and print production</li>
+    </ul>
+  </div>
+
+  <!-- Export Tab Content -->
+  <div class="max-w-2xl mx-auto bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm">
+    <!-- Tab Header -->
+    <div class="border-b border-[var(--pro-border)] px-5">
+      <div class="flex">
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Content</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Colors</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Style</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-[var(--pro-accent)] text-[var(--pro-accent)]">Export</button>
+      </div>
+    </div>
+
+    <!-- Export Content -->
+    <div class="p-6">
+      <!-- Format Selector -->
+      <div class="mb-6">
+        <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide">Export Format</label>
+        <div class="grid grid-cols-4 gap-2">
+          <button class="rounded-lg border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] p-3 text-center">
+            <div class="text-sm font-bold">PNG</div>
+            <div class="text-[10px] text-[var(--pro-muted)]">Raster</div>
+          </button>
+          <button class="rounded-lg border border-[var(--pro-border)] p-3 text-center">
+            <div class="text-sm font-bold">SVG</div>
+            <div class="text-[10px] text-[var(--pro-muted)]">Vector</div>
+          </button>
+          <button class="rounded-lg border border-[var(--pro-border)] p-3 text-center">
+            <div class="text-sm font-bold">PDF</div>
+            <div class="text-[10px] text-[var(--pro-muted)]">Print</div>
+          </button>
+          <button class="rounded-lg border border-[var(--pro-border)] p-3 text-center">
+            <div class="text-sm font-bold">EPS</div>
+            <div class="text-[10px] text-[var(--pro-muted)]">Adobe</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Resolution Slider -->
+      <div class="mb-5 p-4 bg-[var(--pro-surface-hover)] rounded-xl border border-[var(--pro-border)]">
+        <div class="flex items-center justify-between mb-3">
+          <label class="text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide flex items-center gap-2">
+            <svg class="w-4 h-4 text-[var(--pro-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+            </svg>
+            Resolution
+          </label>
+          <div class="text-right">
+            <span class="text-2xl font-bold text-[var(--pro-accent)]" id="resolutionValue">1000</span>
+            <span class="text-sm text-[var(--pro-muted)]">px</span>
+          </div>
+        </div>
+        <input type="range" min="200" max="2000" value="1000" step="100" class="resolution-slider w-full mb-2" id="resolutionSlider">
+        <div class="flex justify-between text-[10px] text-[var(--pro-muted)]">
+          <span>200px</span>
+          <span>1000px</span>
+          <span>2000px</span>
+        </div>
+      </div>
+
+      <!-- NEW: Print Quality Section - Expanded Professional -->
+      <div class="mb-5 space-y-4">
+        <!-- Section Header -->
+        <div class="flex items-center gap-2 pb-2 border-b border-[var(--pro-border)]">
+          <svg class="w-5 h-5 text-[var(--pro-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+          </svg>
+          <h3 class="text-sm font-semibold text-[var(--pro-fg)]">Print Quality Settings</h3>
+        </div>
+
+        <!-- DPI Cards - Detailed -->
+        <div>
+          <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide">Print Quality (DPI)</label>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="dpi-card rounded-xl border-2 border-[var(--pro-border)] bg-white p-3" data-dpi="72">
+              <div class="flex items-center justify-between mb-2">
+                <span class="dpi-value text-xl font-bold text-[var(--pro-fg)]">72</span>
+                <span class="dpi-badge text-[9px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-medium">WEB</span>
+              </div>
+              <p class="text-[10px] text-[var(--pro-muted)] leading-tight">Screen display, websites, email</p>
+            </div>
+            <div class="dpi-card rounded-xl border-2 border-[var(--pro-border)] bg-white p-3" data-dpi="150">
+              <div class="flex items-center justify-between mb-2">
+                <span class="dpi-value text-xl font-bold text-[var(--pro-fg)]">150</span>
+                <span class="dpi-badge text-[9px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 font-medium">PRINT</span>
+              </div>
+              <p class="text-[10px] text-[var(--pro-muted)] leading-tight">Standard print, flyers, posters</p>
+            </div>
+            <div class="dpi-card selected rounded-xl border-2 border-[var(--pro-border)] bg-white p-3" data-dpi="300">
+              <div class="flex items-center justify-between mb-2">
+                <span class="dpi-value text-xl font-bold text-[var(--pro-fg)]">300</span>
+                <span class="dpi-badge text-[9px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-medium">HIGH</span>
+              </div>
+              <p class="text-[10px] text-[var(--pro-muted)] leading-tight">Business cards, brochures</p>
+            </div>
+            <div class="dpi-card rounded-xl border-2 border-[var(--pro-border)] bg-white p-3" data-dpi="600">
+              <div class="flex items-center justify-between mb-2">
+                <span class="dpi-value text-xl font-bold text-[var(--pro-fg)]">600</span>
+                <span class="dpi-badge text-[9px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-600 font-medium">PRO</span>
+              </div>
+              <p class="text-[10px] text-[var(--pro-muted)] leading-tight">Professional print, packaging</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Physical Size Calculator - Large Card -->
+        <div class="size-card rounded-xl border border-[var(--pro-border)] p-5">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h4 class="text-sm font-semibold text-[var(--pro-fg)] flex items-center gap-2">
+                <svg class="w-4 h-4 text-[var(--pro-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                Physical Size Calculator
+              </h4>
+              <p class="text-[10px] text-[var(--pro-muted)] mt-1">Calculated from resolution and DPI</p>
+            </div>
+            <!-- Size Preview Square -->
+            <div class="relative w-16 h-16 border-2 border-dashed border-[var(--pro-accent)] rounded-lg flex items-center justify-center bg-white" id="sizePreview">
+              <div class="w-8 h-8 bg-[var(--pro-accent-light)] rounded border border-[var(--pro-accent)] flex items-center justify-center">
+                <svg class="w-4 h-4 text-[var(--pro-accent)]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm8 0h2v2h-2v-2zm0 4h2v2h-2v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Size Display Grid -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white rounded-lg p-3 border border-[var(--pro-border)]">
+              <div class="text-[10px] text-[var(--pro-muted)] uppercase tracking-wide mb-1">Inches</div>
+              <div class="text-xl font-bold text-[var(--pro-fg)]" id="sizeInches">3.3" x 3.3"</div>
+            </div>
+            <div class="bg-white rounded-lg p-3 border border-[var(--pro-border)]">
+              <div class="text-[10px] text-[var(--pro-muted)] uppercase tracking-wide mb-1">Centimeters</div>
+              <div class="text-xl font-bold text-[var(--pro-fg)]" id="sizeCm">8.5cm x 8.5cm</div>
+            </div>
+          </div>
+
+          <!-- Size Warning -->
+          <div class="mt-4 hidden" id="sizeWarning">
+            <div class="flex items-start gap-3 p-3 bg-[var(--pro-warning-light)] border border-yellow-300 rounded-lg">
+              <svg class="w-5 h-5 text-[var(--pro-warning)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+              <div>
+                <div class="text-sm font-semibold text-[var(--pro-warning)]">Size Warning</div>
+                <p class="text-xs text-[var(--pro-warning)] mt-0.5">QR code may be too small for reliable scanning. Minimum recommended: 0.8" (2cm)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Print Quality Checklist -->
+        <div class="bg-white rounded-xl border border-[var(--pro-border)] p-4">
+          <h4 class="text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide mb-3 flex items-center gap-2">
+            <svg class="w-4 h-4 text-[var(--pro-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Print Quality Checklist
+          </h4>
+          <div class="space-y-2" id="checklist">
+            <div class="checklist-item valid flex items-center gap-2 text-sm">
+              <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="checkRes">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span id="checkResText">Resolution sufficient for print (1000px)</span>
+            </div>
+            <div class="checklist-item valid flex items-center gap-2 text-sm">
+              <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="checkFormat">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span id="checkFormatText">PNG format (raster, transparent background)</span>
+            </div>
+            <div class="checklist-item valid flex items-center gap-2 text-sm">
+              <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="checkSize">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span id="checkSizeText">Size adequate for scanning (3.3" / 8.5cm)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scanning Distance Guide -->
+        <div class="bg-[var(--pro-accent-light)] rounded-lg p-3 border border-blue-200">
+          <div class="flex items-start gap-2">
+            <svg class="w-4 h-4 text-[var(--pro-accent)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div class="text-xs text-[var(--pro-accent)]">
+              <strong>Scanning Distance Guide:</strong> At <span id="guideSize">3.3"</span>, this QR code can be scanned from approximately <span id="guideDistance" class="font-semibold">10 feet (3m)</span> away.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Download Button -->
+      <button class="w-full flex items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-4 text-sm font-semibold text-white transition-all hover:bg-[var(--pro-accent-hover)] hover:shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        <span id="downloadText">Download PNG (1000px @ 300 DPI)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Preview -->
+  <div class="max-w-sm mx-auto mt-8 p-4 bg-gray-100 rounded-xl">
+    <div class="text-center text-xs font-semibold text-gray-500 mb-4 uppercase tracking-wide">Mobile Preview (375px)</div>
+    <div class="bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm max-h-[600px] overflow-y-auto" style="max-width: 375px;">
+      <div class="p-4">
+        <!-- Format - Mobile -->
+        <div class="mb-3">
+          <div class="grid grid-cols-4 gap-1.5">
+            <div class="rounded border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] p-2 text-center">
+              <div class="text-xs font-bold">PNG</div>
+            </div>
+            <div class="rounded border border-[var(--pro-border)] p-2 text-center">
+              <div class="text-xs font-bold">SVG</div>
+            </div>
+            <div class="rounded border border-[var(--pro-border)] p-2 text-center">
+              <div class="text-xs font-bold">PDF</div>
+            </div>
+            <div class="rounded border border-[var(--pro-border)] p-2 text-center">
+              <div class="text-xs font-bold">EPS</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resolution - Mobile -->
+        <div class="mb-3 p-3 bg-[var(--pro-surface-hover)] rounded-lg border border-[var(--pro-border)]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[10px] font-semibold text-[var(--pro-fg)]">Resolution</span>
+            <span class="text-lg font-bold text-[var(--pro-accent)]">1000px</span>
+          </div>
+          <input type="range" min="200" max="2000" value="1000" class="resolution-slider w-full">
+        </div>
+
+        <!-- DPI - Mobile (Scrollable) -->
+        <div class="mb-3">
+          <label class="mb-2 block text-[10px] font-semibold text-[var(--pro-fg)] uppercase">Print Quality (DPI)</label>
+          <div class="flex gap-2 overflow-x-auto pb-2">
+            <div class="flex-shrink-0 rounded-lg border border-[var(--pro-border)] bg-white p-2 min-w-[70px] text-center">
+              <div class="text-sm font-bold">72</div>
+              <div class="text-[9px] text-[var(--pro-muted)]">Web</div>
+            </div>
+            <div class="flex-shrink-0 rounded-lg border border-[var(--pro-border)] bg-white p-2 min-w-[70px] text-center">
+              <div class="text-sm font-bold">150</div>
+              <div class="text-[9px] text-[var(--pro-muted)]">Print</div>
+            </div>
+            <div class="flex-shrink-0 rounded-lg border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] p-2 min-w-[70px] text-center">
+              <div class="text-sm font-bold text-[var(--pro-accent)]">300</div>
+              <div class="text-[9px] text-[var(--pro-muted)]">High</div>
+            </div>
+            <div class="flex-shrink-0 rounded-lg border border-[var(--pro-border)] bg-white p-2 min-w-[70px] text-center">
+              <div class="text-sm font-bold">600</div>
+              <div class="text-[9px] text-[var(--pro-muted)]">Pro</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Size Calculator - Mobile -->
+        <div class="mb-3 p-3 bg-[var(--pro-surface-hover)] rounded-lg border border-[var(--pro-border)]">
+          <div class="text-[10px] font-semibold text-[var(--pro-fg)] mb-2">Print Size</div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-white rounded p-2 text-center">
+              <div class="text-[9px] text-[var(--pro-muted)]">Inches</div>
+              <div class="text-sm font-bold">3.3" x 3.3"</div>
+            </div>
+            <div class="bg-white rounded p-2 text-center">
+              <div class="text-[9px] text-[var(--pro-muted)]">CM</div>
+              <div class="text-sm font-bold">8.5 x 8.5</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Checklist - Mobile (Collapsed) -->
+        <div class="mb-3 p-2 bg-[var(--pro-success-light)] rounded-lg border border-green-200">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-[var(--pro-success)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span class="text-xs text-[var(--pro-success)] font-medium">All print quality checks passed</span>
+          </div>
+        </div>
+
+        <!-- Download - Mobile -->
+        <button class="w-full flex items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-3 text-xs font-semibold text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download (1000px @ 300 DPI)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const resolutionSlider = document.getElementById('resolutionSlider');
+    const resolutionValue = document.getElementById('resolutionValue');
+    const sizeInches = document.getElementById('sizeInches');
+    const sizeCm = document.getElementById('sizeCm');
+    const sizeWarning = document.getElementById('sizeWarning');
+    const downloadText = document.getElementById('downloadText');
+    const dpiCards = document.querySelectorAll('.dpi-card');
+    const guideSize = document.getElementById('guideSize');
+    const guideDistance = document.getElementById('guideDistance');
+    const checkResText = document.getElementById('checkResText');
+    const checkSizeText = document.getElementById('checkSizeText');
+
+    let currentDpi = 300;
+    let currentResolution = 1000;
+
+    function updateCalculations() {
+      const physicalInches = currentResolution / currentDpi;
+      const physicalCm = physicalInches * 2.54;
+
+      sizeInches.textContent = `${physicalInches.toFixed(1)}" x ${physicalInches.toFixed(1)}"`;
+      sizeCm.textContent = `${physicalCm.toFixed(1)}cm x ${physicalCm.toFixed(1)}cm`;
+
+      // Update scanning distance guide (rough formula: ~3ft per inch)
+      const scanDistFeet = Math.round(physicalInches * 3);
+      const scanDistMeters = (scanDistFeet * 0.3048).toFixed(1);
+      guideSize.textContent = `${physicalInches.toFixed(1)}"`;
+      guideDistance.textContent = `${scanDistFeet} feet (${scanDistMeters}m)`;
+
+      // Warning for sizes < 0.8 inches
+      const sizeCheck = document.querySelector('.checklist-item:nth-child(3)');
+      if (physicalInches < 0.8) {
+        sizeWarning.classList.remove('hidden');
+        sizeCheck.classList.remove('valid');
+        sizeCheck.classList.add('warning');
+        sizeCheck.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>';
+      } else {
+        sizeWarning.classList.add('hidden');
+        sizeCheck.classList.remove('warning');
+        sizeCheck.classList.add('valid');
+        sizeCheck.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
+      }
+
+      checkResText.textContent = `Resolution sufficient for print (${currentResolution}px)`;
+      checkSizeText.textContent = `Size adequate for scanning (${physicalInches.toFixed(1)}" / ${physicalCm.toFixed(1)}cm)`;
+
+      downloadText.textContent = `Download PNG (${currentResolution}px @ ${currentDpi} DPI)`;
+    }
+
+    resolutionSlider.addEventListener('input', (e) => {
+      currentResolution = parseInt(e.target.value);
+      resolutionValue.textContent = currentResolution;
+      updateCalculations();
+    });
+
+    dpiCards.forEach(card => {
+      card.addEventListener('click', () => {
+        dpiCards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        currentDpi = parseInt(card.dataset.dpi);
+        updateCalculations();
+      });
+    });
+
+    updateCalculations();
+  </script>
+</body>
+</html>
