@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>High-Resolution Export - Variation 2: Descriptive Dropdown</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --pro-bg: #f8f9fa;
+      --pro-fg: #1a1a1a;
+      --pro-accent: #2563eb;
+      --pro-accent-hover: #1d4ed8;
+      --pro-accent-light: #eff6ff;
+      --pro-muted: #6b7280;
+      --pro-muted-light: #e5e7eb;
+      --pro-border: #e5e7eb;
+      --pro-border-dark: #d1d5db;
+      --pro-surface: #ffffff;
+      --pro-surface-hover: #f9fafb;
+      --pro-success: #059669;
+      --pro-success-light: #d1fae5;
+      --pro-error: #dc2626;
+      --pro-error-light: #fee2e2;
+      --pro-warning: #d97706;
+      --pro-warning-light: #fef3c7;
+    }
+
+    .dropdown-option:hover {
+      background: var(--pro-accent-light);
+    }
+
+    .dropdown-option.selected {
+      background: var(--pro-accent-light);
+      border-left: 3px solid var(--pro-accent);
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dropdown-menu {
+      animation: slideDown 0.15s ease;
+    }
+  </style>
+</head>
+<body class="bg-[var(--pro-bg)] min-h-screen p-8">
+  <!-- Design Info Banner -->
+  <div class="max-w-2xl mx-auto mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+    <h1 class="text-lg font-semibold text-purple-900 mb-1">Variation 2: Descriptive Dropdown with Rich Cards</h1>
+    <p class="text-sm text-purple-700">
+      <strong>Design Approach:</strong> Professional dropdown selector with descriptive use-case cards.
+      Each option explains its best use case for informed decision-making.
+    </p>
+    <ul class="mt-2 text-xs text-purple-600 space-y-1">
+      <li>• Dropdown selector with expandable options panel</li>
+      <li>• Each resolution shows use-case description (web, social, print)</li>
+      <li>• File size integrated directly into each option</li>
+      <li>• Clean, professional aesthetic matching enterprise theme</li>
+    </ul>
+  </div>
+
+  <!-- Export Tab Content -->
+  <div class="max-w-2xl mx-auto bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm">
+    <!-- Tab Header -->
+    <div class="border-b border-[var(--pro-border)] px-5">
+      <div class="flex">
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Content</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Colors</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Style</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-[var(--pro-accent)] text-[var(--pro-accent)]">Export</button>
+      </div>
+    </div>
+
+    <!-- Export Content -->
+    <div class="p-6">
+      <!-- Export Format (existing) -->
+      <div class="mb-6">
+        <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide">Export Format</label>
+        <div class="grid grid-cols-3 gap-3">
+          <button class="relative rounded-md border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] p-4 text-center transition-all">
+            <span class="absolute -top-2 left-1/2 -translate-x-1/2 rounded bg-[var(--pro-accent)] px-2 py-0.5 text-[9px] font-bold uppercase text-white">Recommended</span>
+            <div class="text-base font-bold">PNG</div>
+            <div class="text-xs text-[var(--pro-muted)]">Raster</div>
+          </button>
+          <button class="rounded-md border border-[var(--pro-border)] p-4 text-center transition-all hover:border-[var(--pro-border-dark)]">
+            <div class="text-base font-bold">SVG</div>
+            <div class="text-xs text-[var(--pro-muted)]">Vector</div>
+          </button>
+          <button class="rounded-md border border-[var(--pro-border)] p-4 text-center transition-all hover:border-[var(--pro-border-dark)]">
+            <div class="text-base font-bold">PDF</div>
+            <div class="text-xs text-[var(--pro-muted)]">Print</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- HIGH-RESOLUTION EXPORT CONTROLS - DROPDOWN DESIGN -->
+      <div class="mb-6">
+        <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide flex items-center gap-2">
+          <svg class="w-4 h-4 text-[var(--pro-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+          </svg>
+          Resolution
+        </label>
+
+        <!-- Dropdown Trigger -->
+        <div class="relative" id="dropdownContainer">
+          <button
+            class="w-full flex items-center justify-between p-4 bg-white border-2 border-[var(--pro-border)] rounded-lg hover:border-[var(--pro-accent)] transition-colors"
+            id="dropdownTrigger"
+          >
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-lg bg-[var(--pro-accent)] flex items-center justify-center">
+                <span class="text-lg font-bold text-white">1K</span>
+              </div>
+              <div class="text-left">
+                <div class="font-semibold text-[var(--pro-fg)]">1000 × 1000 px</div>
+                <div class="text-sm text-[var(--pro-muted)]">General Purpose • ~45 KB</div>
+              </div>
+            </div>
+            <svg class="w-5 h-5 text-[var(--pro-muted)] transition-transform" id="dropdownArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+
+          <!-- Dropdown Menu (Expanded State) -->
+          <div class="dropdown-menu absolute left-0 right-0 top-full mt-2 bg-white border border-[var(--pro-border)] rounded-lg shadow-lg z-10 overflow-hidden" id="dropdownMenu">
+            <!-- Option: 200px -->
+            <div class="dropdown-option p-4 cursor-pointer border-b border-[var(--pro-border)] flex items-center gap-4" data-value="200">
+              <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <span class="text-sm font-bold text-gray-600">200</span>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-[var(--pro-fg)]">200 × 200 px</span>
+                  <span class="px-2 py-0.5 bg-gray-100 rounded text-[10px] font-medium text-gray-600">Compact</span>
+                </div>
+                <div class="text-sm text-[var(--pro-muted)]">Email signatures, small web icons</div>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <div class="text-sm font-medium text-[var(--pro-fg)]">~5 KB</div>
+              </div>
+            </div>
+
+            <!-- Option: 500px -->
+            <div class="dropdown-option p-4 cursor-pointer border-b border-[var(--pro-border)] flex items-center gap-4" data-value="500">
+              <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                <span class="text-sm font-bold text-blue-600">500</span>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-[var(--pro-fg)]">500 × 500 px</span>
+                  <span class="px-2 py-0.5 bg-blue-50 rounded text-[10px] font-medium text-blue-600">Web</span>
+                </div>
+                <div class="text-sm text-[var(--pro-muted)]">Social media, website embeds</div>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <div class="text-sm font-medium text-[var(--pro-fg)]">~15 KB</div>
+              </div>
+            </div>
+
+            <!-- Option: 1000px (Default - Selected) -->
+            <div class="dropdown-option selected p-4 cursor-pointer border-b border-[var(--pro-border)] flex items-center gap-4" data-value="1000">
+              <div class="w-12 h-12 rounded-lg bg-[var(--pro-accent)] flex items-center justify-center flex-shrink-0">
+                <span class="text-lg font-bold text-white">1K</span>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-[var(--pro-fg)]">1000 × 1000 px</span>
+                  <span class="px-2 py-0.5 bg-[var(--pro-accent)] rounded text-[10px] font-medium text-white">Default</span>
+                </div>
+                <div class="text-sm text-[var(--pro-muted)]">General purpose, presentations, digital displays</div>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <div class="text-sm font-medium text-[var(--pro-fg)]">~45 KB</div>
+                <svg class="w-5 h-5 text-[var(--pro-accent)] ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Option: 1500px -->
+            <div class="dropdown-option p-4 cursor-pointer border-b border-[var(--pro-border)] flex items-center gap-4" data-value="1500">
+              <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
+                <span class="text-sm font-bold text-purple-600">1.5K</span>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-[var(--pro-fg)]">1500 × 1500 px</span>
+                  <span class="px-2 py-0.5 bg-purple-50 rounded text-[10px] font-medium text-purple-600">High-Res</span>
+                </div>
+                <div class="text-sm text-[var(--pro-muted)]">Marketing materials, large displays</div>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <div class="text-sm font-medium text-[var(--pro-fg)]">~95 KB</div>
+              </div>
+            </div>
+
+            <!-- Option: 2000px -->
+            <div class="dropdown-option p-4 cursor-pointer flex items-center gap-4" data-value="2000">
+              <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                <span class="text-sm font-bold text-green-600">2K</span>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-[var(--pro-fg)]">2000 × 2000 px</span>
+                  <span class="px-2 py-0.5 bg-green-50 rounded text-[10px] font-medium text-green-600">Print</span>
+                </div>
+                <div class="text-sm text-[var(--pro-muted)]">Print production, billboards, large format</div>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <div class="text-sm font-medium text-[var(--pro-fg)]">~160 KB</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- File Size Summary Card -->
+        <div class="mt-4 flex items-center gap-4 p-4 bg-[var(--pro-surface-hover)] rounded-lg border border-[var(--pro-border)]">
+          <div class="w-10 h-10 rounded-full bg-white border border-[var(--pro-border)] flex items-center justify-center">
+            <svg class="w-5 h-5 text-[var(--pro-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="text-sm font-medium text-[var(--pro-fg)]">Export Summary</div>
+            <div class="text-xs text-[var(--pro-muted)]">PNG format at 1000×1000 pixels</div>
+          </div>
+          <div class="text-right">
+            <div class="text-lg font-bold text-[var(--pro-accent)]">~45 KB</div>
+            <div class="text-[10px] text-[var(--pro-muted)]">Estimated</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Download Button -->
+      <button class="w-full flex items-center justify-center gap-2 rounded-md bg-[var(--pro-accent)] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--pro-accent-hover)]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        Download QR Code
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Preview -->
+  <div class="max-w-sm mx-auto mt-8 p-4 bg-gray-100 rounded-xl">
+    <div class="text-center text-xs font-semibold text-gray-500 mb-4 uppercase tracking-wide">Mobile Preview (375px)</div>
+    <div class="bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm" style="max-width: 375px;">
+      <div class="p-4">
+        <!-- Resolution Dropdown - Mobile -->
+        <div class="mb-4">
+          <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase">Resolution</label>
+
+          <!-- Mobile Dropdown - Compact -->
+          <button class="w-full flex items-center justify-between p-3 bg-white border border-[var(--pro-border)] rounded-lg">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-[var(--pro-accent)] flex items-center justify-center">
+                <span class="text-sm font-bold text-white">1K</span>
+              </div>
+              <div class="text-left">
+                <div class="text-sm font-semibold text-[var(--pro-fg)]">1000 × 1000 px</div>
+                <div class="text-xs text-[var(--pro-muted)]">~45 KB</div>
+              </div>
+            </div>
+            <svg class="w-4 h-4 text-[var(--pro-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Quick Size Pills - Mobile Alternative -->
+        <div class="mb-4">
+          <div class="flex gap-2 overflow-x-auto pb-2">
+            <button class="flex-shrink-0 px-3 py-2 text-xs font-medium rounded-full border border-[var(--pro-border)] bg-white">200px</button>
+            <button class="flex-shrink-0 px-3 py-2 text-xs font-medium rounded-full border border-[var(--pro-border)] bg-white">500px</button>
+            <button class="flex-shrink-0 px-3 py-2 text-xs font-medium rounded-full border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] text-[var(--pro-accent)]">1000px</button>
+            <button class="flex-shrink-0 px-3 py-2 text-xs font-medium rounded-full border border-[var(--pro-border)] bg-white">1500px</button>
+            <button class="flex-shrink-0 px-3 py-2 text-xs font-medium rounded-full border border-[var(--pro-border)] bg-white">2000px</button>
+          </div>
+        </div>
+
+        <!-- Download Button - Mobile -->
+        <button class="w-full flex items-center justify-center gap-2 rounded-md bg-[var(--pro-accent)] py-3 text-sm font-semibold text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download (1000px • ~45 KB)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle dropdown
+    const trigger = document.getElementById('dropdownTrigger');
+    const menu = document.getElementById('dropdownMenu');
+    const arrow = document.getElementById('dropdownArrow');
+
+    trigger.addEventListener('click', () => {
+      const isHidden = menu.style.display === 'none' || !menu.style.display;
+      menu.style.display = isHidden ? 'block' : 'none';
+      arrow.style.transform = isHidden ? 'rotate(180deg)' : '';
+    });
+
+    // Option selection
+    document.querySelectorAll('.dropdown-option').forEach(option => {
+      option.addEventListener('click', () => {
+        document.querySelectorAll('.dropdown-option').forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+      });
+    });
+
+    // Initialize
+    menu.style.display = 'block'; // Show expanded for demo
+  </script>
+</body>
+</html>
