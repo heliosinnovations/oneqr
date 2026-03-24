@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Issue #44 - Advanced Design Customization | Variation 1: Compact Accordion</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --success: #10b981;
+      --gradient-start: #ff4d00;
+      --gradient-end: #ff8c42;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+      font-family: 'DM Serif Display', serif;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header h1 {
+      font-size: 1.75rem;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 0.625rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 4px 8px;
+      border-radius: 2px;
+      margin-bottom: 8px;
+    }
+
+    /* Accordion Style */
+    .accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .accordion-section {
+      border: 1px solid var(--border);
+      background: white;
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+      user-select: none;
+    }
+
+    .accordion-header:hover {
+      background: var(--surface);
+    }
+
+    .accordion-header.active {
+      background: var(--accent-light);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .accordion-header h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .accordion-header h3 svg {
+      width: 18px;
+      height: 18px;
+      color: var(--muted);
+    }
+
+    .accordion-header.active h3 svg {
+      color: var(--accent);
+    }
+
+    .accordion-chevron {
+      width: 16px;
+      height: 16px;
+      color: var(--muted);
+      transition: transform 0.2s;
+    }
+
+    .accordion-header.active .accordion-chevron {
+      transform: rotate(180deg);
+    }
+
+    .accordion-content {
+      display: none;
+      padding: 16px;
+    }
+
+    .accordion-content.active {
+      display: block;
+    }
+
+    /* Pattern Grid */
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .pattern-option {
+      aspect-ratio: 1;
+      border: 2px solid var(--border);
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+
+    .pattern-option:hover {
+      border-color: var(--fg);
+    }
+
+    .pattern-option.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .pattern-preview {
+      width: 100%;
+      aspect-ratio: 1;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2px;
+      margin-bottom: 4px;
+    }
+
+    .pattern-preview .dot {
+      background: var(--fg);
+      border-radius: 50%;
+    }
+
+    .pattern-preview .square {
+      background: var(--fg);
+      border-radius: 0;
+    }
+
+    .pattern-preview .rounded-square {
+      background: var(--fg);
+      border-radius: 20%;
+    }
+
+    .pattern-preview .vertical-line {
+      background: var(--fg);
+      border-radius: 2px;
+      transform: scaleX(0.4);
+    }
+
+    .pattern-preview .horizontal-line {
+      background: var(--fg);
+      border-radius: 2px;
+      transform: scaleY(0.4);
+    }
+
+    .pattern-preview .diagonal-line {
+      background: var(--fg);
+      transform: rotate(45deg) scale(0.7);
+    }
+
+    .pattern-label {
+      font-size: 0.625rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+
+    .pattern-option.selected .pattern-label {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Eye Styles */
+    .eye-section {
+      margin-bottom: 16px;
+    }
+
+    .eye-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .eye-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .eye-option {
+      aspect-ratio: 1;
+      border: 2px solid var(--border);
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+    }
+
+    .eye-option:hover {
+      border-color: var(--fg);
+    }
+
+    .eye-option.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .eye-preview {
+      width: 24px;
+      height: 24px;
+      position: relative;
+    }
+
+    .eye-frame {
+      width: 100%;
+      height: 100%;
+      border: 3px solid var(--fg);
+      position: absolute;
+    }
+
+    .eye-frame.square { border-radius: 0; }
+    .eye-frame.rounded { border-radius: 4px; }
+    .eye-frame.circle { border-radius: 50%; }
+    .eye-frame.left-leaf { border-radius: 0 50% 0 50%; }
+    .eye-frame.right-leaf { border-radius: 50% 0 50% 0; }
+
+    .eye-ball {
+      width: 10px;
+      height: 10px;
+      background: var(--fg);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .eye-ball.square { border-radius: 0; }
+    .eye-ball.rounded { border-radius: 2px; }
+    .eye-ball.circle { border-radius: 50%; }
+    .eye-ball.diamond { transform: translate(-50%, -50%) rotate(45deg); }
+
+    /* Gradient Section */
+    .gradient-types {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .gradient-type-btn {
+      flex: 1;
+      padding: 10px 8px;
+      border: 2px solid var(--border);
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .gradient-type-btn:hover {
+      border-color: var(--fg);
+    }
+
+    .gradient-type-btn.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .gradient-type-icon {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    .gradient-type-icon.solid {
+      background: var(--fg);
+    }
+
+    .gradient-type-icon.linear-h {
+      background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+    }
+
+    .gradient-type-icon.linear-v {
+      background: linear-gradient(180deg, var(--gradient-start), var(--gradient-end));
+    }
+
+    .gradient-type-icon.radial {
+      background: radial-gradient(circle, var(--gradient-end), var(--gradient-start));
+    }
+
+    /* Color Pickers */
+    .color-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .color-picker-group {
+      flex: 1;
+    }
+
+    .color-picker-label {
+      font-size: 0.625rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .color-picker-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      padding: 6px;
+      background: white;
+    }
+
+    .color-picker-wrapper input[type="color"] {
+      width: 28px;
+      height: 28px;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+
+    .color-picker-wrapper input[type="text"] {
+      flex: 1;
+      border: none;
+      font-family: monospace;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      outline: none;
+      min-width: 0;
+    }
+
+    /* Apply To Section */
+    .apply-to {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .apply-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      font-size: 0.6875rem;
+      transition: all 0.2s;
+    }
+
+    .apply-chip:hover {
+      border-color: var(--fg);
+    }
+
+    .apply-chip.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .apply-chip input {
+      display: none;
+    }
+
+    .apply-chip .check {
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .apply-chip.selected .check {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .apply-chip.selected .check svg {
+      color: white;
+    }
+
+    /* Gradient Preview */
+    .gradient-preview-bar {
+      height: 24px;
+      border: 1px solid var(--border);
+      margin-top: 12px;
+      border-radius: 4px;
+    }
+
+    /* Direction Selector */
+    .direction-selector {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .direction-btn {
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--border);
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .direction-btn:hover {
+      border-color: var(--fg);
+    }
+
+    .direction-btn.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .direction-btn svg {
+      width: 16px;
+      height: 16px;
+      color: var(--muted);
+    }
+
+    .direction-btn.selected svg {
+      color: var(--accent);
+    }
+
+    /* QR Preview Card */
+    .preview-card {
+      margin-top: 24px;
+      border: 1px solid var(--border);
+      background: white;
+      padding: 20px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .preview-header h3 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .preview-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.625rem;
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .preview-status .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .qr-preview {
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+      background: var(--surface);
+    }
+
+    .qr-mock {
+      width: 160px;
+      height: 160px;
+      position: relative;
+    }
+
+    .qr-mock-body {
+      position: absolute;
+      inset: 24px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+    }
+
+    .qr-mock-body .cell {
+      background: var(--fg);
+      border-radius: 50%;
+    }
+
+    .qr-eye {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+    }
+
+    .qr-eye.top-left { top: 0; left: 0; }
+    .qr-eye.top-right { top: 0; right: 0; }
+    .qr-eye.bottom-left { bottom: 0; left: 0; }
+
+    .qr-eye .frame {
+      width: 100%;
+      height: 100%;
+      border: 4px solid var(--fg);
+      border-radius: 4px;
+      position: absolute;
+    }
+
+    .qr-eye .ball {
+      width: 14px;
+      height: 14px;
+      background: var(--fg);
+      border-radius: 2px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Info Footer */
+    .info-footer {
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--surface);
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      body {
+        padding: 16px;
+      }
+
+      .pattern-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .eye-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .gradient-types {
+        flex-wrap: wrap;
+      }
+
+      .gradient-type-btn {
+        flex: 1 1 calc(50% - 4px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <span class="badge">Issue #44</span>
+      <h1>Advanced Design</h1>
+      <p>Customize patterns, eye styles & gradients</p>
+    </div>
+
+    <div class="accordion">
+      <!-- Body Pattern Section -->
+      <div class="accordion-section">
+        <div class="accordion-header active" onclick="toggleAccordion(this)">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            Body Pattern
+          </h3>
+          <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+        <div class="accordion-content active">
+          <div class="pattern-grid">
+            <div class="pattern-option" onclick="selectPattern(this)">
+              <div class="pattern-preview">
+                <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
+              </div>
+              <span class="pattern-label">Square</span>
+            </div>
+            <div class="pattern-option selected" onclick="selectPattern(this)">
+              <div class="pattern-preview">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+              </div>
+              <span class="pattern-label">Dots</span>
+            </div>
+            <div class="pattern-option" onclick="selectPattern(this)">
+              <div class="pattern-preview">
+                <div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div>
+                <div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div>
+                <div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div>
+                <div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div>
+                <div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div><div class="rounded-square"></div>
+              </div>
+              <span class="pattern-label">Rounded</span>
+            </div>
+            <div class="pattern-option" onclick="selectPattern(this)">
+              <div class="pattern-preview">
+                <div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div>
+                <div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div>
+                <div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div>
+                <div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div>
+                <div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div><div class="vertical-line"></div>
+              </div>
+              <span class="pattern-label">Vertical</span>
+            </div>
+            <div class="pattern-option" onclick="selectPattern(this)">
+              <div class="pattern-preview">
+                <div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div>
+                <div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div>
+                <div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div>
+                <div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div>
+                <div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div><div class="horizontal-line"></div>
+              </div>
+              <span class="pattern-label">Horizontal</span>
+            </div>
+            <div class="pattern-option" onclick="selectPattern(this)">
+              <div class="pattern-preview">
+                <div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div>
+                <div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div>
+                <div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div>
+                <div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div>
+                <div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div><div class="diagonal-line"></div>
+              </div>
+              <span class="pattern-label">Diagonal</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Eye Styles Section -->
+      <div class="accordion-section">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <circle cx="12" cy="12" r="4"/>
+            </svg>
+            Corner Styles
+          </h3>
+          <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+        <div class="accordion-content">
+          <div class="eye-section">
+            <div class="section-label">Corner Frame Style</div>
+            <div class="eye-grid">
+              <div class="eye-option selected" onclick="selectEyeFrame(this)">
+                <div class="eye-preview">
+                  <div class="eye-frame square"></div>
+                </div>
+              </div>
+              <div class="eye-option" onclick="selectEyeFrame(this)">
+                <div class="eye-preview">
+                  <div class="eye-frame rounded"></div>
+                </div>
+              </div>
+              <div class="eye-option" onclick="selectEyeFrame(this)">
+                <div class="eye-preview">
+                  <div class="eye-frame circle"></div>
+                </div>
+              </div>
+              <div class="eye-option" onclick="selectEyeFrame(this)">
+                <div class="eye-preview">
+                  <div class="eye-frame left-leaf"></div>
+                </div>
+              </div>
+              <div class="eye-option" onclick="selectEyeFrame(this)">
+                <div class="eye-preview">
+                  <div class="eye-frame right-leaf"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="eye-section">
+            <div class="section-label">Corner Center Style</div>
+            <div class="eye-grid">
+              <div class="eye-option selected" onclick="selectEyeBall(this)">
+                <div class="eye-preview">
+                  <div class="eye-ball square"></div>
+                </div>
+              </div>
+              <div class="eye-option" onclick="selectEyeBall(this)">
+                <div class="eye-preview">
+                  <div class="eye-ball rounded"></div>
+                </div>
+              </div>
+              <div class="eye-option" onclick="selectEyeBall(this)">
+                <div class="eye-preview">
+                  <div class="eye-ball circle"></div>
+                </div>
+              </div>
+              <div class="eye-option" onclick="selectEyeBall(this)">
+                <div class="eye-preview">
+                  <div class="eye-ball diamond"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gradient Section -->
+      <div class="accordion-section">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="2"/>
+              <path d="M2 12h20"/>
+              <path d="M12 2v20"/>
+            </svg>
+            Gradient Colors
+          </h3>
+          <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+        <div class="accordion-content">
+          <div class="gradient-types">
+            <button class="gradient-type-btn selected" onclick="selectGradientType(this, 'solid')">
+              <div class="gradient-type-icon solid"></div>
+              Solid
+            </button>
+            <button class="gradient-type-btn" onclick="selectGradientType(this, 'linear-h')">
+              <div class="gradient-type-icon linear-h"></div>
+              Linear
+            </button>
+            <button class="gradient-type-btn" onclick="selectGradientType(this, 'radial')">
+              <div class="gradient-type-icon radial"></div>
+              Radial
+            </button>
+          </div>
+
+          <div class="color-row">
+            <div class="color-picker-group">
+              <div class="color-picker-label">Start Color</div>
+              <div class="color-picker-wrapper">
+                <input type="color" value="#ff4d00" id="startColor">
+                <input type="text" value="#FF4D00" maxlength="7">
+              </div>
+            </div>
+            <div class="color-picker-group">
+              <div class="color-picker-label">End Color</div>
+              <div class="color-picker-wrapper">
+                <input type="color" value="#ff8c42" id="endColor">
+                <input type="text" value="#FF8C42" maxlength="7">
+              </div>
+            </div>
+          </div>
+
+          <div class="section-label">Gradient Direction</div>
+          <div class="direction-selector">
+            <button class="direction-btn selected" title="Left to Right">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+            <button class="direction-btn" title="Top to Bottom">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12l7 7 7-7"/>
+              </svg>
+            </button>
+            <button class="direction-btn" title="Diagonal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 17L17 7M17 7H10M17 7v7"/>
+              </svg>
+            </button>
+            <button class="direction-btn" title="Radial Center">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="9"/>
+                <circle cx="12" cy="12" r="4"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="gradient-preview-bar" style="background: linear-gradient(90deg, #ff4d00, #ff8c42)"></div>
+
+          <div class="apply-to">
+            <label class="apply-chip selected">
+              <input type="checkbox" checked>
+              <span class="check">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </span>
+              Body
+            </label>
+            <label class="apply-chip">
+              <input type="checkbox">
+              <span class="check">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </span>
+              Eye Frames
+            </label>
+            <label class="apply-chip">
+              <input type="checkbox">
+              <span class="check">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </span>
+              Eye Balls
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Preview -->
+    <div class="preview-card">
+      <div class="preview-header">
+        <h3>Live Preview</h3>
+        <span class="preview-status">
+          <span class="dot"></span>
+          Auto-updating
+        </span>
+      </div>
+      <div class="qr-preview">
+        <div class="qr-mock">
+          <div class="qr-eye top-left">
+            <div class="frame"></div>
+            <div class="ball"></div>
+          </div>
+          <div class="qr-eye top-right">
+            <div class="frame"></div>
+            <div class="ball"></div>
+          </div>
+          <div class="qr-eye bottom-left">
+            <div class="frame"></div>
+            <div class="ball"></div>
+          </div>
+          <div class="qr-mock-body">
+            <div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div></div>
+            <div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div>
+            <div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div></div><div class="cell"></div><div></div>
+            <div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div></div><div class="cell"></div><div class="cell"></div><div></div><div class="cell"></div><div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-footer">
+      Variation 1: Compact Accordion - Space-efficient with progressive disclosure
+    </div>
+  </div>
+
+  <script>
+    function toggleAccordion(header) {
+      const content = header.nextElementSibling;
+      const isActive = header.classList.contains('active');
+
+      // Close all
+      document.querySelectorAll('.accordion-header').forEach(h => h.classList.remove('active'));
+      document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('active'));
+
+      // Toggle current
+      if (!isActive) {
+        header.classList.add('active');
+        content.classList.add('active');
+      }
+    }
+
+    function selectPattern(el) {
+      document.querySelectorAll('.pattern-option').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function selectEyeFrame(el) {
+      el.closest('.eye-section').querySelectorAll('.eye-option').forEach(e => e.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function selectEyeBall(el) {
+      el.closest('.eye-section').querySelectorAll('.eye-option').forEach(e => e.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function selectGradientType(el, type) {
+      document.querySelectorAll('.gradient-type-btn').forEach(b => b.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    // Apply chip toggle
+    document.querySelectorAll('.apply-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('selected');
+      });
+    });
+
+    // Direction buttons
+    document.querySelectorAll('.direction-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.direction-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
+    });
+  </script>
+</body>
+</html>
