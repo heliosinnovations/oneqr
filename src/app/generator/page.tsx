@@ -5,6 +5,7 @@ import QRCode from "qrcode";
 import Link from "next/link";
 
 type TabType = "content" | "colors" | "style" | "export";
+type ToastType = { message: string; type: "success" | "error"; id: number };
 type ErrorLevelType = "L" | "M" | "Q" | "H";
 type PatternType = "square" | "rounded" | "dots" | "classy";
 type CornerType = "square" | "rounded" | "extra" | "dot";
@@ -82,11 +83,9 @@ export default function GeneratorPage() {
   const [exportSize, setExportSize] = useState<SizeType>(512);
   const [dpi, setDpi] = useState(150);
 
-  // Toast state
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
+  // Toast state - support multiple toasts with IDs
+  const [toasts, setToasts] = useState<ToastType[]>([]);
+  const toastIdRef = useRef(0);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -120,14 +119,18 @@ export default function GeneratorPage() {
     []
   );
 
-  // Show toast notification
-  const showToast = (
-    message: string,
-    type: "success" | "error" = "success"
-  ) => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  // Show toast notification with slide-in animation and auto-dismiss
+  const showToast = useCallback(
+    (message: string, type: "success" | "error" = "success") => {
+      const id = ++toastIdRef.current;
+      setToasts((prev) => [...prev, { message, type, id }]);
+      // Auto-dismiss after 3 seconds
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, 3000);
+    },
+    []
+  );
 
   // Generate QR code
   const generateQR = useCallback(async () => {
@@ -165,7 +168,7 @@ export default function GeneratorPage() {
     } finally {
       setIsGenerating(false);
     }
-  }, [url, exportSize, fgColor, bgColor, errorLevel]);
+  }, [url, exportSize, fgColor, bgColor, errorLevel, showToast]);
 
   // Handle template selection
   const setTemplate = (templateId: string) => {
@@ -180,6 +183,32 @@ export default function GeneratorPage() {
   // Handle color preset selection
   const selectColorPreset = (color: string) => {
     setFgColor(color);
+  };
+
+  // Validate and normalize hex color
+  const isValidHex = (hex: string): boolean => {
+    return /^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
+  };
+
+  const normalizeHex = (hex: string): string => {
+    let normalized = hex.startsWith("#") ? hex : `#${hex}`;
+    // Expand 3-char hex to 6-char
+    if (normalized.length === 4) {
+      normalized = `#${normalized[1]}${normalized[1]}${normalized[2]}${normalized[2]}${normalized[3]}${normalized[3]}`;
+    }
+    return normalized.toLowerCase();
+  };
+
+  // Handle hex input change with validation
+  const handleHexInput = (
+    value: string,
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    // Allow user to type freely
+    const cleanValue = value.toUpperCase();
+    if (isValidHex(cleanValue)) {
+      setter(normalizeHex(cleanValue));
+    }
   };
 
   // Zoom controls
@@ -597,105 +626,96 @@ export default function GeneratorPage() {
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_420px]">
           {/* Configuration Panel */}
           <div className="flex flex-col gap-4">
-            {/* Content Panel */}
-            <div className="overflow-hidden rounded-lg border border-[var(--pro-border)] bg-[var(--pro-surface)]">
-              <div className="flex items-center justify-between border-b border-[var(--pro-border)] px-5 py-4">
-                <h2 className="flex items-center gap-2 text-sm font-semibold">
-                  <Icon
-                    name="link"
-                    className="h-[18px] w-[18px] text-[var(--pro-muted)]"
-                  />
-                  Content
-                </h2>
-                <span className="rounded bg-[var(--pro-accent-light)] px-2 py-1 text-xs font-semibold text-[var(--pro-accent)]">
-                  Required
-                </span>
-              </div>
-              <div className="p-5">
-                <div className="mb-5">
-                  <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-[var(--pro-fg)]">
-                    URL or Text{" "}
-                    <span className="text-[var(--pro-error)]">*</span>
-                  </label>
-                  <div className="relative">
-                    <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pro-muted)]">
-                      <Icon name="globe" className="h-[18px] w-[18px]" />
-                    </div>
-                    <input
-                      type="url"
-                      value={url}
-                      onChange={(e) => {
-                        setUrl(e.target.value);
-                        validateURL(e.target.value);
-                      }}
-                      placeholder="https://example.com"
-                      className={`w-full rounded-md border py-2.5 pl-10 pr-20 text-sm outline-none transition-all ${
-                        urlValid
-                          ? "border-[var(--pro-success)] shadow-[0_0_0_3px_var(--pro-success-light)]"
-                          : url
-                            ? "border-[var(--pro-error)] shadow-[0_0_0_3px_var(--pro-error-light)]"
-                            : "border-[var(--pro-border)] focus:border-[var(--pro-accent)] focus:shadow-[0_0_0_3px_var(--pro-accent-light)]"
-                      }`}
-                    />
-                    <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-2">
-                      {url && (
-                        <span
-                          className={`flex items-center gap-1 text-xs font-semibold ${
-                            urlValid
-                              ? "text-[var(--pro-success)]"
-                              : "text-[var(--pro-error)]"
-                          }`}
-                        >
-                          <Icon
-                            name={urlValid ? "check" : "x"}
-                            className="h-3.5 w-3.5"
-                          />
-                          {urlValid ? "Valid" : "Invalid"}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <p className="mt-1.5 text-xs text-[var(--pro-muted)]">
-                    Enter a URL, text, or use one of the quick actions below
-                  </p>
-                </div>
-
-                {/* Quick Actions */}
-                <div className="flex flex-wrap gap-1.5">
-                  {QUICK_ACTIONS.map((action) => (
-                    <button
-                      key={action.id}
-                      onClick={() => setTemplate(action.id)}
-                      className="flex items-center gap-1 rounded border border-[var(--pro-border)] bg-[var(--pro-surface-hover)] px-2.5 py-1.5 text-xs font-medium transition-all hover:border-[var(--pro-accent)] hover:bg-[var(--pro-accent-light)] hover:text-[var(--pro-accent)]"
-                    >
-                      <Icon name={action.icon} className="h-3 w-3" />
-                      {action.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Customization Panel */}
+            {/* Customization Panel with Tabs */}
             <div className="overflow-hidden rounded-lg border border-[var(--pro-border)] bg-[var(--pro-surface)]">
               {/* Tabs */}
               <div className="border-b border-[var(--pro-border)] px-5">
                 <div className="flex">
-                  {(["colors", "style", "export"] as TabType[]).map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      className={`border-b-2 px-4 py-3.5 text-sm font-medium transition-all ${
-                        activeTab === tab
-                          ? "border-[var(--pro-accent)] text-[var(--pro-accent)]"
-                          : "border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]"
-                      }`}
-                    >
-                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                    </button>
-                  ))}
+                  {(["content", "colors", "style", "export"] as TabType[]).map(
+                    (tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`border-b-2 px-4 py-3.5 text-sm font-medium transition-all ${
+                          activeTab === tab
+                            ? "border-[var(--pro-accent)] text-[var(--pro-accent)]"
+                            : "border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]"
+                        }`}
+                      >
+                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                      </button>
+                    )
+                  )}
                 </div>
               </div>
+
+              {/* Content Tab */}
+              {activeTab === "content" && (
+                <div className="p-5">
+                  <div className="mb-5">
+                    <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-[var(--pro-fg)]">
+                      URL or Text{" "}
+                      <span className="text-[var(--pro-error)]">*</span>
+                    </label>
+                    <div className="relative">
+                      <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pro-muted)]">
+                        <Icon name="globe" className="h-[18px] w-[18px]" />
+                      </div>
+                      <input
+                        type="url"
+                        id="contentInput"
+                        value={url}
+                        onChange={(e) => {
+                          setUrl(e.target.value);
+                          validateURL(e.target.value);
+                        }}
+                        placeholder="https://example.com"
+                        className={`w-full rounded-md border py-2.5 pl-10 pr-20 text-sm outline-none transition-all ${
+                          urlValid
+                            ? "border-[var(--pro-success)] shadow-[0_0_0_3px_var(--pro-success-light)]"
+                            : url
+                              ? "border-[var(--pro-error)] shadow-[0_0_0_3px_var(--pro-error-light)]"
+                              : "border-[var(--pro-border)] focus:border-[var(--pro-accent)] focus:shadow-[0_0_0_3px_var(--pro-accent-light)]"
+                        }`}
+                      />
+                      <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-2">
+                        {url && (
+                          <span
+                            className={`flex items-center gap-1 text-xs font-semibold ${
+                              urlValid
+                                ? "text-[var(--pro-success)]"
+                                : "text-[var(--pro-error)]"
+                            }`}
+                          >
+                            <Icon
+                              name={urlValid ? "check" : "x"}
+                              className="h-3.5 w-3.5"
+                            />
+                            {urlValid ? "Valid" : "Invalid"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <p className="mt-1.5 text-xs text-[var(--pro-muted)]">
+                      Enter a URL, text, or use one of the quick actions below
+                    </p>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="flex flex-wrap gap-1.5">
+                    {QUICK_ACTIONS.map((action) => (
+                      <button
+                        key={action.id}
+                        onClick={() => setTemplate(action.id)}
+                        className="flex items-center gap-1 rounded border border-[var(--pro-border)] bg-[var(--pro-surface-hover)] px-2.5 py-1.5 text-xs font-medium transition-all hover:border-[var(--pro-accent)] hover:bg-[var(--pro-accent-light)] hover:text-[var(--pro-accent)]"
+                      >
+                        <Icon name={action.icon} className="h-3 w-3" />
+                        {action.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Colors Tab */}
               {activeTab === "colors" && (
@@ -713,6 +733,7 @@ export default function GeneratorPage() {
                         >
                           <input
                             type="color"
+                            id="fgColorPicker"
                             value={fgColor}
                             onChange={(e) => setFgColor(e.target.value)}
                             className="absolute -left-1/2 -top-1/2 h-[200%] w-[200%] cursor-pointer"
@@ -720,8 +741,16 @@ export default function GeneratorPage() {
                         </div>
                         <input
                           type="text"
+                          id="fgHexInput"
                           value={fgColor.toUpperCase()}
-                          onChange={(e) => setFgColor(e.target.value)}
+                          onChange={(e) =>
+                            handleHexInput(e.target.value, setFgColor)
+                          }
+                          onBlur={(e) => {
+                            if (!isValidHex(e.target.value)) {
+                              setFgColor("#1a1a1a");
+                            }
+                          }}
                           className="flex-1 rounded-md border border-[var(--pro-border)] px-3 py-2 font-mono text-sm uppercase focus:border-[var(--pro-accent)] focus:outline-none"
                         />
                       </div>
@@ -738,6 +767,7 @@ export default function GeneratorPage() {
                         >
                           <input
                             type="color"
+                            id="bgColorPicker"
                             value={bgColor}
                             onChange={(e) => setBgColor(e.target.value)}
                             className="absolute -left-1/2 -top-1/2 h-[200%] w-[200%] cursor-pointer"
@@ -745,8 +775,16 @@ export default function GeneratorPage() {
                         </div>
                         <input
                           type="text"
+                          id="bgHexInput"
                           value={bgColor.toUpperCase()}
-                          onChange={(e) => setBgColor(e.target.value)}
+                          onChange={(e) =>
+                            handleHexInput(e.target.value, setBgColor)
+                          }
+                          onBlur={(e) => {
+                            if (!isValidHex(e.target.value)) {
+                              setBgColor("#ffffff");
+                            }
+                          }}
                           className="flex-1 rounded-md border border-[var(--pro-border)] px-3 py-2 font-mono text-sm uppercase focus:border-[var(--pro-accent)] focus:outline-none"
                         />
                       </div>
@@ -1236,13 +1274,17 @@ export default function GeneratorPage() {
                 {qrDataUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
+                    id="qrPreview"
                     src={qrDataUrl}
                     alt={`QR code linking to ${generatedUrl}`}
                     className="h-[200px] w-[200px] transition-transform"
                     style={{ transform: `scale(${zoomLevel / 100})` }}
                   />
                 ) : (
-                  <div className="flex h-[200px] w-[200px] items-center justify-center">
+                  <div
+                    id="qrPreview"
+                    className="flex h-[200px] w-[200px] items-center justify-center"
+                  >
                     <Icon
                       name="qr"
                       className="h-16 w-16 text-[var(--pro-border)]"
@@ -1261,7 +1303,10 @@ export default function GeneratorPage() {
               >
                 <Icon name="zoom-out" />
               </button>
-              <span className="min-w-[50px] text-center text-sm font-semibold">
+              <span
+                id="zoomValue"
+                className="min-w-[50px] text-center text-sm font-semibold"
+              >
                 {zoomLevel}%
               </span>
               <button
@@ -1333,11 +1378,15 @@ export default function GeneratorPage() {
         </div>
       </main>
 
-      {/* Toast Notification */}
-      {toast && (
-        <div className="fixed bottom-6 right-6 z-[1000]">
+      {/* Toast Container with slide-in animation */}
+      <div
+        id="toastContainer"
+        className="fixed bottom-6 right-6 z-[1000] flex flex-col gap-2"
+      >
+        {toasts.map((toast) => (
           <div
-            className={`flex items-center gap-2.5 rounded-md px-4 py-3 text-sm font-medium text-white shadow-lg ${
+            key={toast.id}
+            className={`animate-slideIn flex items-center gap-2.5 rounded-md px-4 py-3 text-sm font-medium text-white shadow-lg ${
               toast.type === "success"
                 ? "bg-[var(--pro-success)]"
                 : "bg-[var(--pro-error)]"
@@ -1349,8 +1398,8 @@ export default function GeneratorPage() {
             />
             {toast.message}
           </div>
-        </div>
-      )}
+        ))}
+      </div>
 
       {/* Hidden canvas for potential future use */}
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
