@@ -758,6 +758,9 @@ export default function GeneratorPage() {
                             id="fgColorPicker"
                             value={fgColor}
                             onChange={(e) => setFgColor(e.target.value)}
+                            onInput={(e) =>
+                              setFgColor((e.target as HTMLInputElement).value)
+                            }
                             className="absolute -left-1/2 -top-1/2 h-[200%] w-[200%] cursor-pointer"
                           />
                         </div>
@@ -792,6 +795,9 @@ export default function GeneratorPage() {
                             id="bgColorPicker"
                             value={bgColor}
                             onChange={(e) => setBgColor(e.target.value)}
+                            onInput={(e) =>
+                              setBgColor((e.target as HTMLInputElement).value)
+                            }
                             className="absolute -left-1/2 -top-1/2 h-[200%] w-[200%] cursor-pointer"
                           />
                         </div>
