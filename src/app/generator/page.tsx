@@ -3,14 +3,51 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import QRCode from "qrcode";
 import Link from "next/link";
+import { jsPDF } from "jspdf";
 
 type TabType = "content" | "colors" | "style" | "export";
 type ToastType = { message: string; type: "success" | "error"; id: number };
 type ErrorLevelType = "L" | "M" | "Q" | "H";
 type PatternType = "square" | "rounded" | "dots" | "classy";
 type CornerType = "square" | "rounded" | "extra" | "dot";
-type FormatType = "png" | "svg" | "pdf";
+type FormatType = "png" | "svg" | "pdf" | "eps";
 type SizeType = 256 | 512 | 1024 | 2048;
+
+// Format info for cards
+const FORMAT_INFO = {
+  png: {
+    label: "PNG",
+    description: "Raster image",
+    badge: "Web & Social",
+    badgeColor: "bg-green-100 text-green-700",
+    isVector: false,
+    tip: "Best for web, social media, and digital use. Supports transparency and works everywhere.",
+  },
+  svg: {
+    label: "SVG",
+    description: "Vector graphic",
+    badge: "Scalable",
+    badgeColor: "bg-purple-100 text-purple-700",
+    isVector: true,
+    tip: "Vector format that scales infinitely. Perfect for logos, large prints, and developers.",
+  },
+  pdf: {
+    label: "PDF",
+    description: "Document format",
+    badge: "Print Ready",
+    badgeColor: "bg-red-100 text-red-700",
+    isVector: true,
+    tip: "Universal print format. Great for business cards, flyers, and professional printing.",
+  },
+  eps: {
+    label: "EPS",
+    description: "Adobe compatible",
+    badge: "Professional",
+    badgeColor: "bg-orange-100 text-orange-700",
+    isVector: true,
+    tip: "Adobe Illustrator/InDesign compatible. Industry standard for professional design work.",
+  },
+} as const;
 
 // Resolution snap points for export
 const RESOLUTION_SNAP_POINTS = [200, 500, 1000, 1500, 2000] as const;
@@ -279,34 +316,282 @@ export default function GeneratorPage() {
     }
   };
 
+  // Generate SVG string for QR code
+  const generateSvgString = useCallback(async (): Promise<string> => {
+    const svgString = await QRCode.toString(generatedUrl, {
+      type: "svg",
+      margin: 2,
+      color: {
+        dark: fgColor,
+        light: bgColor,
+      },
+      errorCorrectionLevel: errorLevel,
+    });
+    return svgString;
+  }, [generatedUrl, fgColor, bgColor, errorLevel]);
+
+  // Generate EPS from SVG
+  const generateEpsString = useCallback(async (): Promise<string> => {
+    const svgString = await generateSvgString();
+
+    // Parse the SVG to get width/height
+    const parser = new DOMParser();
+    const svgDoc = parser.parseFromString(svgString, "image/svg+xml");
+    const svgElement = svgDoc.querySelector("svg");
+    const width = parseInt(svgElement?.getAttribute("width") || "100", 10);
+    const height = parseInt(svgElement?.getAttribute("height") || "100", 10);
+
+    // Create a simple EPS wrapper with embedded SVG
+    // EPS header with proper bounding box
+    const epsHeader = `%!PS-Adobe-3.0 EPSF-3.0
+%%Creator: QRSpot - Multi-Format Export
+%%Title: QR Code
+%%BoundingBox: 0 0 ${width} ${height}
+%%HiResBoundingBox: 0.000000 0.000000 ${width}.000000 ${height}.000000
+%%DocumentData: Clean7Bit
+%%LanguageLevel: 2
+%%Pages: 1
+%%EndComments
+%%BeginProlog
+/bd { bind def } bind def
+/m { moveto } bd
+/l { lineto } bd
+/c { curveto } bd
+/f { fill } bd
+/s { stroke } bd
+/rgb { setrgbcolor } bd
+/rect { /h exch def /w exch def /y exch def /x exch def
+  newpath x y m x w add y l x w add y h add l x y h add l closepath } bd
+%%EndProlog
+%%Page: 1 1
+gsave
+`;
+
+    // Parse SVG paths and convert to PostScript
+    // First, fill with background color
+    const bgRgb = hexToRgbNormalized(bgColor);
+    const fgRgb = hexToRgbNormalized(fgColor);
+
+    let epsBody = `% Background
+${bgRgb.r} ${bgRgb.g} ${bgRgb.b} rgb
+0 0 ${width} ${height} rect f
+`;
+
+    // Find all path elements and convert them
+    const paths = svgDoc.querySelectorAll("path");
+    paths.forEach((path) => {
+      const fill = path.getAttribute("fill");
+      if (fill && fill !== "none" && fill !== bgColor) {
+        const d = path.getAttribute("d");
+        if (d) {
+          epsBody += `% QR Module\n`;
+          epsBody += `${fgRgb.r} ${fgRgb.g} ${fgRgb.b} rgb\n`;
+          epsBody += `newpath\n`;
+          epsBody += convertSvgPathToPs(d, height);
+          epsBody += `f\n`;
+        }
+      }
+    });
+
+    const epsFooter = `grestore
+showpage
+%%EOF
+`;
+
+    return epsHeader + epsBody + epsFooter;
+  }, [generateSvgString, bgColor, fgColor]);
+
+  // Helper function to convert hex to normalized RGB
+  const hexToRgbNormalized = (
+    hex: string
+  ): { r: number; g: number; b: number } => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (!result) return { r: 0, g: 0, b: 0 };
+    return {
+      r: parseInt(result[1], 16) / 255,
+      g: parseInt(result[2], 16) / 255,
+      b: parseInt(result[3], 16) / 255,
+    };
+  };
+
+  // Convert SVG path d attribute to PostScript
+  const convertSvgPathToPs = (d: string, svgHeight: number): string => {
+    let ps = "";
+    // Simple parser for M and L commands (QR codes are typically just rectangles)
+    const commands = d.match(/[MmLlHhVvZz][^MmLlHhVvZz]*/g) || [];
+    let currentX = 0;
+    let currentY = 0;
+    let startX = 0;
+    let startY = 0;
+
+    commands.forEach((cmd) => {
+      const type = cmd[0];
+      const coords = cmd
+        .slice(1)
+        .trim()
+        .split(/[\s,]+/)
+        .map(parseFloat)
+        .filter((n) => !isNaN(n));
+
+      switch (type) {
+        case "M":
+          currentX = coords[0];
+          currentY = svgHeight - coords[1]; // Flip Y for PostScript
+          startX = currentX;
+          startY = currentY;
+          ps += `${currentX.toFixed(2)} ${currentY.toFixed(2)} m\n`;
+          break;
+        case "m":
+          currentX += coords[0];
+          currentY -= coords[1]; // Flip Y for PostScript
+          startX = currentX;
+          startY = currentY;
+          ps += `${currentX.toFixed(2)} ${currentY.toFixed(2)} m\n`;
+          break;
+        case "L":
+          currentX = coords[0];
+          currentY = svgHeight - coords[1];
+          ps += `${currentX.toFixed(2)} ${currentY.toFixed(2)} l\n`;
+          break;
+        case "l":
+          currentX += coords[0];
+          currentY -= coords[1];
+          ps += `${currentX.toFixed(2)} ${currentY.toFixed(2)} l\n`;
+          break;
+        case "H":
+          currentX = coords[0];
+          ps += `${currentX.toFixed(2)} ${currentY.toFixed(2)} l\n`;
+          break;
+        case "h":
+          currentX += coords[0];
+          ps += `${currentX.toFixed(2)} ${currentY.toFixed(2)} l\n`;
+          break;
+        case "V":
+          currentY = svgHeight - coords[0];
+          ps += `${currentX.toFixed(2)} ${currentY.toFixed(2)} l\n`;
+          break;
+        case "v":
+          currentY -= coords[0];
+          ps += `${currentX.toFixed(2)} ${currentY.toFixed(2)} l\n`;
+          break;
+        case "Z":
+        case "z":
+          ps += `closepath\n`;
+          currentX = startX;
+          currentY = startY;
+          break;
+      }
+    });
+
+    return ps;
+  };
+
   // Download QR code at specified resolution
   const downloadQR = useCallback(async () => {
     if (!generatedUrl) return;
 
     setIsGenerating(true);
     try {
-      // Generate QR at export resolution
-      const dataUrl = await QRCode.toDataURL(generatedUrl, {
-        width: exportResolution,
-        margin: 2,
-        color: {
-          dark: fgColor,
-          light: bgColor,
-        },
-        errorCorrectionLevel: errorLevel,
-      });
+      const formatInfo = FORMAT_INFO[exportFormat];
+      const isVector = formatInfo.isVector;
 
-      const link = document.createElement("a");
-      link.href = dataUrl;
-      link.download = `qr-code-${exportResolution}px.${exportFormat}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showToast(
-        `QR Code downloaded (${exportResolution}×${exportResolution}px)!`,
-        "success"
-      );
-    } catch {
+      switch (exportFormat) {
+        case "png": {
+          // Generate PNG at export resolution
+          const dataUrl = await QRCode.toDataURL(generatedUrl, {
+            width: exportResolution,
+            margin: 2,
+            color: {
+              dark: fgColor,
+              light: bgColor,
+            },
+            errorCorrectionLevel: errorLevel,
+          });
+
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = `qr-code.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          showToast(
+            `QR Code downloaded (${exportResolution}×${exportResolution}px)!`,
+            "success"
+          );
+          break;
+        }
+
+        case "svg": {
+          // Generate true vector SVG
+          const svgString = await generateSvgString();
+
+          const blob = new Blob([svgString], { type: "image/svg+xml" });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "qr-code.svg";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          showToast("SVG downloaded (vector format)!", "success");
+          break;
+        }
+
+        case "pdf": {
+          // Generate PDF with embedded QR code as image for best compatibility
+          const pngDataUrl = await QRCode.toDataURL(generatedUrl, {
+            width: 1000, // High resolution for PDF
+            margin: 2,
+            color: {
+              dark: fgColor,
+              light: bgColor,
+            },
+            errorCorrectionLevel: errorLevel,
+          });
+
+          // Create A4 PDF with centered QR code
+          const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "a4",
+          });
+
+          // A4 dimensions: 210 x 297 mm
+          const pageWidth = 210;
+          const pageHeight = 297;
+          const qrSize = 100; // 100mm QR code size
+          const x = (pageWidth - qrSize) / 2;
+          const y = (pageHeight - qrSize) / 2;
+
+          pdf.addImage(pngDataUrl, "PNG", x, y, qrSize, qrSize);
+
+          pdf.save("qr-code.pdf");
+          showToast("PDF downloaded (print-ready)!", "success");
+          break;
+        }
+
+        case "eps": {
+          // Generate EPS (Encapsulated PostScript) for Adobe compatibility
+          const epsString = await generateEpsString();
+
+          const blob = new Blob([epsString], {
+            type: "application/postscript",
+          });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "qr-code.eps";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          showToast("EPS downloaded (Adobe compatible)!", "success");
+          break;
+        }
+      }
+    } catch (error) {
+      console.error("Export error:", error);
       showToast("Failed to download QR code", "error");
     } finally {
       setIsGenerating(false);
@@ -319,6 +604,8 @@ export default function GeneratorPage() {
     errorLevel,
     exportFormat,
     showToast,
+    generateSvgString,
+    generateEpsString,
   ]);
 
   // Calculate contrast ratio
@@ -1228,208 +1515,131 @@ export default function GeneratorPage() {
               {/* Export Tab */}
               {activeTab === "export" && (
                 <div className="p-5">
-                  {/* Export Format */}
+                  {/* Export Format - Card Grid with Icons */}
                   <div className="mb-6">
-                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
+                    <label className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
+                      <svg
+                        className="h-4 w-4 text-[var(--pro-accent)]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                        />
+                      </svg>
                       Export Format
                     </label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {(
-                        [
-                          {
-                            value: "png",
-                            label: "PNG",
-                            info: "Raster",
-                            recommended: true,
-                          },
-                          {
-                            value: "svg",
-                            label: "SVG",
-                            info: "Vector",
-                            recommended: false,
-                          },
-                          {
-                            value: "pdf",
-                            label: "PDF",
-                            info: "Print",
-                            recommended: false,
-                          },
-                        ] as const
-                      ).map((format) => (
-                        <button
-                          key={format.value}
-                          onClick={() => setExportFormat(format.value)}
-                          className={`relative rounded-md border-2 p-4 text-center transition-all ${
-                            exportFormat === format.value
-                              ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)]"
-                              : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)]"
-                          }`}
-                        >
-                          {format.recommended && (
-                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded bg-[var(--pro-accent)] px-2 py-0.5 text-[9px] font-bold uppercase text-white">
-                              Recommended
-                            </span>
-                          )}
-                          <div className="text-base font-bold">
-                            {format.label}
-                          </div>
-                          <div className="text-xs text-[var(--pro-muted)]">
-                            {format.info}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* HIGH-RESOLUTION EXPORT CONTROLS */}
-                  <div className="mb-6 rounded-xl border border-[var(--pro-border)] bg-gradient-to-br from-[var(--pro-surface)] to-[var(--pro-surface-hover)] p-5">
-                    {/* Resolution Header with Live Display */}
-                    <div className="mb-4 flex items-center justify-between">
-                      <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
-                        <svg
-                          className="h-4 w-4 text-[var(--pro-accent)]"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-                          />
-                        </svg>
-                        Resolution
-                      </label>
-                      {/* Large Resolution Display */}
-                      <div className="text-right">
-                        <span className="text-3xl font-bold text-[var(--pro-accent)] transition-transform">
-                          {exportResolution}
-                        </span>
-                        <span className="text-lg text-[var(--pro-muted)]">
-                          px
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Slider Container */}
-                    <div className="relative mb-6 pb-8 pt-2">
-                      {/* Slider Track Background */}
-                      <div className="absolute left-0 right-0 top-[18px] h-2 rounded-full bg-[var(--pro-muted-light)]" />
-
-                      {/* Active Track */}
-                      <div
-                        className="absolute left-0 top-[18px] h-2 rounded-full bg-[var(--pro-accent)]"
-                        style={{
-                          width: `${getSliderTrackPercentage(exportResolution)}%`,
-                        }}
-                      />
-
-                      {/* Snap Points */}
-                      <div className="absolute left-0 right-0 top-[18px]">
-                        {RESOLUTION_SNAP_POINTS.map((snapValue) => (
-                          <div
-                            key={snapValue}
-                            className={`absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full transition-colors ${
-                              snapValue <= exportResolution
-                                ? "bg-[var(--pro-accent)]"
-                                : "bg-[var(--pro-muted-light)]"
-                            }`}
-                            style={{
-                              left: `${getSnapPointPosition(snapValue)}%`,
-                              top: "50%",
-                            }}
-                          />
-                        ))}
-                      </div>
-
-                      {/* Slider Input */}
-                      <input
-                        type="range"
-                        min="200"
-                        max="2000"
-                        step="1"
-                        value={exportResolution}
-                        onChange={(e) =>
-                          handleResolutionChange(Number(e.target.value))
+                    {/* Format Cards Grid */}
+                    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                      {(["png", "svg", "pdf", "eps"] as FormatType[]).map(
+                        (format) => {
+                          const info = FORMAT_INFO[format];
+                          const isSelected = exportFormat === format;
+                          return (
+                            <button
+                              key={format}
+                              onClick={() => setExportFormat(format)}
+                              className={`group relative rounded-xl border-2 p-4 text-center transition-all hover:-translate-y-0.5 hover:shadow-md ${
+                                isSelected
+                                  ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)] shadow-[0_0_0_3px_rgba(37,99,235,0.15)]"
+                                  : "border-[var(--pro-border)] bg-white hover:border-[var(--pro-border-dark)]"
+                              }`}
+                            >
+                              {/* Icon */}
+                              <div
+                                className={`mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${
+                                  isSelected
+                                    ? "bg-[var(--pro-accent)] text-white"
+                                    : "bg-[var(--pro-muted-light)] text-[var(--pro-muted)] group-hover:bg-[var(--pro-border)]"
+                                }`}
+                              >
+                                {format === "png" && (
+                                  <svg
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
+                                  </svg>
+                                )}
+                                {format === "svg" && (
+                                  <svg
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+                                    />
+                                  </svg>
+                                )}
+                                {format === "pdf" && (
+                                  <svg
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                    />
+                                  </svg>
+                                )}
+                                {format === "eps" && (
+                                  <svg
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"
+                                    />
+                                  </svg>
+                                )}
+                              </div>
+                              {/* Label */}
+                              <div className="text-base font-bold text-[var(--pro-fg)]">
+                                {info.label}
+                              </div>
+                              <div className="mt-1 text-xs text-[var(--pro-muted)]">
+                                {info.description}
+                              </div>
+                              {/* Badge */}
+                              <span
+                                className={`mt-2 inline-block rounded px-1.5 py-0.5 text-[9px] font-medium ${info.badgeColor}`}
+                              >
+                                {info.badge}
+                              </span>
+                            </button>
+                          );
                         }
-                        className="relative z-10 h-2 w-full cursor-pointer appearance-none rounded-full bg-transparent [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-[var(--pro-accent)] [&::-moz-range-thumb]:shadow-[0_2px_8px_rgba(37,99,235,0.3)] [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-[var(--pro-accent)] [&::-webkit-slider-thumb]:shadow-[0_2px_8px_rgba(37,99,235,0.3)] [&::-webkit-slider-thumb]:transition-transform hover:[&::-webkit-slider-thumb]:scale-110"
-                      />
-
-                      {/* Labels below */}
-                      <div className="absolute left-0 right-0 top-10 flex justify-between px-0">
-                        <span className="text-center text-[11px]">
-                          <span className="text-[var(--pro-muted)]">200px</span>
-                          <br />
-                          <span className="text-[10px] text-[var(--pro-muted)]">
-                            Web
-                          </span>
-                        </span>
-                        <span className="text-center text-[11px] text-[var(--pro-muted)]">
-                          500px
-                        </span>
-                        <span
-                          className={`text-center text-[11px] font-semibold ${exportResolution === 1000 ? "text-[var(--pro-accent)]" : "text-[var(--pro-muted)]"}`}
-                        >
-                          1000px
-                          <br />
-                          <span className="text-[10px]">Default</span>
-                        </span>
-                        <span className="text-center text-[11px] text-[var(--pro-muted)]">
-                          1500px
-                        </span>
-                        <span className="text-center text-[11px]">
-                          <span className="text-[var(--pro-muted)]">
-                            2000px
-                          </span>
-                          <br />
-                          <span className="text-[10px] text-[var(--pro-muted)]">
-                            Print
-                          </span>
-                        </span>
-                      </div>
+                      )}
                     </div>
 
-                    {/* File Size Estimator */}
-                    <div className="flex items-center justify-between rounded-lg border border-[var(--pro-border)] bg-white p-3">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--pro-accent-light)]">
-                          <svg
-                            className="h-5 w-5 text-[var(--pro-accent)]"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <div className="text-sm font-semibold text-[var(--pro-fg)]">
-                            Estimated File Size
-                          </div>
-                          <div className="text-xs text-[var(--pro-muted)]">
-                            Based on {exportResolution}×{exportResolution}px PNG
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-2xl font-bold text-[var(--pro-fg)]">
-                          {estimateFileSize(exportResolution)}
-                        </span>
-                        <span className="text-sm text-[var(--pro-muted)]">
-                          {" "}
-                          KB
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Size Guide Tooltip */}
-                    <div className="mt-3 flex items-start gap-2 text-xs text-[var(--pro-muted)]">
+                    {/* Format Info Tooltip */}
+                    <div className="mt-3 flex items-start gap-2 rounded-lg border border-blue-100 bg-[var(--pro-accent-light)] p-3">
                       <svg
                         className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--pro-accent)]"
                         fill="none"
@@ -1443,18 +1653,226 @@ export default function GeneratorPage() {
                           d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      <span>
-                        <strong>Tip:</strong> Use 200-500px for web/social,
-                        1000px for general use, 1500-2000px for print materials.
-                      </span>
+                      <p className="text-xs text-[var(--pro-accent)]">
+                        <strong>{FORMAT_INFO[exportFormat].label}</strong> -{" "}
+                        {FORMAT_INFO[exportFormat].tip}
+                      </p>
                     </div>
                   </div>
+
+                  {/* HIGH-RESOLUTION EXPORT CONTROLS - Only for PNG (raster format) */}
+                  {!FORMAT_INFO[exportFormat].isVector && (
+                    <div className="mb-6 rounded-xl border border-[var(--pro-border)] bg-gradient-to-br from-[var(--pro-surface)] to-[var(--pro-surface-hover)] p-5">
+                      {/* Resolution Header with Live Display */}
+                      <div className="mb-4 flex items-center justify-between">
+                        <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
+                          <svg
+                            className="h-4 w-4 text-[var(--pro-accent)]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                            />
+                          </svg>
+                          Resolution
+                        </label>
+                        {/* Large Resolution Display */}
+                        <div className="text-right">
+                          <span className="text-3xl font-bold text-[var(--pro-accent)] transition-transform">
+                            {exportResolution}
+                          </span>
+                          <span className="text-lg text-[var(--pro-muted)]">
+                            px
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Slider Container */}
+                      <div className="relative mb-6 pb-8 pt-2">
+                        {/* Slider Track Background */}
+                        <div className="absolute left-0 right-0 top-[18px] h-2 rounded-full bg-[var(--pro-muted-light)]" />
+
+                        {/* Active Track */}
+                        <div
+                          className="absolute left-0 top-[18px] h-2 rounded-full bg-[var(--pro-accent)]"
+                          style={{
+                            width: `${getSliderTrackPercentage(exportResolution)}%`,
+                          }}
+                        />
+
+                        {/* Snap Points */}
+                        <div className="absolute left-0 right-0 top-[18px]">
+                          {RESOLUTION_SNAP_POINTS.map((snapValue) => (
+                            <div
+                              key={snapValue}
+                              className={`absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full transition-colors ${
+                                snapValue <= exportResolution
+                                  ? "bg-[var(--pro-accent)]"
+                                  : "bg-[var(--pro-muted-light)]"
+                              }`}
+                              style={{
+                                left: `${getSnapPointPosition(snapValue)}%`,
+                                top: "50%",
+                              }}
+                            />
+                          ))}
+                        </div>
+
+                        {/* Slider Input */}
+                        <input
+                          type="range"
+                          min="200"
+                          max="2000"
+                          step="1"
+                          value={exportResolution}
+                          onChange={(e) =>
+                            handleResolutionChange(Number(e.target.value))
+                          }
+                          className="relative z-10 h-2 w-full cursor-pointer appearance-none rounded-full bg-transparent [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-[var(--pro-accent)] [&::-moz-range-thumb]:shadow-[0_2px_8px_rgba(37,99,235,0.3)] [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-[var(--pro-accent)] [&::-webkit-slider-thumb]:shadow-[0_2px_8px_rgba(37,99,235,0.3)] [&::-webkit-slider-thumb]:transition-transform hover:[&::-webkit-slider-thumb]:scale-110"
+                        />
+
+                        {/* Labels below */}
+                        <div className="absolute left-0 right-0 top-10 flex justify-between px-0">
+                          <span className="text-center text-[11px]">
+                            <span className="text-[var(--pro-muted)]">
+                              200px
+                            </span>
+                            <br />
+                            <span className="text-[10px] text-[var(--pro-muted)]">
+                              Web
+                            </span>
+                          </span>
+                          <span className="text-center text-[11px] text-[var(--pro-muted)]">
+                            500px
+                          </span>
+                          <span
+                            className={`text-center text-[11px] font-semibold ${exportResolution === 1000 ? "text-[var(--pro-accent)]" : "text-[var(--pro-muted)]"}`}
+                          >
+                            1000px
+                            <br />
+                            <span className="text-[10px]">Default</span>
+                          </span>
+                          <span className="text-center text-[11px] text-[var(--pro-muted)]">
+                            1500px
+                          </span>
+                          <span className="text-center text-[11px]">
+                            <span className="text-[var(--pro-muted)]">
+                              2000px
+                            </span>
+                            <br />
+                            <span className="text-[10px] text-[var(--pro-muted)]">
+                              Print
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* File Size Estimator */}
+                      <div className="flex items-center justify-between rounded-lg border border-[var(--pro-border)] bg-white p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--pro-accent-light)]">
+                            <svg
+                              className="h-5 w-5 text-[var(--pro-accent)]"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                              />
+                            </svg>
+                          </div>
+                          <div>
+                            <div className="text-sm font-semibold text-[var(--pro-fg)]">
+                              Estimated File Size
+                            </div>
+                            <div className="text-xs text-[var(--pro-muted)]">
+                              Based on {exportResolution}×{exportResolution}px
+                              PNG
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-2xl font-bold text-[var(--pro-fg)]">
+                            {estimateFileSize(exportResolution)}
+                          </span>
+                          <span className="text-sm text-[var(--pro-muted)]">
+                            {" "}
+                            KB
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Size Guide Tooltip */}
+                      <div className="mt-3 flex items-start gap-2 text-xs text-[var(--pro-muted)]">
+                        <svg
+                          className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--pro-accent)]"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        <span>
+                          <strong>Tip:</strong> Use 200-500px for web/social,
+                          1000px for general use, 1500-2000px for print
+                          materials.
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Vector Format Notice - Only for SVG, PDF, EPS */}
+                  {FORMAT_INFO[exportFormat].isVector && (
+                    <div className="mb-6 rounded-xl border border-purple-200 bg-purple-50 p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-purple-100">
+                          <svg
+                            className="h-5 w-5 text-purple-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold text-purple-900">
+                            Vector Format Selected
+                          </div>
+                          <p className="mt-1 text-xs text-purple-700">
+                            Vector files are infinitely scalable - no resolution
+                            setting needed. Perfect for printing at any size
+                            without quality loss.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Download Button */}
                   <button
                     onClick={downloadQR}
                     disabled={isGenerating || !generatedUrl}
-                    className="flex w-full items-center justify-center gap-2 rounded-md bg-[var(--pro-accent)] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--pro-accent-hover)] disabled:cursor-not-allowed disabled:bg-[var(--pro-muted-light)]"
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-4 text-sm font-semibold text-white transition-all hover:bg-[var(--pro-accent-hover)] hover:shadow-lg disabled:cursor-not-allowed disabled:bg-[var(--pro-muted-light)]"
                   >
                     <svg
                       className="h-5 w-5"
@@ -1469,7 +1887,9 @@ export default function GeneratorPage() {
                         d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
                       />
                     </svg>
-                    Download QR Code ({exportResolution}×{exportResolution}px)
+                    {FORMAT_INFO[exportFormat].isVector
+                      ? `Download ${FORMAT_INFO[exportFormat].label}`
+                      : `Download ${FORMAT_INFO[exportFormat].label} (${exportResolution} × ${exportResolution}px)`}
                   </button>
                 </div>
               )}
