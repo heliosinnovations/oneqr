@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
 import Link from "next/link";
 import { jsPDF } from "jspdf";
@@ -175,13 +176,18 @@ const ERROR_LEVELS: {
   { value: "H", label: "H", percentage: "30%" },
 ];
 
-export default function GeneratorPage() {
+function GeneratorContent() {
+  // Get URL from query params
+  const searchParams = useSearchParams();
+  const urlParam = searchParams.get("url");
+
   // Form state
-  const [url, setUrl] = useState("https://example.com");
+  const [url, setUrl] = useState(urlParam || "https://example.com");
   const [urlValid, setUrlValid] = useState(true);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState<string>("");
+  const [urlInitialized, setUrlInitialized] = useState(false);
 
   // UI state
   const [activeTab, setActiveTab] = useState<TabType>("content");
@@ -203,6 +209,14 @@ export default function GeneratorPage() {
   const toastIdRef = useRef(0);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Update URL from query param when it changes
+  useEffect(() => {
+    if (urlParam && !urlInitialized) {
+      setUrl(urlParam);
+      setUrlInitialized(true);
+    }
+  }, [urlParam, urlInitialized]);
 
   // Debounce helper
   const debounce = <T extends (...args: Parameters<T>) => void>(
@@ -2005,8 +2019,16 @@ showpage
                               Inches
                             </div>
                             <div className="text-xl font-bold text-[var(--pro-fg)]">
-                              {calculatePhysicalSize(exportResolution, dpi).inches.toFixed(1)}&quot; ×{" "}
-                              {calculatePhysicalSize(exportResolution, dpi).inches.toFixed(1)}&quot;
+                              {calculatePhysicalSize(
+                                exportResolution,
+                                dpi
+                              ).inches.toFixed(1)}
+                              &quot; ×{" "}
+                              {calculatePhysicalSize(
+                                exportResolution,
+                                dpi
+                              ).inches.toFixed(1)}
+                              &quot;
                             </div>
                           </div>
                           <div className="rounded-lg border border-[var(--pro-border)] bg-white p-3">
@@ -2014,8 +2036,16 @@ showpage
                               Centimeters
                             </div>
                             <div className="text-xl font-bold text-[var(--pro-fg)]">
-                              {calculatePhysicalSize(exportResolution, dpi).cm.toFixed(1)}cm ×{" "}
-                              {calculatePhysicalSize(exportResolution, dpi).cm.toFixed(1)}cm
+                              {calculatePhysicalSize(
+                                exportResolution,
+                                dpi
+                              ).cm.toFixed(1)}
+                              cm ×{" "}
+                              {calculatePhysicalSize(
+                                exportResolution,
+                                dpi
+                              ).cm.toFixed(1)}
+                              cm
                             </div>
                           </div>
                         </div>
@@ -2043,8 +2073,8 @@ showpage
                                   Size Warning
                                 </div>
                                 <p className="mt-0.5 text-xs text-[var(--pro-warning)]">
-                                  QR code may be too small for reliable scanning.
-                                  Minimum recommended: 0.8&quot; (2cm)
+                                  QR code may be too small for reliable
+                                  scanning. Minimum recommended: 0.8&quot; (2cm)
                                 </p>
                               </div>
                             </div>
@@ -2102,7 +2132,8 @@ showpage
                               )}
                             </svg>
                             <span>
-                              Resolution sufficient for print ({exportResolution}
+                              Resolution sufficient for print (
+                              {exportResolution}
                               px)
                             </span>
                           </div>
@@ -2197,7 +2228,8 @@ showpage
                               exportResolution,
                               dpi
                             ).inches.toFixed(1)}
-                            &quot;, this QR code can be scanned from approximately{" "}
+                            &quot;, this QR code can be scanned from
+                            approximately{" "}
                             <span className="font-semibold">
                               {
                                 calculateScanDistance(
@@ -2439,5 +2471,23 @@ showpage
       {/* Hidden canvas for potential future use */}
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
     </div>
+  );
+}
+
+// Wrapper component with Suspense for useSearchParams
+export default function GeneratorPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-bg">
+          <div className="text-center">
+            <div className="mb-4 text-4xl">⏳</div>
+            <p className="text-muted">Loading generator...</p>
+          </div>
+        </div>
+      }
+    >
+      <GeneratorContent />
+    </Suspense>
   );
 }

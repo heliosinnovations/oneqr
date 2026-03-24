@@ -1,4 +1,4 @@
-import QRGenerator from "@/components/QRGenerator";
+import SimpleQRGenerator from "@/components/SimpleQRGenerator";
 import Link from "next/link";
 
 export default function Home() {
@@ -53,8 +53,8 @@ export default function Home() {
           </header>
 
           {/* Full-width QR Generator - Above the fold */}
-          <div id="qr-generator" className="mx-auto max-w-2xl scroll-mt-24">
-            <QRGenerator />
+          <div id="qr-generator" className="mx-auto max-w-lg scroll-mt-24">
+            <SimpleQRGenerator />
           </div>
 
           {/* Stats - Below generator */}
@@ -106,89 +106,95 @@ export default function Home() {
                 id="features-heading"
                 className="font-serif text-[56px] leading-[1.1]"
               >
-                Everything you need.
+                Professional QR codes.
                 <br />
-                <span className="italic text-accent">Nothing</span> you
-                don&apos;t.
+                <span className="italic text-accent">Free</span> forever.
               </h2>
             </header>
 
             {/* Features Grid */}
             <ul
-              className="grid gap-px bg-white/10 md:grid-cols-3"
+              className="grid gap-px bg-white/10 md:grid-cols-2"
               role="list"
               aria-label="Product features"
             >
               <li className="bg-fg p-10">
-                <div className="mb-4 text-4xl" role="img" aria-label="Mobile">
-                  📱
+                <div
+                  className="mb-4 text-4xl"
+                  role="img"
+                  aria-label="High Resolution"
+                >
+                  🖼️
                 </div>
-                <h3 className="mb-3 font-serif text-xl">Instant Generation</h3>
+                <h3 className="mb-3 font-serif text-xl">
+                  High-Resolution Export
+                </h3>
                 <p className="text-sm leading-relaxed opacity-70">
-                  Enter a URL, get a QR code. Download PNG or SVG. No signup, no
-                  wait.
+                  Export from 512px up to 4096px. Perfect for billboards,
+                  posters, and large format printing.
                 </p>
               </li>
               <li className="bg-fg p-10">
-                <div className="mb-4 text-4xl" role="img" aria-label="Cloud">
-                  ☁️
+                <div
+                  className="mb-4 text-4xl"
+                  role="img"
+                  aria-label="File Formats"
+                >
+                  📁
                 </div>
-                <h3 className="mb-3 font-serif text-xl">Cloud Storage</h3>
+                <h3 className="mb-3 font-serif text-xl">Multi-Format Export</h3>
                 <p className="text-sm leading-relaxed opacity-70">
-                  Save QR codes to your dashboard. Access from anywhere with
-                  magic link login.
+                  Download as PNG, SVG, PDF, or EPS. Vector formats for infinite
+                  scaling, raster for quick sharing.
                 </p>
               </li>
               <li className="bg-fg p-10">
-                <div className="mb-4 text-4xl" role="img" aria-label="Infinity">
-                  ♾️
+                <div
+                  className="mb-4 text-4xl"
+                  role="img"
+                  aria-label="Print Quality"
+                >
+                  🖨️
                 </div>
-                <h3 className="mb-3 font-serif text-xl">No Limits</h3>
+                <h3 className="mb-3 font-serif text-xl">
+                  Print Quality Controls
+                </h3>
                 <p className="text-sm leading-relaxed opacity-70">
-                  Create unlimited QR codes. Download as many times as you want.
-                  Forever free.
+                  Set DPI from 72 to 600 with a built-in size calculator. Know
+                  exactly how your QR will print.
                 </p>
               </li>
               <li className="bg-fg p-10">
-                <div className="mb-4 text-4xl" role="img" aria-label="Pencil">
-                  ✏️
+                <div className="mb-4 text-4xl" role="img" aria-label="Design">
+                  🎨
                 </div>
-                <h3 className="mb-3 font-serif text-xl">Optional Editing</h3>
+                <h3 className="mb-3 font-serif text-xl">Advanced Design</h3>
                 <p className="text-sm leading-relaxed opacity-70">
-                  Need to change where your QR points? Unlock editing for a
-                  small one-time fee.
-                </p>
-              </li>
-              <li className="bg-fg p-10">
-                <div className="mb-4 text-4xl" role="img" aria-label="Chart">
-                  📊
-                </div>
-                <h3 className="mb-3 font-serif text-xl">Scan Analytics</h3>
-                <p className="text-sm leading-relaxed opacity-70">
-                  Track how many people scan your QR codes. See what&apos;s
-                  working.
-                </p>
-              </li>
-              <li className="bg-fg p-10">
-                <div className="mb-4 text-4xl" role="img" aria-label="Lock">
-                  🔒
-                </div>
-                <h3 className="mb-3 font-serif text-xl">Never Expires</h3>
-                <p className="text-sm leading-relaxed opacity-70">
-                  Your QR codes work forever. No monthly fees, no surprise
-                  charges.
+                  6 data patterns, 9 eye styles, gradient support, and custom
+                  colors. Make your QR code stand out.
                 </p>
               </li>
             </ul>
 
-            {/* Subtle pricing mention */}
+            {/* CTA to advanced generator */}
             <aside className="mt-16 border-t border-white/10 pt-12 text-center">
-              <p className="text-lg leading-relaxed opacity-70">
-                Editing unlocks at $3.99 per QR or $9.99 for unlimited.
-                <br />
-                <span className="text-sm opacity-50">
-                  One-time payment. No subscriptions.
-                </span>
+              <Link
+                href="/generator"
+                className="inline-flex items-center gap-3 bg-accent px-8 py-4 text-lg font-semibold text-white transition-colors hover:bg-white hover:text-fg"
+              >
+                Try Advanced Generator
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="h-5 w-5"
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </Link>
+              <p className="mt-4 text-sm opacity-50">
+                All features are free. No signup required.
               </p>
             </aside>
           </div>
