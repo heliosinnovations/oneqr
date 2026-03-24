@@ -12,6 +12,7 @@ type PatternType = "square" | "rounded" | "dots" | "classy";
 type CornerType = "square" | "rounded" | "extra" | "dot";
 type FormatType = "png" | "svg" | "pdf" | "eps";
 type SizeType = 256 | 512 | 1024 | 2048;
+type DpiType = 72 | 150 | 300 | 600;
 
 // Format info for cards
 const FORMAT_INFO = {
@@ -52,6 +53,60 @@ const FORMAT_INFO = {
 // Resolution snap points for export
 const RESOLUTION_SNAP_POINTS = [200, 500, 1000, 1500, 2000] as const;
 type ResolutionType = (typeof RESOLUTION_SNAP_POINTS)[number];
+
+// DPI options for print quality
+const DPI_OPTIONS = [
+  {
+    value: 72 as DpiType,
+    label: "72",
+    badge: "WEB",
+    badgeColor: "bg-gray-100 text-gray-600",
+    description: "Screen display, websites, email",
+  },
+  {
+    value: 150 as DpiType,
+    label: "150",
+    badge: "PRINT",
+    badgeColor: "bg-blue-100 text-blue-600",
+    description: "Standard print, flyers, posters",
+  },
+  {
+    value: 300 as DpiType,
+    label: "300",
+    badge: "HIGH",
+    badgeColor: "bg-green-100 text-green-600",
+    description: "Business cards, brochures",
+  },
+  {
+    value: 600 as DpiType,
+    label: "600",
+    badge: "PRO",
+    badgeColor: "bg-purple-100 text-purple-600",
+    description: "Professional print, packaging",
+  },
+] as const;
+
+// Minimum size in inches for reliable scanning
+const MIN_SIZE_INCHES = 0.8;
+
+// Calculate physical size from pixels and DPI
+const calculatePhysicalSize = (
+  pixels: number,
+  dpi: number
+): { inches: number; cm: number } => {
+  const inches = pixels / dpi;
+  const cm = inches * 2.54;
+  return { inches, cm };
+};
+
+// Calculate approximate scanning distance (rough formula: ~3ft per inch of QR size)
+const calculateScanDistance = (
+  sizeInches: number
+): { feet: number; meters: number } => {
+  const feet = Math.round(sizeInches * 3);
+  const meters = parseFloat((feet * 0.3048).toFixed(1));
+  return { feet, meters };
+};
 
 // File size estimates for each resolution (in KB)
 const FILE_SIZE_ESTIMATES: Record<ResolutionType, string> = {
@@ -141,7 +196,7 @@ export default function GeneratorPage() {
   const [exportFormat, setExportFormat] = useState<FormatType>("png");
   const [exportSize, setExportSize] = useState<SizeType>(512);
   const [exportResolution, setExportResolution] = useState<number>(1000);
-  const [dpi, setDpi] = useState(150);
+  const [dpi, setDpi] = useState<DpiType>(300);
 
   // Toast state - support multiple toasts with IDs
   const [toasts, setToasts] = useState<ToastType[]>([]);
@@ -1835,6 +1890,337 @@ showpage
                     </div>
                   )}
 
+                  {/* Print Quality Section - Only for PNG (raster format) */}
+                  {!FORMAT_INFO[exportFormat].isVector && (
+                    <div className="mb-6 space-y-4">
+                      {/* Section Header */}
+                      <div className="flex items-center gap-2 border-b border-[var(--pro-border)] pb-2">
+                        <svg
+                          className="h-5 w-5 text-[var(--pro-accent)]"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                          />
+                        </svg>
+                        <h3 className="text-sm font-semibold text-[var(--pro-fg)]">
+                          Print Quality Settings
+                        </h3>
+                      </div>
+
+                      {/* DPI Cards */}
+                      <div>
+                        <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
+                          Print Quality (DPI)
+                        </label>
+                        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                          {DPI_OPTIONS.map((option) => {
+                            const isSelected = dpi === option.value;
+                            return (
+                              <button
+                                key={option.value}
+                                onClick={() => setDpi(option.value)}
+                                className={`rounded-xl border-2 bg-white p-3 text-left transition-all hover:-translate-y-0.5 hover:shadow-md ${
+                                  isSelected
+                                    ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)] shadow-[0_0_0_3px_rgba(37,99,235,0.15)]"
+                                    : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)]"
+                                }`}
+                              >
+                                <div className="mb-2 flex items-center justify-between">
+                                  <span
+                                    className={`text-xl font-bold ${
+                                      isSelected
+                                        ? "text-[var(--pro-accent)]"
+                                        : "text-[var(--pro-fg)]"
+                                    }`}
+                                  >
+                                    {option.label}
+                                  </span>
+                                  <span
+                                    className={`rounded-full px-2 py-0.5 text-[9px] font-medium ${
+                                      isSelected
+                                        ? "bg-[var(--pro-accent)] text-white"
+                                        : option.badgeColor
+                                    }`}
+                                  >
+                                    {option.badge}
+                                  </span>
+                                </div>
+                                <p className="text-[10px] leading-tight text-[var(--pro-muted)]">
+                                  {option.description}
+                                </p>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Physical Size Calculator */}
+                      <div className="rounded-xl border border-[var(--pro-border)] bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] p-5">
+                        <div className="mb-4 flex items-start justify-between">
+                          <div>
+                            <h4 className="flex items-center gap-2 text-sm font-semibold text-[var(--pro-fg)]">
+                              <svg
+                                className="h-4 w-4 text-[var(--pro-accent)]"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                />
+                              </svg>
+                              Physical Size Calculator
+                            </h4>
+                            <p className="mt-1 text-[10px] text-[var(--pro-muted)]">
+                              Calculated from resolution and DPI
+                            </p>
+                          </div>
+                          {/* Size Preview Square */}
+                          <div className="relative flex h-16 w-16 items-center justify-center rounded-lg border-2 border-dashed border-[var(--pro-accent)] bg-white">
+                            <div className="flex h-8 w-8 items-center justify-center rounded border border-[var(--pro-accent)] bg-[var(--pro-accent-light)]">
+                              <svg
+                                className="h-4 w-4 text-[var(--pro-accent)]"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm8 0h2v2h-2v-2zm0 4h2v2h-2v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2z" />
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Size Display Grid */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="rounded-lg border border-[var(--pro-border)] bg-white p-3">
+                            <div className="mb-1 text-[10px] uppercase tracking-wide text-[var(--pro-muted)]">
+                              Inches
+                            </div>
+                            <div className="text-xl font-bold text-[var(--pro-fg)]">
+                              {calculatePhysicalSize(exportResolution, dpi).inches.toFixed(1)}&quot; ×{" "}
+                              {calculatePhysicalSize(exportResolution, dpi).inches.toFixed(1)}&quot;
+                            </div>
+                          </div>
+                          <div className="rounded-lg border border-[var(--pro-border)] bg-white p-3">
+                            <div className="mb-1 text-[10px] uppercase tracking-wide text-[var(--pro-muted)]">
+                              Centimeters
+                            </div>
+                            <div className="text-xl font-bold text-[var(--pro-fg)]">
+                              {calculatePhysicalSize(exportResolution, dpi).cm.toFixed(1)}cm ×{" "}
+                              {calculatePhysicalSize(exportResolution, dpi).cm.toFixed(1)}cm
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Size Warning */}
+                        {calculatePhysicalSize(exportResolution, dpi).inches <
+                          MIN_SIZE_INCHES && (
+                          <div className="mt-4">
+                            <div className="flex items-start gap-3 rounded-lg border border-yellow-300 bg-[var(--pro-warning-light)] p-3">
+                              <svg
+                                className="mt-0.5 h-5 w-5 flex-shrink-0 text-[var(--pro-warning)]"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                />
+                              </svg>
+                              <div>
+                                <div className="text-sm font-semibold text-[var(--pro-warning)]">
+                                  Size Warning
+                                </div>
+                                <p className="mt-0.5 text-xs text-[var(--pro-warning)]">
+                                  QR code may be too small for reliable scanning.
+                                  Minimum recommended: 0.8&quot; (2cm)
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Print Quality Checklist */}
+                      <div className="rounded-xl border border-[var(--pro-border)] bg-white p-4">
+                        <h4 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
+                          <svg
+                            className="h-4 w-4 text-[var(--pro-accent)]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          Print Quality Checklist
+                        </h4>
+                        <div className="space-y-2">
+                          {/* Resolution Check */}
+                          <div
+                            className={`flex items-center gap-2 text-sm ${
+                              exportResolution >= 300
+                                ? "text-[var(--pro-success)]"
+                                : "text-[var(--pro-warning)]"
+                            }`}
+                          >
+                            <svg
+                              className="h-4 w-4 flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              {exportResolution >= 300 ? (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M5 13l4 4L19 7"
+                                />
+                              ) : (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                />
+                              )}
+                            </svg>
+                            <span>
+                              Resolution sufficient for print ({exportResolution}
+                              px)
+                            </span>
+                          </div>
+                          {/* Format Check */}
+                          <div className="flex items-center gap-2 text-sm text-[var(--pro-success)]">
+                            <svg
+                              className="h-4 w-4 flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            <span>
+                              {FORMAT_INFO[exportFormat].label} format (raster,
+                              transparent background)
+                            </span>
+                          </div>
+                          {/* Size Check */}
+                          <div
+                            className={`flex items-center gap-2 text-sm ${
+                              calculatePhysicalSize(exportResolution, dpi)
+                                .inches >= MIN_SIZE_INCHES
+                                ? "text-[var(--pro-success)]"
+                                : "text-[var(--pro-warning)]"
+                            }`}
+                          >
+                            <svg
+                              className="h-4 w-4 flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              {calculatePhysicalSize(exportResolution, dpi)
+                                .inches >= MIN_SIZE_INCHES ? (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M5 13l4 4L19 7"
+                                />
+                              ) : (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                />
+                              )}
+                            </svg>
+                            <span>
+                              Size adequate for scanning (
+                              {calculatePhysicalSize(
+                                exportResolution,
+                                dpi
+                              ).inches.toFixed(1)}
+                              &quot; /{" "}
+                              {calculatePhysicalSize(
+                                exportResolution,
+                                dpi
+                              ).cm.toFixed(1)}
+                              cm)
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Scanning Distance Guide */}
+                      <div className="rounded-lg border border-blue-200 bg-[var(--pro-accent-light)] p-3">
+                        <div className="flex items-start gap-2">
+                          <svg
+                            className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--pro-accent)]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          <div className="text-xs text-[var(--pro-accent)]">
+                            <strong>Scanning Distance Guide:</strong> At{" "}
+                            {calculatePhysicalSize(
+                              exportResolution,
+                              dpi
+                            ).inches.toFixed(1)}
+                            &quot;, this QR code can be scanned from approximately{" "}
+                            <span className="font-semibold">
+                              {
+                                calculateScanDistance(
+                                  calculatePhysicalSize(exportResolution, dpi)
+                                    .inches
+                                ).feet
+                              }{" "}
+                              feet (
+                              {
+                                calculateScanDistance(
+                                  calculatePhysicalSize(exportResolution, dpi)
+                                    .inches
+                                ).meters
+                              }
+                              m)
+                            </span>{" "}
+                            away.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Vector Format Notice - Only for SVG, PDF, EPS */}
                   {FORMAT_INFO[exportFormat].isVector && (
                     <div className="mb-6 rounded-xl border border-purple-200 bg-purple-50 p-4">
@@ -1889,7 +2275,7 @@ showpage
                     </svg>
                     {FORMAT_INFO[exportFormat].isVector
                       ? `Download ${FORMAT_INFO[exportFormat].label}`
-                      : `Download ${FORMAT_INFO[exportFormat].label} (${exportResolution} × ${exportResolution}px)`}
+                      : `Download ${FORMAT_INFO[exportFormat].label} (${exportResolution}px @ ${dpi} DPI)`}
                   </button>
                 </div>
               )}
