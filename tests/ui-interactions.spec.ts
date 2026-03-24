@@ -22,7 +22,7 @@ test.describe('UI/UX Interactions', () => {
     await urlInput.press('Enter');
 
     // Verify QR code is generated
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
   });
 
   test('should not trigger generation with other keys', async ({ page }) => {
@@ -32,7 +32,7 @@ test.describe('UI/UX Interactions', () => {
     await urlInput.press('Space');
 
     // QR code should not be generated
-    await expect(page.locator('img[alt="Generated QR Code"]')).not.toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).not.toBeVisible();
   });
 
   test('should show placeholder text in input field', async ({ page }) => {
@@ -56,7 +56,7 @@ test.describe('UI/UX Interactions', () => {
     await generateButton.click();
 
     // Button should eventually show QR code
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
   });
 
   test('should display error message styling', async ({ page }) => {
@@ -82,11 +82,9 @@ test.describe('UI/UX Interactions', () => {
     await urlInput.fill('https://example.com');
     await generateButton.click();
 
-    // Success state: QR code and all action buttons visible
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
-    await expect(page.locator('button:has-text("PNG")')).toBeVisible();
-    await expect(page.locator('button:has-text("SVG")')).toBeVisible();
-    await expect(page.locator('button:has-text("Print")')).toBeVisible();
+    // Success state: QR code and download button visible
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
+    await expect(page.locator('button:has-text("Generate & Download")')).toBeVisible();
   });
 
   test('should maintain input value after generation', async ({ page }) => {
@@ -97,7 +95,7 @@ test.describe('UI/UX Interactions', () => {
     await urlInput.fill(testUrl);
     await generateButton.click();
 
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
 
     // Input should still have the value
     const value = await urlInput.inputValue();
@@ -106,17 +104,16 @@ test.describe('UI/UX Interactions', () => {
 
   test('should allow modifying URL after generation', async ({ page }) => {
     const urlInput = page.locator('input[placeholder*="yoursite.com"]');
-    const generateButton = page.locator('button:has-text("Generate QR Code")');
 
     // Generate first QR
     await urlInput.fill('https://example1.com');
-    await generateButton.click();
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await page.locator('button:has-text("Generate QR Code")').click();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
 
-    // Modify URL and generate again
+    // Modify URL and generate again (button text changed)
     await urlInput.fill('https://example2.com');
-    await generateButton.click();
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await page.locator('button:has-text("Generate & Download")').click();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
 
     const value = await urlInput.inputValue();
     expect(value).toBe('https://example2.com');
@@ -137,30 +134,34 @@ test.describe('UI/UX Interactions', () => {
 
     await urlInput.fill('https://example.com');
     await generateButton.click();
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
 
     // Hover over download button
-    const pngButton = page.locator('button:has-text("PNG")');
-    await pngButton.hover();
+    const downloadButton = page.locator('button:has-text("Generate & Download")');
+    await downloadButton.hover();
 
     // Button should be visible and interactable
-    await expect(pngButton).toBeVisible();
-    await expect(pngButton).toBeEnabled();
+    await expect(downloadButton).toBeVisible();
+    await expect(downloadButton).toBeEnabled();
   });
 
   test('should handle rapid consecutive clicks gracefully', async ({ page }) => {
     const urlInput = page.locator('input[placeholder*="yoursite.com"]');
-    const generateButton = page.locator('button:has-text("Generate QR Code")');
 
     await urlInput.fill('https://example.com');
 
-    // Click multiple times rapidly
-    await generateButton.click();
-    await generateButton.click();
-    await generateButton.click();
+    // Click the Generate QR Code button
+    await page.locator('button:has-text("Generate QR Code")').click();
 
-    // Should still generate QR code successfully
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    // Wait for QR to be generated
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
+
+    // Now click the Generate & Download button multiple times rapidly
+    await page.locator('button:has-text("Generate & Download")').click();
+    await page.locator('button:has-text("Generate & Download")').click();
+
+    // Should still display QR code successfully
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
   });
 
   test('should display "Try it now" label', async ({ page }) => {
@@ -180,7 +181,7 @@ test.describe('UI/UX Interactions', () => {
     await generateButton.click();
 
     // Should still generate QR code
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
   });
 
   test('should have accessible button labels', async ({ page }) => {
@@ -189,12 +190,10 @@ test.describe('UI/UX Interactions', () => {
 
     await urlInput.fill('https://example.com');
     await generateButton.click();
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
 
-    // All buttons should have clear text labels
-    await expect(page.locator('button:has-text("PNG")')).toBeVisible();
-    await expect(page.locator('button:has-text("SVG")')).toBeVisible();
-    await expect(page.locator('button:has-text("Print")')).toBeVisible();
+    // Download button should have clear text label
+    await expect(page.locator('button:has-text("Generate & Download")')).toBeVisible();
   });
 
   test('should have proper input label', async ({ page }) => {

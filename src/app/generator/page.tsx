@@ -271,9 +271,31 @@ export default function GeneratorPage() {
 
   // Auto-regenerate QR when options change (if QR already exists)
   useEffect(() => {
-    if (generatedUrl && qrDataUrl) {
-      generateQR();
-    }
+    // Only regenerate if we already have a QR code
+    if (!generatedUrl || !qrDataUrl) return;
+
+    // Regenerate QR with current colors/options
+    const regenerate = async () => {
+      setIsGenerating(true);
+      try {
+        const dataUrl = await QRCode.toDataURL(generatedUrl, {
+          width: exportSize,
+          margin: 2,
+          color: {
+            dark: fgColor,
+            light: bgColor,
+          },
+          errorCorrectionLevel: errorLevel,
+        });
+        setQrDataUrl(dataUrl);
+      } catch {
+        showToast("Failed to regenerate QR code", "error");
+      } finally {
+        setIsGenerating(false);
+      }
+    };
+
+    regenerate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fgColor, bgColor, exportSize, errorLevel]);
 
