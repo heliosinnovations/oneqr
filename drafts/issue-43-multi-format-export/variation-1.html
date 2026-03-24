@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Format Export - Variation 1: Card Grid with Icons</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --pro-bg: #f8f9fa;
+      --pro-fg: #1a1a1a;
+      --pro-accent: #2563eb;
+      --pro-accent-hover: #1d4ed8;
+      --pro-accent-light: #eff6ff;
+      --pro-muted: #6b7280;
+      --pro-muted-light: #e5e7eb;
+      --pro-border: #e5e7eb;
+      --pro-border-dark: #d1d5db;
+      --pro-surface: #ffffff;
+      --pro-surface-hover: #f9fafb;
+      --pro-success: #059669;
+      --pro-success-light: #d1fae5;
+    }
+
+    .format-card {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .format-card:hover {
+      border-color: var(--pro-border-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .format-card.selected {
+      border-color: var(--pro-accent);
+      background: var(--pro-accent-light);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .format-card.selected .format-icon {
+      background: var(--pro-accent);
+      color: white;
+    }
+
+    .format-badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .resolution-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(to right, var(--pro-accent) 44%, var(--pro-muted-light) 44%);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .resolution-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--pro-accent);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+      border: 3px solid white;
+    }
+
+    .resolution-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--pro-accent);
+      cursor: pointer;
+      border: 3px solid white;
+    }
+
+    @media (max-width: 640px) {
+      .format-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body class="bg-[var(--pro-bg)] min-h-screen p-4 md:p-8">
+  <!-- Design Info Banner -->
+  <div class="max-w-2xl mx-auto mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+    <h1 class="text-lg font-semibold text-blue-900 mb-1">Variation 1: Card Grid with Icons</h1>
+    <p class="text-sm text-blue-700">
+      <strong>Design Approach:</strong> Large, visual format cards with prominent icons and format descriptions.
+      Best for users who prefer visual selection with clear format information.
+    </p>
+    <ul class="mt-2 text-xs text-blue-600 space-y-1">
+      <li>- 2x2 card grid showing all formats at once</li>
+      <li>- Custom icons indicating raster vs vector</li>
+      <li>- Clear badges (Web, Print, Vector)</li>
+      <li>- Integrated with resolution slider below</li>
+      <li>- Resolution slider only shown for raster formats (PNG)</li>
+    </ul>
+  </div>
+
+  <!-- Export Tab Content -->
+  <div class="max-w-2xl mx-auto bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm">
+    <!-- Tab Header -->
+    <div class="border-b border-[var(--pro-border)] px-5">
+      <div class="flex">
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Content</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Colors</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Style</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-[var(--pro-accent)] text-[var(--pro-accent)]">Export</button>
+      </div>
+    </div>
+
+    <!-- Export Content -->
+    <div class="p-6">
+      <!-- Format Selector -->
+      <div class="mb-6">
+        <label class="mb-3 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide flex items-center gap-2">
+          <svg class="w-4 h-4 text-[var(--pro-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+          </svg>
+          Export Format
+        </label>
+
+        <!-- Format Cards Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 format-grid">
+          <!-- PNG -->
+          <div class="format-card selected rounded-xl border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] p-4" data-format="png">
+            <div class="format-icon w-12 h-12 rounded-lg bg-[var(--pro-accent)] flex items-center justify-center mb-3 mx-auto">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <div class="text-center">
+              <div class="text-base font-bold text-[var(--pro-fg)]">PNG</div>
+              <div class="text-xs text-[var(--pro-muted)] mt-1">Raster image</div>
+              <span class="format-badge inline-block mt-2 bg-green-100 text-green-700 font-medium">Web & Social</span>
+            </div>
+          </div>
+
+          <!-- SVG -->
+          <div class="format-card rounded-xl border-2 border-[var(--pro-border)] bg-white p-4" data-format="svg">
+            <div class="format-icon w-12 h-12 rounded-lg bg-[var(--pro-muted-light)] flex items-center justify-center mb-3 mx-auto">
+              <svg class="w-6 h-6 text-[var(--pro-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+              </svg>
+            </div>
+            <div class="text-center">
+              <div class="text-base font-bold text-[var(--pro-fg)]">SVG</div>
+              <div class="text-xs text-[var(--pro-muted)] mt-1">Vector graphic</div>
+              <span class="format-badge inline-block mt-2 bg-purple-100 text-purple-700 font-medium">Scalable</span>
+            </div>
+          </div>
+
+          <!-- PDF -->
+          <div class="format-card rounded-xl border-2 border-[var(--pro-border)] bg-white p-4" data-format="pdf">
+            <div class="format-icon w-12 h-12 rounded-lg bg-[var(--pro-muted-light)] flex items-center justify-center mb-3 mx-auto">
+              <svg class="w-6 h-6 text-[var(--pro-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <div class="text-center">
+              <div class="text-base font-bold text-[var(--pro-fg)]">PDF</div>
+              <div class="text-xs text-[var(--pro-muted)] mt-1">Document format</div>
+              <span class="format-badge inline-block mt-2 bg-red-100 text-red-700 font-medium">Print Ready</span>
+            </div>
+          </div>
+
+          <!-- EPS -->
+          <div class="format-card rounded-xl border-2 border-[var(--pro-border)] bg-white p-4" data-format="eps">
+            <div class="format-icon w-12 h-12 rounded-lg bg-[var(--pro-muted-light)] flex items-center justify-center mb-3 mx-auto">
+              <svg class="w-6 h-6 text-[var(--pro-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/>
+              </svg>
+            </div>
+            <div class="text-center">
+              <div class="text-base font-bold text-[var(--pro-fg)]">EPS</div>
+              <div class="text-xs text-[var(--pro-muted)] mt-1">Adobe compatible</div>
+              <span class="format-badge inline-block mt-2 bg-orange-100 text-orange-700 font-medium">Professional</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Format Info -->
+        <div class="mt-3 p-3 bg-[var(--pro-accent-light)] rounded-lg border border-blue-100" id="formatInfo">
+          <div class="flex items-start gap-2">
+            <svg class="w-4 h-4 text-[var(--pro-accent)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-xs text-[var(--pro-accent)]">
+              <strong>PNG</strong> - Best for web, social media, and digital use. Supports transparency and works everywhere.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resolution Selector (Only for PNG) -->
+      <div class="mb-6 p-5 bg-gradient-to-br from-[var(--pro-surface)] to-[var(--pro-surface-hover)] rounded-xl border border-[var(--pro-border)]" id="resolutionSection">
+        <div class="flex items-center justify-between mb-4">
+          <label class="text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide flex items-center gap-2">
+            <svg class="w-4 h-4 text-[var(--pro-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+            </svg>
+            Resolution
+          </label>
+          <div class="text-right">
+            <span class="text-2xl font-bold text-[var(--pro-accent)]" id="resolutionValue">1000</span>
+            <span class="text-sm text-[var(--pro-muted)]">px</span>
+          </div>
+        </div>
+
+        <input type="range" min="200" max="2000" value="1000" step="100" class="resolution-slider w-full mb-3" id="resolutionSlider">
+
+        <div class="flex justify-between text-xs text-[var(--pro-muted)]">
+          <span>200px</span>
+          <span class="font-medium text-[var(--pro-accent)]">1000px (Default)</span>
+          <span>2000px</span>
+        </div>
+
+        <div class="mt-3 flex items-center justify-between p-3 bg-white rounded-lg border border-[var(--pro-border)]">
+          <span class="text-xs font-medium text-[var(--pro-fg)]">Estimated file size</span>
+          <span class="text-sm font-bold text-[var(--pro-fg)]" id="fileSize">~45 KB</span>
+        </div>
+      </div>
+
+      <!-- Vector Notice (hidden by default) -->
+      <div class="mb-6 p-4 bg-purple-50 rounded-xl border border-purple-200 hidden" id="vectorNotice">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-purple-900">Vector Format Selected</div>
+            <p class="text-xs text-purple-700 mt-1">
+              Vector files are infinitely scalable - no resolution setting needed.
+              Perfect for printing at any size without quality loss.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Download Button -->
+      <button class="w-full flex items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-4 text-sm font-semibold text-white transition-all hover:bg-[var(--pro-accent-hover)] hover:shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        <span id="downloadText">Download PNG (1000 x 1000px)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Preview -->
+  <div class="max-w-sm mx-auto mt-8 p-4 bg-gray-100 rounded-xl">
+    <div class="text-center text-xs font-semibold text-gray-500 mb-4 uppercase tracking-wide">Mobile Preview (375px)</div>
+    <div class="bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm" style="max-width: 375px;">
+      <div class="p-4">
+        <!-- Format Cards - Mobile 2x2 -->
+        <div class="mb-4">
+          <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase">Format</label>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="format-card selected rounded-lg border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] p-3 text-center">
+              <div class="text-sm font-bold">PNG</div>
+              <div class="text-[10px] text-[var(--pro-muted)]">Raster</div>
+            </div>
+            <div class="format-card rounded-lg border border-[var(--pro-border)] p-3 text-center">
+              <div class="text-sm font-bold">SVG</div>
+              <div class="text-[10px] text-[var(--pro-muted)]">Vector</div>
+            </div>
+            <div class="format-card rounded-lg border border-[var(--pro-border)] p-3 text-center">
+              <div class="text-sm font-bold">PDF</div>
+              <div class="text-[10px] text-[var(--pro-muted)]">Print</div>
+            </div>
+            <div class="format-card rounded-lg border border-[var(--pro-border)] p-3 text-center">
+              <div class="text-sm font-bold">EPS</div>
+              <div class="text-[10px] text-[var(--pro-muted)]">Adobe</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resolution - Mobile -->
+        <div class="mb-4 p-3 bg-[var(--pro-surface-hover)] rounded-lg border border-[var(--pro-border)]">
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-semibold text-[var(--pro-fg)]">Resolution</label>
+            <span class="text-lg font-bold text-[var(--pro-accent)]">1000px</span>
+          </div>
+          <input type="range" min="200" max="2000" value="1000" class="resolution-slider w-full">
+        </div>
+
+        <!-- Download - Mobile -->
+        <button class="w-full flex items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-3 text-sm font-semibold text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download PNG
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Format selection
+    const formatCards = document.querySelectorAll('.format-card[data-format]');
+    const formatInfo = document.getElementById('formatInfo');
+    const resolutionSection = document.getElementById('resolutionSection');
+    const vectorNotice = document.getElementById('vectorNotice');
+    const downloadText = document.getElementById('downloadText');
+
+    const formatDescriptions = {
+      png: '<strong>PNG</strong> - Best for web, social media, and digital use. Supports transparency and works everywhere.',
+      svg: '<strong>SVG</strong> - Vector format that scales infinitely. Perfect for logos, large prints, and developers.',
+      pdf: '<strong>PDF</strong> - Universal print format. Great for business cards, flyers, and professional printing.',
+      eps: '<strong>EPS</strong> - Adobe Illustrator/InDesign compatible. Industry standard for professional design work.'
+    };
+
+    const isVector = { png: false, svg: true, pdf: true, eps: true };
+
+    formatCards.forEach(card => {
+      card.addEventListener('click', () => {
+        formatCards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+
+        const format = card.dataset.format;
+        formatInfo.querySelector('p').innerHTML = formatDescriptions[format];
+
+        if (isVector[format]) {
+          resolutionSection.classList.add('hidden');
+          vectorNotice.classList.remove('hidden');
+          downloadText.textContent = `Download ${format.toUpperCase()}`;
+        } else {
+          resolutionSection.classList.remove('hidden');
+          vectorNotice.classList.add('hidden');
+          updateDownloadText();
+        }
+      });
+    });
+
+    // Resolution slider
+    const slider = document.getElementById('resolutionSlider');
+    const resolutionValue = document.getElementById('resolutionValue');
+    const fileSize = document.getElementById('fileSize');
+    const fileSizes = { 200: '~5 KB', 500: '~15 KB', 1000: '~45 KB', 1500: '~95 KB', 2000: '~160 KB' };
+
+    function updateDownloadText() {
+      const value = slider.value;
+      downloadText.textContent = `Download PNG (${value} x ${value}px)`;
+    }
+
+    slider.addEventListener('input', () => {
+      resolutionValue.textContent = slider.value;
+      const nearest = [200, 500, 1000, 1500, 2000].reduce((prev, curr) =>
+        Math.abs(curr - slider.value) < Math.abs(prev - slider.value) ? curr : prev
+      );
+      fileSize.textContent = fileSizes[nearest];
+      updateDownloadText();
+    });
+  </script>
+</body>
+</html>
