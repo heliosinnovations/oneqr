@@ -33,18 +33,6 @@ export default function Home() {
             <ul className="hidden gap-10 md:flex" role="list">
               <li>
                 <Link
-                  href="#how-it-works"
-                  className="group relative text-sm font-medium text-fg transition-colors"
-                >
-                  How it works
-                  <span
-                    className="absolute -bottom-1 left-0 h-0.5 w-0 bg-accent transition-all duration-300 group-hover:w-full"
-                    aria-hidden="true"
-                  />
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="#features"
                   className="group relative text-sm font-medium text-fg transition-colors"
                 >
@@ -95,7 +83,7 @@ export default function Home() {
 
           {/* Stats - Below generator */}
           <div
-            className="mx-auto mt-20 flex max-w-3xl justify-center gap-12 border-t border-border pt-12 md:gap-20"
+            className="mx-auto mt-16 flex max-w-3xl justify-center gap-12 border-t border-border pt-10 md:gap-20"
             role="list"
             aria-label="Key statistics"
           >
@@ -126,89 +114,6 @@ export default function Home() {
                 Accounts
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* How It Works Section */}
-        <section
-          id="how-it-works"
-          className="scroll-mt-20 px-6 py-[120px] lg:px-12"
-          aria-labelledby="how-it-works-heading"
-        >
-          <div className="mx-auto max-w-5xl">
-            {/* Section Header */}
-            <header className="mb-20 text-center">
-              <h2
-                id="how-it-works-heading"
-                className="font-serif text-5xl text-fg md:text-[56px]"
-              >
-                How it <span className="italic text-accent">works</span>
-              </h2>
-            </header>
-
-            {/* Steps */}
-            <ol
-              className="grid border border-border md:grid-cols-3"
-              role="list"
-              aria-label="Steps to create QR codes"
-            >
-              {/* Step 1 */}
-              <li className="relative border-b border-border p-10 md:border-b-0 md:border-r md:p-14">
-                <div
-                  className="absolute right-6 top-6 font-serif text-[120px] leading-none text-surface"
-                  aria-hidden="true"
-                >
-                  01
-                </div>
-                <div className="relative z-10">
-                  <h3 className="mb-4 font-serif text-[28px]">
-                    Create <span className="text-accent">free</span> QR codes
-                  </h3>
-                  <p className="text-[15px] leading-[1.7] text-muted">
-                    Enter any URL. Your QR code generates instantly. Download as
-                    PNG or SVG. Print, share, use anywhere. Completely free.
-                  </p>
-                </div>
-              </li>
-
-              {/* Step 2 */}
-              <li className="relative border-b border-border p-10 md:border-b-0 md:border-r md:p-14">
-                <div
-                  className="absolute right-6 top-6 font-serif text-[120px] leading-none text-surface"
-                  aria-hidden="true"
-                >
-                  02
-                </div>
-                <div className="relative z-10">
-                  <h3 className="mb-4 font-serif text-[28px]">
-                    Save to your <span className="text-accent">dashboard</span>
-                  </h3>
-                  <p className="text-[15px] leading-[1.7] text-muted">
-                    Want to save your QR codes? Enter your email for free magic
-                    link access. No password, no hassle.
-                  </p>
-                </div>
-              </li>
-
-              {/* Step 3 */}
-              <li className="relative p-10 md:p-14">
-                <div
-                  className="absolute right-6 top-6 font-serif text-[120px] leading-none text-surface"
-                  aria-hidden="true"
-                >
-                  03
-                </div>
-                <div className="relative z-10">
-                  <h3 className="mb-4 font-serif text-[28px]">
-                    Need to <span className="text-accent">edit</span> later?
-                  </h3>
-                  <p className="text-[15px] leading-[1.7] text-muted">
-                    Unlock editing for any QR code. One small payment unlocks
-                    unlimited edits forever. Your printed QR keeps working.
-                  </p>
-                </div>
-              </li>
-            </ol>
           </div>
         </section>
 
