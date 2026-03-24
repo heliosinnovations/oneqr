@@ -29,21 +29,6 @@ export default function Home() {
               The QR <span className="text-accent">Spot</span>
             </Link>
 
-            {/* Nav Links - Hidden on mobile */}
-            <ul className="hidden gap-10 md:flex" role="list">
-              <li>
-                <Link
-                  href="#features"
-                  className="group relative text-sm font-medium text-fg transition-colors"
-                >
-                  Features
-                  <span
-                    className="absolute -bottom-1 left-0 h-0.5 w-0 bg-accent transition-all duration-300 group-hover:w-full"
-                    aria-hidden="true"
-                  />
-                </Link>
-              </li>
-            </ul>
 
             {/* CTA Button */}
             <Link
