@@ -317,12 +317,13 @@ export default function GeneratorPage() {
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
+          showToast("QR Code downloaded successfully!", "success");
         }
       }
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [qrDataUrl, exportFormat]);
+  }, [qrDataUrl, exportFormat, showToast]);
 
   // Icon components
   const Icon = ({
@@ -815,6 +816,7 @@ export default function GeneratorPage() {
 
                   {/* Contrast Alert */}
                   <div
+                    id="contrastAlert"
                     className={`mt-4 flex items-start gap-3 rounded-md border p-3 ${
                       wcagAAA
                         ? "border-[var(--pro-success)] bg-[var(--pro-success-light)]"
@@ -856,6 +858,7 @@ export default function GeneratorPage() {
                       </div>
                       <div className="mt-2 flex gap-1.5">
                         <span
+                          id="wcagAA"
                           className={`rounded bg-white px-2 py-0.5 text-[10px] font-bold ${
                             wcagAA
                               ? "text-[var(--pro-success)]"
@@ -865,6 +868,7 @@ export default function GeneratorPage() {
                           AA {wcagAA ? "✓" : "✗"}
                         </span>
                         <span
+                          id="wcagAAA"
                           className={`rounded bg-white px-2 py-0.5 text-[10px] font-bold ${
                             wcagAAA
                               ? "text-[var(--pro-success)]"
