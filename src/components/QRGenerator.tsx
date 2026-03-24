@@ -3,28 +3,70 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import QRCode from "qrcode";
 
+type TabType = "colors" | "logo" | "settings";
+type ErrorLevelType = "L" | "M" | "Q" | "H";
+
+// Preset colors
+const FG_PRESETS = [
+  { color: "#000000", name: "Black" },
+  { color: "#1E40AF", name: "Blue" },
+  { color: "#047857", name: "Teal" },
+  { color: "#7C3AED", name: "Purple" },
+  { color: "#DC2626", name: "Red" },
+];
+
+const BG_PRESETS = [
+  { color: "#FFFFFF", name: "White" },
+  { color: "#F3F4F6", name: "Gray" },
+  { color: "#FEF3C7", name: "Cream" },
+  { color: "#DDD6FE", name: "Lavender" },
+  { color: "#A7F3D0", name: "Mint" },
+];
+
+const SIZE_OPTIONS = [
+  { value: 400, label: "Small", display: "400×400px" },
+  { value: 512, label: "Medium", display: "512×512px" },
+  { value: 1024, label: "Large", display: "1024×1024px" },
+];
+
+const ERROR_LEVELS: {
+  value: ErrorLevelType;
+  label: string;
+  recovery: string;
+  percentage: number;
+}[] = [
+  { value: "L", label: "L", recovery: "7% recovery", percentage: 25 },
+  { value: "M", label: "M", recovery: "15% recovery", percentage: 50 },
+  { value: "Q", label: "Q", recovery: "25% recovery", percentage: 75 },
+  { value: "H", label: "H", recovery: "30% recovery", percentage: 100 },
+];
+
 export default function QRGenerator() {
   const [url, setUrl] = useState("");
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
-  const [qrSvg, setQrSvg] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generatedUrl, setGeneratedUrl] = useState<string>("");
 
-  // Customization options
-  const [fgColor, setFgColor] = useState("#1a1a1a");
-  const [bgColor, setBgColor] = useState("#ffffff");
-  const [size, setSize] = useState(400);
-  const [errorLevel, setErrorLevel] = useState<"L" | "M" | "Q" | "H">("M");
-  const [showCustomize, setShowCustomize] = useState(false);
+  // Tab state
+  const [activeTab, setActiveTab] = useState<TabType>("colors");
 
-  // Custom text for printable page
-  const [customTitle, setCustomTitle] = useState("");
-  const [customMessage, setCustomMessage] = useState("");
+  // Customization options
+  const [fgColor, setFgColor] = useState("#000000");
+  const [bgColor, setBgColor] = useState("#FFFFFF");
+  const [size, setSize] = useState(512);
+  const [errorLevel, setErrorLevel] = useState<ErrorLevelType>("M");
+
+  // Logo state
+  const [logoDataUrl, setLogoDataUrl] = useState<string | null>(null);
+
+  // Updating badge animation
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const printFrameRef = useRef<HTMLIFrameElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Generate QR with optional logo overlay
   const generateQR = useCallback(async () => {
     if (!url.trim()) {
       setError("Please enter a URL");
@@ -41,11 +83,12 @@ export default function QRGenerator() {
     }
 
     setIsGenerating(true);
+    setIsUpdating(true);
     setError(null);
 
     try {
-      // Generate QR code as data URL for display and PNG download
-      const dataUrl = await QRCode.toDataURL(processedUrl, {
+      // Generate base QR code
+      const baseDataUrl = await QRCode.toDataURL(processedUrl, {
         width: size,
         margin: 2,
         color: {
@@ -54,31 +97,147 @@ export default function QRGenerator() {
         },
         errorCorrectionLevel: errorLevel,
       });
-      setQrDataUrl(dataUrl);
-      setGeneratedUrl(processedUrl);
 
-      // Generate SVG for SVG download
-      const svgString = await QRCode.toString(processedUrl, {
-        type: "svg",
-        width: size,
-        margin: 2,
-        color: {
-          dark: fgColor,
-          light: bgColor,
-        },
-        errorCorrectionLevel: errorLevel,
-      });
-      setQrSvg(svgString);
+      // If there's a logo, overlay it on the QR code
+      if (logoDataUrl) {
+        const finalDataUrl = await overlayLogoOnQR(
+          baseDataUrl,
+          logoDataUrl,
+          size
+        );
+        setQrDataUrl(finalDataUrl);
+      } else {
+        setQrDataUrl(baseDataUrl);
+      }
+
+      setGeneratedUrl(processedUrl);
     } catch {
       setError("Failed to generate QR code. Please check the URL.");
     } finally {
       setIsGenerating(false);
+      // Keep updating badge visible briefly
+      setTimeout(() => setIsUpdating(false), 500);
     }
-  }, [url, size, fgColor, bgColor, errorLevel]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url, size, fgColor, bgColor, errorLevel, logoDataUrl]);
+
+  // Overlay logo on QR code using canvas
+  const overlayLogoOnQR = async (
+    qrDataUrl: string,
+    logoUrl: string,
+    qrSize: number
+  ): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = qrSize;
+      canvas.height = qrSize;
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        reject(new Error("Canvas context not available"));
+        return;
+      }
+
+      const qrImage = new Image();
+      qrImage.onload = () => {
+        // Draw QR code
+        ctx.drawImage(qrImage, 0, 0, qrSize, qrSize);
+
+        // Load and draw logo
+        const logoImage = new Image();
+        logoImage.onload = () => {
+          // Logo size is ~22% of QR size
+          const logoSize = Math.round(qrSize * 0.22);
+          const logoX = (qrSize - logoSize) / 2;
+          const logoY = (qrSize - logoSize) / 2;
+
+          // Draw white background for logo with small padding
+          const padding = 4;
+          ctx.fillStyle = bgColor;
+          ctx.fillRect(
+            logoX - padding,
+            logoY - padding,
+            logoSize + padding * 2,
+            logoSize + padding * 2
+          );
+
+          // Draw logo
+          ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
+
+          resolve(canvas.toDataURL("image/png"));
+        };
+        logoImage.onerror = () => reject(new Error("Failed to load logo"));
+        logoImage.src = logoUrl;
+      };
+      qrImage.onerror = () => reject(new Error("Failed to load QR"));
+      qrImage.src = qrDataUrl;
+    });
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       generateQR();
+    }
+  };
+
+  // Handle logo file upload
+  const handleLogoUpload = useCallback((file: File) => {
+    // Validate file type
+    const validTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "image/svg+xml",
+    ];
+    if (!validTypes.includes(file.type)) {
+      setError("Invalid file type. Please upload PNG, JPG, or SVG.");
+      return;
+    }
+
+    // Validate file size (2MB max)
+    const maxSize = 2 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setError("File too large. Maximum size is 2MB.");
+      return;
+    }
+
+    setError(null);
+
+    // Read file as data URL
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        setLogoDataUrl(e.target.result as string);
+      }
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleLogoUpload(file);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleLogoUpload(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const removeLogo = () => {
+    setLogoDataUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -93,101 +252,59 @@ export default function QRGenerator() {
     document.body.removeChild(link);
   }, [qrDataUrl]);
 
-  const downloadSVG = useCallback(() => {
-    if (!qrSvg) return;
-
-    const blob = new Blob([qrSvg], { type: "image/svg+xml" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "qr-code.svg";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }, [qrSvg]);
-
-  const printQR = useCallback(() => {
-    if (!qrDataUrl) return;
-
-    const printWindow = window.open("", "_blank");
-    if (printWindow) {
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <title>Print QR Code - The QR Spot</title>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-              body {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                min-height: 100vh;
-                margin: 0;
-                padding: 40px;
-                box-sizing: border-box;
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-              }
-              .container {
-                text-align: center;
-                max-width: 600px;
-              }
-              .title {
-                font-size: 24px;
-                font-weight: 600;
-                color: #1a1a1a;
-                margin-bottom: 12px;
-              }
-              .message {
-                font-size: 16px;
-                color: #666;
-                margin-bottom: 32px;
-                line-height: 1.5;
-              }
-              img {
-                max-width: 400px;
-                height: auto;
-                margin: 0 auto;
-              }
-              @media print {
-                body {
-                  padding: 20px;
-                }
-                .title {
-                  margin-bottom: 8px;
-                }
-                .message {
-                  margin-bottom: 24px;
-                }
-              }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              ${customTitle ? `<div class="title">${customTitle}</div>` : ''}
-              ${customMessage ? `<div class="message">${customMessage}</div>` : ''}
-              <img src="${qrDataUrl}" alt="QR Code for ${generatedUrl}" />
-            </div>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.onload = () => {
-        printWindow.print();
-      };
-    }
-  }, [qrDataUrl, generatedUrl, customTitle, customMessage]);
-
   // Auto-regenerate QR when customization options change (only if QR already exists)
   useEffect(() => {
     if (generatedUrl && qrDataUrl) {
       generateQR();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fgColor, bgColor, size, errorLevel]);
+  }, [fgColor, bgColor, size, errorLevel, logoDataUrl]);
+
+  // Tab icons
+  const TabIcon = ({ type }: { type: TabType }) => {
+    switch (type) {
+      case "colors":
+        return (
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            className="h-5 w-5"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <circle cx="12" cy="12" r="4" />
+          </svg>
+        );
+      case "logo":
+        return (
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            className="h-5 w-5"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="M21 15l-5-5L5 21" />
+          </svg>
+        );
+      case "settings":
+        return (
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            className="h-5 w-5"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+          </svg>
+        );
+    }
+  };
 
   return (
     <div
@@ -203,13 +320,12 @@ export default function QRGenerator() {
         Try it now
       </div>
 
-      {/* Layout: URL → Generate → QR Preview → Accordion Options */}
       <div className="p-8 md:p-12">
         {/* URL Input */}
         <div className="mb-6">
           <label
             htmlFor="qr-url-input"
-            className="mb-4 block text-xs uppercase tracking-widest text-muted"
+            className="mb-4 block text-xs font-semibold uppercase tracking-widest text-muted"
           >
             Enter Your URL
           </label>
@@ -240,17 +356,370 @@ export default function QRGenerator() {
           </p>
         )}
 
-        {/* Generate Button */}
+        {/* Tab Navigation */}
+        <nav className="mb-6 flex border-b border-border" role="tablist">
+          {(["colors", "logo", "settings"] as TabType[]).map((tab) => (
+            <button
+              key={tab}
+              role="tab"
+              aria-selected={activeTab === tab}
+              aria-controls={`${tab}-panel`}
+              onClick={() => setActiveTab(tab)}
+              className={`relative flex flex-1 flex-col items-center gap-2 px-3 py-4 transition-all hover:bg-accent-light ${
+                activeTab === tab
+                  ? "after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-[2px] after:bg-accent"
+                  : ""
+              }`}
+            >
+              <span
+                className={`transition-colors ${
+                  activeTab === tab ? "text-accent" : "text-muted"
+                }`}
+              >
+                <TabIcon type={tab} />
+              </span>
+              <span
+                className={`text-[11px] font-semibold uppercase tracking-wider transition-colors ${
+                  activeTab === tab ? "text-fg" : "text-muted"
+                }`}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </span>
+            </button>
+          ))}
+        </nav>
+
+        {/* Tab Panels */}
+        {/* Colors Panel */}
+        <div
+          id="colors-panel"
+          role="tabpanel"
+          aria-labelledby="colors-tab"
+          className={`${activeTab === "colors" ? "animate-fadeIn block" : "hidden"}`}
+        >
+          {/* Color Preview Strip */}
+          <div className="mb-5 flex h-12 overflow-hidden border border-border">
+            <div className="flex-1" style={{ backgroundColor: fgColor }} />
+            <div className="flex-1" style={{ backgroundColor: bgColor }} />
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Foreground Color */}
+            <div className="border border-border bg-white p-4">
+              <label className="mb-3 block text-[11px] font-semibold uppercase tracking-wider text-muted">
+                Foreground Color
+              </label>
+              <div className="mb-3 flex items-center gap-3">
+                <input
+                  type="color"
+                  value={fgColor}
+                  onChange={(e) => setFgColor(e.target.value)}
+                  className="h-10 w-10 cursor-pointer border-2 border-border p-0"
+                />
+                <input
+                  type="text"
+                  value={fgColor.toUpperCase()}
+                  onChange={(e) => setFgColor(e.target.value)}
+                  className="flex-1 border border-border px-3 py-2.5 font-mono text-sm uppercase outline-none focus:border-accent"
+                />
+              </div>
+              <div className="flex gap-1.5">
+                {FG_PRESETS.map((preset) => (
+                  <button
+                    key={preset.color}
+                    onClick={() => setFgColor(preset.color)}
+                    className="h-6 w-6 border border-border transition-transform hover:scale-110"
+                    style={{ backgroundColor: preset.color }}
+                    title={preset.name}
+                    aria-label={`Set foreground to ${preset.name}`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Background Color */}
+            <div className="border border-border bg-white p-4">
+              <label className="mb-3 block text-[11px] font-semibold uppercase tracking-wider text-muted">
+                Background Color
+              </label>
+              <div className="mb-3 flex items-center gap-3">
+                <input
+                  type="color"
+                  value={bgColor}
+                  onChange={(e) => setBgColor(e.target.value)}
+                  className="h-10 w-10 cursor-pointer border-2 border-border p-0"
+                />
+                <input
+                  type="text"
+                  value={bgColor.toUpperCase()}
+                  onChange={(e) => setBgColor(e.target.value)}
+                  className="flex-1 border border-border px-3 py-2.5 font-mono text-sm uppercase outline-none focus:border-accent"
+                />
+              </div>
+              <div className="flex gap-1.5">
+                {BG_PRESETS.map((preset) => (
+                  <button
+                    key={preset.color}
+                    onClick={() => setBgColor(preset.color)}
+                    className="h-6 w-6 border border-border transition-transform hover:scale-110"
+                    style={{ backgroundColor: preset.color }}
+                    title={preset.name}
+                    aria-label={`Set background to ${preset.name}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Logo Panel */}
+        <div
+          id="logo-panel"
+          role="tabpanel"
+          aria-labelledby="logo-tab"
+          className={`${activeTab === "logo" ? "animate-fadeIn block" : "hidden"}`}
+        >
+          {!logoDataUrl ? (
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              className="cursor-pointer border-2 border-dashed border-border bg-white p-10 text-center transition-all hover:border-accent hover:bg-accent-light"
+            >
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-surface">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  className="h-6 w-6 text-muted"
+                >
+                  <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <p className="mb-1 text-sm text-fg">
+                <strong className="text-accent">Browse</strong> or drag & drop
+              </p>
+              <p className="text-xs text-muted">PNG, SVG, JPG - Max 2MB</p>
+            </div>
+          ) : (
+            <div className="border border-border bg-white p-5 text-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={logoDataUrl}
+                alt="Logo preview"
+                className="mx-auto mb-4 h-20 w-20 object-contain"
+              />
+              <div className="flex justify-center gap-2">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border border-border bg-white px-4 py-2 text-xs font-medium transition-colors hover:border-fg"
+                >
+                  Change
+                </button>
+                <button
+                  onClick={removeLogo}
+                  className="border border-border bg-white px-4 py-2 text-xs font-medium text-red-600 transition-colors hover:border-red-500"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+            onChange={handleFileInputChange}
+            className="hidden"
+            aria-label="Upload logo"
+          />
+        </div>
+
+        {/* Settings Panel */}
+        <div
+          id="settings-panel"
+          role="tabpanel"
+          aria-labelledby="settings-tab"
+          className={`${activeTab === "settings" ? "animate-fadeIn block" : "hidden"}`}
+        >
+          {/* Size Selection */}
+          <div className="mb-6">
+            <label className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
+              Output Size
+              <span
+                className="flex h-4 w-4 cursor-help items-center justify-center rounded-full bg-border text-[10px] font-semibold text-muted hover:bg-accent hover:text-white"
+                title="Higher resolution for print, lower for web"
+              >
+                ?
+              </span>
+            </label>
+            <div className="grid grid-cols-3 gap-3">
+              {SIZE_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setSize(option.value)}
+                  className={`border-2 bg-white p-4 text-center transition-all ${
+                    size === option.value
+                      ? "border-accent bg-accent-light"
+                      : "border-border hover:border-fg"
+                  }`}
+                >
+                  <div className="mx-auto mb-2 flex h-8 w-8 items-center justify-center">
+                    <svg
+                      className={`${
+                        size === option.value ? "text-accent" : "text-muted"
+                      }`}
+                      width={
+                        option.value === 400
+                          ? 20
+                          : option.value === 512
+                            ? 28
+                            : 36
+                      }
+                      height={
+                        option.value === 400
+                          ? 20
+                          : option.value === 512
+                            ? 28
+                            : 36
+                      }
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    >
+                      <rect x="3" y="3" width="7" height="7" />
+                      <rect x="14" y="3" width="7" height="7" />
+                      <rect x="3" y="14" width="7" height="7" />
+                      <rect x="14" y="14" width="7" height="7" />
+                    </svg>
+                  </div>
+                  <div className="text-[13px] font-semibold text-fg">
+                    {option.label}
+                  </div>
+                  <div className="text-[11px] text-muted">{option.display}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Error Correction */}
+          <div>
+            <label className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
+              Error Correction
+              <span
+                className="flex h-4 w-4 cursor-help items-center justify-center rounded-full bg-border text-[10px] font-semibold text-muted hover:bg-accent hover:text-white"
+                title="Higher levels allow QR to work even when partially damaged"
+              >
+                ?
+              </span>
+            </label>
+            <div className="grid grid-cols-4 gap-2.5">
+              {ERROR_LEVELS.map((level) => (
+                <button
+                  key={level.value}
+                  onClick={() => setErrorLevel(level.value)}
+                  className={`border-2 bg-white p-3 text-center transition-all ${
+                    errorLevel === level.value
+                      ? "border-accent bg-accent-light"
+                      : "border-border hover:border-fg"
+                  }`}
+                >
+                  <div
+                    className={`mb-1 text-lg font-bold ${
+                      errorLevel === level.value ? "text-accent" : "text-fg"
+                    }`}
+                  >
+                    {level.label}
+                  </div>
+                  <div className="text-[10px] text-muted">{level.recovery}</div>
+                  <div className="mt-2 h-1 overflow-hidden bg-border">
+                    <div
+                      className={`h-full transition-all ${
+                        errorLevel === level.value ? "bg-accent" : "bg-muted"
+                      }`}
+                      style={{ width: `${level.percentage}%` }}
+                    />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Live Preview Section */}
+        <div className="mt-6 border-t border-border pt-6">
+          <div className="mb-4 flex items-center justify-between">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+              Live Preview
+            </span>
+            <span
+              className={`flex items-center gap-1.5 bg-accent-light px-2 py-1 text-[10px] font-semibold text-accent transition-opacity ${
+                isUpdating ? "opacity-100" : "opacity-50"
+              }`}
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full bg-accent ${
+                  isUpdating ? "animate-pulse" : ""
+                }`}
+              />
+              Updating
+            </span>
+          </div>
+          <div className="flex justify-center border border-border bg-white p-6">
+            {qrDataUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={qrDataUrl}
+                alt={`QR code linking to ${generatedUrl}`}
+                className="h-40 w-40"
+              />
+            ) : (
+              <div className="flex h-40 w-40 items-center justify-center bg-surface">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                  className="h-16 w-16 text-border"
+                >
+                  <rect x="3" y="3" width="7" height="7" />
+                  <rect x="14" y="3" width="7" height="7" />
+                  <rect x="3" y="14" width="7" height="7" />
+                  <rect x="14" y="14" width="4" height="4" />
+                  <rect x="17" y="17" width="4" height="4" />
+                </svg>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Generate & Download Button */}
         <button
-          onClick={generateQR}
+          onClick={qrDataUrl ? downloadPNG : generateQR}
           disabled={isGenerating}
-          className="mb-8 flex w-full items-center justify-center gap-3 bg-fg px-8 py-5 text-base font-semibold text-bg transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-6 flex w-full items-center justify-center gap-3 bg-fg px-8 py-5 text-base font-semibold text-bg transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           aria-busy={isGenerating}
         >
           {isGenerating ? (
             <>
               <span className="sr-only">Generating QR code, please wait</span>
               <span aria-hidden="true">Generating...</span>
+            </>
+          ) : qrDataUrl ? (
+            <>
+              Generate & Download
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="h-5 w-5"
+                aria-hidden="true"
+              >
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+              </svg>
             </>
           ) : (
             <>
@@ -269,294 +738,30 @@ export default function QRGenerator() {
           )}
         </button>
 
-        {/* QR Code Preview - Shows after generate */}
-        {qrDataUrl && (
-          <div className="mb-8 flex flex-col items-center border-y border-border bg-white py-8" role="region" aria-label="QR Code Preview">
-            {/* Custom Text Preview */}
-            {customTitle && (
-              <h3 className="mb-3 text-center text-xl font-semibold text-fg">
-                {customTitle}
-              </h3>
-            )}
-            {customMessage && (
-              <p className="mb-6 max-w-md text-center text-sm text-muted">
-                {customMessage}
-              </p>
-            )}
-
-            {/* QR Code Image */}
-            <div className="mb-6 border border-border bg-white p-6">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={qrDataUrl}
-                alt={`QR code linking to ${generatedUrl}`}
-                className="h-48 w-48"
-                width={192}
-                height={192}
-              />
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex w-full max-w-[300px] flex-col gap-3">
-              <button
-                onClick={downloadPNG}
-                className="flex items-center justify-center gap-2 bg-fg px-4 py-3 text-sm font-medium text-bg transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-accent"
-                aria-label="Download QR code as PNG image"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="h-4 w-4"
-                  aria-hidden="true"
-                >
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-                Download PNG
-              </button>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={downloadSVG}
-                  className="flex flex-1 items-center justify-center gap-2 border border-border bg-white px-4 py-3 text-sm font-medium text-fg transition-colors hover:border-fg hover:bg-fg hover:text-bg focus:outline-none focus:ring-2 focus:ring-accent"
-                  aria-label="Download QR code as SVG vector"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    className="h-4 w-4"
-                    aria-hidden="true"
-                  >
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  SVG
-                </button>
-                <button
-                  onClick={printQR}
-                  className="flex flex-1 items-center justify-center gap-2 border border-border bg-white px-4 py-3 text-sm font-medium text-fg transition-colors hover:border-fg hover:bg-fg hover:text-bg focus:outline-none focus:ring-2 focus:ring-accent"
-                  aria-label="Print QR code"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    className="h-4 w-4"
-                    aria-hidden="true"
-                  >
-                    <polyline points="6 9 6 2 18 2 18 9" />
-                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                    <rect x="6" y="14" width="12" height="8" />
-                  </svg>
-                  Print
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Customization Accordion - Only shows after QR generated */}
-        {qrDataUrl && (
-          <div className="space-y-4">
-            {/* Accordion Toggle */}
-            <button
-              onClick={() => setShowCustomize(!showCustomize)}
-              className="flex w-full items-center justify-between border-t border-border pt-6 text-left"
-              aria-expanded={showCustomize}
-              aria-controls="customize-panel"
-            >
-              <span className="text-sm font-semibold uppercase tracking-wider text-fg">
-                Customize QR Code
-              </span>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className={`h-5 w-5 transition-transform ${showCustomize ? "rotate-180" : ""}`}
-                aria-hidden="true"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-
-            {/* Accordion Content */}
-            {showCustomize && (
-              <div id="customize-panel" className="space-y-8 pt-4">
-                {/* Custom Text Section */}
-                <div className="space-y-4 border-b border-border pb-6">
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-fg">
-                    Printable Page Text
-                  </h3>
-
-                  {/* Title Input */}
-                  <div>
-                    <label
-                      htmlFor="custom-title"
-                      className="mb-2 block text-xs uppercase tracking-wider text-muted"
-                    >
-                      Title (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      id="custom-title"
-                      value={customTitle}
-                      onChange={(e) => setCustomTitle(e.target.value)}
-                      placeholder="e.g., Visit Our Website"
-                      className="w-full border border-border bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-                    />
-                  </div>
-
-                  {/* Message Input */}
-                  <div>
-                    <label
-                      htmlFor="custom-message"
-                      className="mb-2 block text-xs uppercase tracking-wider text-muted"
-                    >
-                      Message (Optional)
-                    </label>
-                    <textarea
-                      id="custom-message"
-                      value={customMessage}
-                      onChange={(e) => setCustomMessage(e.target.value)}
-                      placeholder="e.g., Scan this QR code to access our menu"
-                      rows={3}
-                      className="w-full border border-border bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-                    />
-                  </div>
-                </div>
-
-                {/* QR Code Customization */}
-                <div className="space-y-4">
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-fg">
-                    QR Code Appearance
-                  </h3>
-
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {/* Foreground Color */}
-                    <div>
-                      <label
-                        htmlFor="fg-color"
-                        className="mb-2 block text-xs uppercase tracking-wider text-muted"
-                      >
-                        Foreground Color
-                      </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="color"
-                          id="fg-color"
-                          value={fgColor}
-                          onChange={(e) => setFgColor(e.target.value)}
-                          className="h-12 w-16 cursor-pointer rounded border border-border"
-                        />
-                        <input
-                          type="text"
-                          value={fgColor}
-                          onChange={(e) => setFgColor(e.target.value)}
-                          className="flex-1 border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus:border-accent"
-                          pattern="^#[0-9A-Fa-f]{6}$"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Background Color */}
-                    <div>
-                      <label
-                        htmlFor="bg-color"
-                        className="mb-2 block text-xs uppercase tracking-wider text-muted"
-                      >
-                        Background Color
-                      </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="color"
-                          id="bg-color"
-                          value={bgColor}
-                          onChange={(e) => setBgColor(e.target.value)}
-                          className="h-12 w-16 cursor-pointer rounded border border-border"
-                        />
-                        <input
-                          type="text"
-                          value={bgColor}
-                          onChange={(e) => setBgColor(e.target.value)}
-                          className="flex-1 border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus:border-accent"
-                          pattern="^#[0-9A-Fa-f]{6}$"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Size */}
-                  <div>
-                    <label
-                      htmlFor="qr-size"
-                      className="mb-2 block text-xs uppercase tracking-wider text-muted"
-                    >
-                      Size: {size}px
-                    </label>
-                    <input
-                      type="range"
-                      id="qr-size"
-                      min="200"
-                      max="1000"
-                      step="50"
-                      value={size}
-                      onChange={(e) => setSize(Number(e.target.value))}
-                      className="w-full"
-                    />
-                    <div className="mt-1 flex justify-between text-xs text-muted">
-                      <span>200px</span>
-                      <span>1000px</span>
-                    </div>
-                  </div>
-
-                  {/* Error Correction Level */}
-                  <div>
-                    <label
-                      htmlFor="error-level"
-                      className="mb-2 block text-xs uppercase tracking-wider text-muted"
-                    >
-                      Error Correction
-                    </label>
-                    <select
-                      id="error-level"
-                      value={errorLevel}
-                      onChange={(e) => setErrorLevel(e.target.value as "L" | "M" | "Q" | "H")}
-                      className="w-full border border-border bg-white px-3 py-2 outline-none focus:border-accent"
-                    >
-                      <option value="L">Low (7%)</option>
-                      <option value="M">Medium (15%)</option>
-                      <option value="Q">Quartile (25%)</option>
-                      <option value="H">High (30%)</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Note */}
-            <p className="mt-6 text-center text-sm italic text-muted">
-              Free to generate. Save to dashboard for editing capabilities.
-            </p>
-          </div>
-        )}
+        {/* Note */}
+        <p className="mt-5 text-center text-sm italic text-muted">
+          Free to generate. Save to dashboard for editing capabilities.
+        </p>
       </div>
 
       {/* Hidden canvas for potential future use */}
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
-      <iframe
-        ref={printFrameRef}
-        className="hidden"
-        title="Print Frame"
-        aria-hidden="true"
-      />
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease;
+        }
+      `}</style>
     </div>
   );
 }
