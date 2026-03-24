@@ -16,12 +16,10 @@ test.describe('QR Code Generation', () => {
     await generateButton.click();
 
     // Wait for QR code to be generated
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
 
-    // Verify download buttons are visible
-    await expect(page.locator('button:has-text("PNG")')).toBeVisible();
-    await expect(page.locator('button:has-text("SVG")')).toBeVisible();
-    await expect(page.locator('button:has-text("Print")')).toBeVisible();
+    // Verify the button changed to download mode
+    await expect(page.locator('button:has-text("Generate & Download")')).toBeVisible();
   });
 
   test('should generate QR code for URL without https prefix', async ({ page }) => {
@@ -33,10 +31,10 @@ test.describe('QR Code Generation', () => {
     await generateButton.click();
 
     // Wait for QR code to be generated
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
 
     // Verify QR code image has valid data URL
-    const qrImage = page.locator('img[alt="Generated QR Code"]');
+    const qrImage = page.locator('img[alt^="QR code linking to"]');
     const src = await qrImage.getAttribute('src');
     expect(src).toContain('data:image/png;base64');
   });
@@ -51,7 +49,7 @@ test.describe('QR Code Generation', () => {
     await expect(page.locator('text=Please enter a URL')).toBeVisible();
 
     // Verify QR code is not displayed
-    await expect(page.locator('img[alt="Generated QR Code"]')).not.toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).not.toBeVisible();
   });
 
   test('should show error for whitespace-only input', async ({ page }) => {
@@ -80,7 +78,7 @@ test.describe('QR Code Generation', () => {
 
     // Verify error is cleared
     await expect(page.locator('text=Please enter a URL')).not.toBeVisible();
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
   });
 
   test('should show loading state while generating', async ({ page }) => {
@@ -99,7 +97,7 @@ test.describe('QR Code Generation', () => {
     await clickPromise;
 
     // Eventually should show the QR code
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
   });
 
   test('should generate QR code for complex URL with query parameters', async ({ page }) => {
@@ -112,7 +110,7 @@ test.describe('QR Code Generation', () => {
     await generateButton.click();
 
     // Verify QR code is generated
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
   });
 
   test('should generate QR code for localhost URL', async ({ page }) => {
@@ -122,26 +120,28 @@ test.describe('QR Code Generation', () => {
     await urlInput.fill('http://localhost:3000');
     await generateButton.click();
 
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
   });
 
   test('should generate different QR codes for different URLs', async ({ page }) => {
     const urlInput = page.locator('input[placeholder*="yoursite.com"]');
-    const generateButton = page.locator('button:has-text("Generate QR Code")');
 
     // Generate first QR code
     await urlInput.fill('https://example1.com');
-    await generateButton.click();
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await page.locator('button:has-text("Generate QR Code")').click();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
 
-    const firstQrSrc = await page.locator('img[alt="Generated QR Code"]').getAttribute('src');
+    const firstQrSrc = await page.locator('img[alt^="QR code linking to"]').getAttribute('src');
 
-    // Generate second QR code
+    // Generate second QR code by pressing Enter (regenerates with new URL)
     await urlInput.fill('https://example2.com');
-    await generateButton.click();
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await urlInput.press('Enter');
 
-    const secondQrSrc = await page.locator('img[alt="Generated QR Code"]').getAttribute('src');
+    // Wait for new QR code to be generated
+    await page.waitForTimeout(500);
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
+
+    const secondQrSrc = await page.locator('img[alt^="QR code linking to"]').getAttribute('src');
 
     // Verify QR codes are different
     expect(firstQrSrc).not.toBe(secondQrSrc);
@@ -154,7 +154,7 @@ test.describe('QR Code Generation', () => {
     await urlInput.fill('https://example.com');
     await generateButton.click();
 
-    const qrImage = page.locator('img[alt="Generated QR Code"]');
+    const qrImage = page.locator('img[alt^="QR code linking to"]');
     await expect(qrImage).toBeVisible();
 
     // Verify image has proper dimensions

@@ -11,15 +11,15 @@ test.describe('QR Code Download', () => {
 
     await urlInput.fill('https://example.com');
     await generateButton.click();
-    await expect(page.locator('img[alt="Generated QR Code"]')).toBeVisible();
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
   });
 
-  test('should download PNG file', async ({ page }) => {
+  test('should download PNG file via Generate & Download button', async ({ page }) => {
     // Set up download promise
     const downloadPromise = page.waitForEvent('download');
 
-    // Click PNG download button
-    await page.locator('button:has-text("PNG")').click();
+    // Click the combined Generate & Download button
+    await page.locator('button:has-text("Generate & Download")').click();
 
     // Wait for download
     const download = await downloadPromise;
@@ -42,61 +42,16 @@ test.describe('QR Code Download', () => {
     expect(buffer[3]).toBe(0x47);
   });
 
-  test('should download SVG file', async ({ page }) => {
-    // Set up download promise
-    const downloadPromise = page.waitForEvent('download');
-
-    // Click SVG download button
-    await page.locator('button:has-text("SVG")').click();
-
-    // Wait for download
-    const download = await downloadPromise;
-
-    // Verify file name
-    expect(download.suggestedFilename()).toBe('qr-code.svg');
-
-    // Save file to verify it's valid
-    const path = await download.path();
-    expect(path).not.toBeNull();
-
-    // Verify file is not empty
-    const buffer = readFileSync(path!);
-    expect(buffer.length).toBeGreaterThan(0);
-
-    // Verify it's an SVG file (contains SVG tags)
-    const content = buffer.toString('utf-8');
-    expect(content).toContain('<svg');
-    expect(content).toContain('</svg>');
-  });
-
   test('should download PNG with correct MIME type', async ({ page }) => {
-    const downloadPromise = page.waitForEvent('download');
-    await page.locator('button:has-text("PNG")').click();
-    const download = await downloadPromise;
-
-    // The browser will set the MIME type based on the data URL
-    // For data URLs, we verify the prefix contains the MIME type
-    const qrImage = page.locator('img[alt="Generated QR Code"]');
+    // The QR image should be a base64 PNG
+    const qrImage = page.locator('img[alt^="QR code linking to"]');
     const src = await qrImage.getAttribute('src');
     expect(src).toContain('data:image/png;base64');
   });
 
-  test('should download SVG with correct MIME type', async ({ page }) => {
-    const downloadPromise = page.waitForEvent('download');
-    await page.locator('button:has-text("SVG")').click();
-    const download = await downloadPromise;
-
-    // Verify file content is valid SVG
-    const path = await download.path();
-    const content = readFileSync(path!).toString('utf-8');
-
-    // SVG should contain xmlns attribute
-    expect(content).toContain('xmlns="http://www.w3.org/2000/svg"');
-  });
-
   test('should download non-empty PNG file', async ({ page }) => {
     const downloadPromise = page.waitForEvent('download');
-    await page.locator('button:has-text("PNG")').click();
+    await page.locator('button:has-text("Generate & Download")').click();
     const download = await downloadPromise;
 
     const path = await download.path();
@@ -107,38 +62,27 @@ test.describe('QR Code Download', () => {
     expect(buffer.length).toBeLessThan(1000000); // Less than 1MB
   });
 
-  test('should download non-empty SVG file', async ({ page }) => {
-    const downloadPromise = page.waitForEvent('download');
-    await page.locator('button:has-text("SVG")').click();
-    const download = await downloadPromise;
-
-    const path = await download.path();
-    const buffer = readFileSync(path!);
-
-    // SVG text should be at least a few hundred bytes
-    expect(buffer.length).toBeGreaterThan(100);
-  });
-
-  test('should download buttons be disabled before QR generation', async ({ page }) => {
+  test('should download button not be visible before QR generation', async ({ page }) => {
     // Go to fresh page
     await page.goto('/');
 
-    // Download buttons should not be visible before QR is generated
-    await expect(page.locator('button:has-text("PNG")')).not.toBeVisible();
-    await expect(page.locator('button:has-text("SVG")')).not.toBeVisible();
+    // Generate & Download button should not be visible before QR is generated
+    // Only "Generate QR Code" button should be visible
+    await expect(page.locator('button:has-text("Generate QR Code")')).toBeVisible();
+    await expect(page.locator('button:has-text("Generate & Download")')).not.toBeVisible();
   });
 
   test('should download same QR code multiple times', async ({ page }) => {
-    // Download PNG first time
+    // Download first time
     let downloadPromise = page.waitForEvent('download');
-    await page.locator('button:has-text("PNG")').click();
+    await page.locator('button:has-text("Generate & Download")').click();
     const download1 = await downloadPromise;
     const path1 = await download1.path();
     const content1 = readFileSync(path1!);
 
-    // Download PNG second time
+    // Download second time
     downloadPromise = page.waitForEvent('download');
-    await page.locator('button:has-text("PNG")').click();
+    await page.locator('button:has-text("Generate & Download")').click();
     const download2 = await downloadPromise;
     const path2 = await download2.path();
     const content2 = readFileSync(path2!);
@@ -147,29 +91,31 @@ test.describe('QR Code Download', () => {
     expect(content1.equals(content2)).toBe(true);
   });
 
-  test('should download different formats of same QR code', async ({ page }) => {
-    // Download PNG
+  test('should download different QR codes for different URLs', async ({ page }) => {
+    const urlInput = page.locator('input[placeholder*="yoursite.com"]');
+
+    // First QR code is already generated for example.com
+    // Download it
     let downloadPromise = page.waitForEvent('download');
-    await page.locator('button:has-text("PNG")').click();
-    const pngDownload = await downloadPromise;
-    const pngPath = await pngDownload.path();
-    const pngBuffer = readFileSync(pngPath!);
+    await page.locator('button:has-text("Generate & Download")').click();
+    const download1 = await downloadPromise;
+    const path1 = await download1.path();
+    const content1 = readFileSync(path1!);
 
-    // Download SVG
+    // Change URL and regenerate using Enter key
+    await urlInput.fill('https://different-example.com');
+    await urlInput.press('Enter');
+    await page.waitForTimeout(500);
+    await expect(page.locator('img[alt^="QR code linking to"]')).toBeVisible();
+
+    // Download the new QR code
     downloadPromise = page.waitForEvent('download');
-    await page.locator('button:has-text("SVG")').click();
-    const svgDownload = await downloadPromise;
-    const svgPath = await svgDownload.path();
-    const svgBuffer = readFileSync(svgPath!);
+    await page.locator('button:has-text("Generate & Download")').click();
+    const download2 = await downloadPromise;
+    const path2 = await download2.path();
+    const content2 = readFileSync(path2!);
 
-    // Verify both files exist and have different formats
-    expect(pngBuffer.length).toBeGreaterThan(0);
-    expect(svgBuffer.length).toBeGreaterThan(0);
-
-    // PNG starts with PNG signature
-    expect(pngBuffer[0]).toBe(0x89);
-
-    // SVG is text starting with '<'
-    expect(svgBuffer[0]).toBe(0x3C); // '<' character
+    // The QR codes should be different
+    expect(content1.equals(content2)).toBe(false);
   });
 });
