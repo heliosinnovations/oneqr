@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Format Export - Variation 3: Segmented Control with Tabs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --pro-bg: #f8f9fa;
+      --pro-fg: #1a1a1a;
+      --pro-accent: #2563eb;
+      --pro-accent-hover: #1d4ed8;
+      --pro-accent-light: #eff6ff;
+      --pro-muted: #6b7280;
+      --pro-muted-light: #e5e7eb;
+      --pro-border: #e5e7eb;
+      --pro-border-dark: #d1d5db;
+      --pro-surface: #ffffff;
+      --pro-surface-hover: #f9fafb;
+    }
+
+    .segmented-control {
+      display: inline-flex;
+      background: var(--pro-muted-light);
+      border-radius: 10px;
+      padding: 4px;
+      gap: 2px;
+    }
+
+    .segment {
+      position: relative;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--pro-muted);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .segment:hover {
+      color: var(--pro-fg);
+    }
+
+    .segment.active {
+      background: white;
+      color: var(--pro-accent);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .segment .badge {
+      font-size: 9px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .format-panel {
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .format-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .resolution-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      background: var(--pro-muted-light);
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .resolution-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--pro-accent);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+      border: 3px solid white;
+    }
+
+    .resolution-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--pro-accent);
+      cursor: pointer;
+      border: 3px solid white;
+    }
+
+    .size-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+
+    .size-chip:hover {
+      background: var(--pro-accent-light);
+      border-color: var(--pro-accent);
+    }
+
+    .size-chip.selected {
+      background: var(--pro-accent);
+      color: white;
+    }
+
+    .feature-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    /* Mobile responsive segmented control */
+    @media (max-width: 500px) {
+      .segmented-control {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        width: 100%;
+      }
+
+      .segment {
+        justify-content: center;
+        padding: 12px 8px;
+      }
+
+      .segment .badge {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[var(--pro-bg)] min-h-screen p-4 md:p-8">
+  <!-- Design Info Banner -->
+  <div class="max-w-2xl mx-auto mb-6 p-4 bg-violet-50 border border-violet-200 rounded-lg">
+    <h1 class="text-lg font-semibold text-violet-900 mb-1">Variation 3: Segmented Control with Format Panels</h1>
+    <p class="text-sm text-violet-700">
+      <strong>Design Approach:</strong> iOS/macOS-style segmented control with dedicated panels for each format.
+      Best for users who want a modern, familiar interface with format-specific options.
+    </p>
+    <ul class="mt-2 text-xs text-violet-600 space-y-1">
+      <li>- Sleek segmented control for format switching</li>
+      <li>- Each format has its own dedicated panel with relevant options</li>
+      <li>- Format-specific features and tips visible per selection</li>
+      <li>- 2x2 grid on mobile for touch-friendly interaction</li>
+      <li>- Animated panel transitions for smooth UX</li>
+    </ul>
+  </div>
+
+  <!-- Export Tab Content -->
+  <div class="max-w-2xl mx-auto bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm">
+    <!-- Tab Header -->
+    <div class="border-b border-[var(--pro-border)] px-5">
+      <div class="flex">
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Content</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Colors</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Style</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-[var(--pro-accent)] text-[var(--pro-accent)]">Export</button>
+      </div>
+    </div>
+
+    <!-- Export Content -->
+    <div class="p-6">
+      <!-- Segmented Control -->
+      <div class="mb-6">
+        <label class="mb-3 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide">Export Format</label>
+        <div class="segmented-control w-full md:w-auto">
+          <button class="segment active" data-format="png">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            PNG
+            <span class="badge bg-green-100 text-green-700">Web</span>
+          </button>
+          <button class="segment" data-format="svg">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+            </svg>
+            SVG
+            <span class="badge bg-purple-100 text-purple-700">Vector</span>
+          </button>
+          <button class="segment" data-format="pdf">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            PDF
+            <span class="badge bg-red-100 text-red-700">Print</span>
+          </button>
+          <button class="segment" data-format="eps">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/>
+            </svg>
+            EPS
+            <span class="badge bg-orange-100 text-orange-700">Adobe</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Format Panels -->
+      <div class="mb-6">
+        <!-- PNG Panel -->
+        <div class="format-panel active" id="panel-png">
+          <div class="p-5 bg-gradient-to-br from-green-50 to-white rounded-xl border border-green-100">
+            <!-- Features -->
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="feature-tag bg-green-100 text-green-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Transparency
+              </span>
+              <span class="feature-tag bg-green-100 text-green-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Universal Support
+              </span>
+              <span class="feature-tag bg-green-100 text-green-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Web Optimized
+              </span>
+            </div>
+
+            <!-- Resolution Control -->
+            <div class="mb-4">
+              <div class="flex items-center justify-between mb-3">
+                <label class="text-sm font-medium text-[var(--pro-fg)]">Resolution</label>
+                <div class="flex items-center gap-2">
+                  <span class="text-2xl font-bold text-green-600" id="pngResolution">1000</span>
+                  <span class="text-sm text-[var(--pro-muted)]">x</span>
+                  <span class="text-2xl font-bold text-green-600" id="pngResolution2">1000</span>
+                  <span class="text-sm text-[var(--pro-muted)]">px</span>
+                </div>
+              </div>
+
+              <input type="range" min="200" max="2000" value="1000" step="100" class="resolution-slider w-full mb-4" id="pngSlider">
+
+              <!-- Size Chips -->
+              <div class="flex flex-wrap gap-2">
+                <button class="size-chip bg-[var(--pro-surface-hover)]" data-size="200">
+                  <span class="text-[10px] text-[var(--pro-muted)]">Icon</span> 200px
+                </button>
+                <button class="size-chip bg-[var(--pro-surface-hover)]" data-size="500">
+                  <span class="text-[10px] text-[var(--pro-muted)]">Social</span> 500px
+                </button>
+                <button class="size-chip selected" data-size="1000">
+                  <span class="text-[10px] text-white/70">Default</span> 1000px
+                </button>
+                <button class="size-chip bg-[var(--pro-surface-hover)]" data-size="1500">
+                  <span class="text-[10px] text-[var(--pro-muted)]">HD</span> 1500px
+                </button>
+                <button class="size-chip bg-[var(--pro-surface-hover)]" data-size="2000">
+                  <span class="text-[10px] text-[var(--pro-muted)]">Print</span> 2000px
+                </button>
+              </div>
+            </div>
+
+            <!-- File Info -->
+            <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-green-100">
+              <span class="text-xs font-medium text-[var(--pro-fg)]">Estimated file size</span>
+              <span class="text-sm font-bold text-green-600" id="pngFileSize">~45 KB</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SVG Panel -->
+        <div class="format-panel" id="panel-svg">
+          <div class="p-5 bg-gradient-to-br from-purple-50 to-white rounded-xl border border-purple-100">
+            <!-- Features -->
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="feature-tag bg-purple-100 text-purple-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Infinitely Scalable
+              </span>
+              <span class="feature-tag bg-purple-100 text-purple-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Editable
+              </span>
+              <span class="feature-tag bg-purple-100 text-purple-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Small File Size
+              </span>
+            </div>
+
+            <!-- SVG Info -->
+            <div class="flex items-center gap-4 p-4 bg-white rounded-lg border border-purple-100">
+              <div class="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-purple-900">Vector format - No resolution needed</div>
+                <p class="text-xs text-purple-600 mt-1">
+                  SVG files scale to any size without losing quality. Perfect for logos, web, and print at any dimension.
+                </p>
+              </div>
+            </div>
+
+            <!-- Use Cases -->
+            <div class="mt-4 grid grid-cols-2 gap-3">
+              <div class="p-3 bg-white rounded-lg border border-purple-100 text-center">
+                <div class="text-lg mb-1">🎨</div>
+                <div class="text-xs font-medium text-purple-900">Web Design</div>
+                <div class="text-[10px] text-purple-600">CSS animations</div>
+              </div>
+              <div class="p-3 bg-white rounded-lg border border-purple-100 text-center">
+                <div class="text-lg mb-1">🖨️</div>
+                <div class="text-xs font-medium text-purple-900">Large Print</div>
+                <div class="text-[10px] text-purple-600">Billboard-ready</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PDF Panel -->
+        <div class="format-panel" id="panel-pdf">
+          <div class="p-5 bg-gradient-to-br from-red-50 to-white rounded-xl border border-red-100">
+            <!-- Features -->
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="feature-tag bg-red-100 text-red-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Print Ready
+              </span>
+              <span class="feature-tag bg-red-100 text-red-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Universal Format
+              </span>
+              <span class="feature-tag bg-red-100 text-red-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Embedded Vector
+              </span>
+            </div>
+
+            <!-- PDF Info -->
+            <div class="flex items-center gap-4 p-4 bg-white rounded-lg border border-red-100">
+              <div class="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-red-900">Professional printing format</div>
+                <p class="text-xs text-red-600 mt-1">
+                  Ideal for business cards, flyers, posters. Vector quality preserved for sharp prints at any size.
+                </p>
+              </div>
+            </div>
+
+            <!-- Use Cases -->
+            <div class="mt-4 grid grid-cols-3 gap-2">
+              <div class="p-2 bg-white rounded-lg border border-red-100 text-center">
+                <div class="text-sm mb-0.5">📇</div>
+                <div class="text-[10px] font-medium text-red-900">Business Cards</div>
+              </div>
+              <div class="p-2 bg-white rounded-lg border border-red-100 text-center">
+                <div class="text-sm mb-0.5">📄</div>
+                <div class="text-[10px] font-medium text-red-900">Flyers</div>
+              </div>
+              <div class="p-2 bg-white rounded-lg border border-red-100 text-center">
+                <div class="text-sm mb-0.5">🖼️</div>
+                <div class="text-[10px] font-medium text-red-900">Posters</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EPS Panel -->
+        <div class="format-panel" id="panel-eps">
+          <div class="p-5 bg-gradient-to-br from-orange-50 to-white rounded-xl border border-orange-100">
+            <!-- Features -->
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="feature-tag bg-orange-100 text-orange-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Illustrator Compatible
+              </span>
+              <span class="feature-tag bg-orange-100 text-orange-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                InDesign Ready
+              </span>
+              <span class="feature-tag bg-orange-100 text-orange-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Industry Standard
+              </span>
+            </div>
+
+            <!-- EPS Info -->
+            <div class="flex items-center gap-4 p-4 bg-white rounded-lg border border-orange-100">
+              <div class="w-14 h-14 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-7 h-7 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-orange-900">Adobe Creative Suite format</div>
+                <p class="text-xs text-orange-600 mt-1">
+                  Best for designers using Illustrator, InDesign, or Photoshop. Fully editable vector paths.
+                </p>
+              </div>
+            </div>
+
+            <!-- Compatible Apps -->
+            <div class="mt-4 flex items-center gap-3 p-3 bg-white rounded-lg border border-orange-100">
+              <span class="text-xs font-medium text-orange-900">Compatible with:</span>
+              <div class="flex gap-2">
+                <span class="px-2 py-1 bg-orange-100 rounded text-[10px] font-medium text-orange-700">Illustrator</span>
+                <span class="px-2 py-1 bg-orange-100 rounded text-[10px] font-medium text-orange-700">InDesign</span>
+                <span class="px-2 py-1 bg-orange-100 rounded text-[10px] font-medium text-orange-700">Photoshop</span>
+                <span class="px-2 py-1 bg-orange-100 rounded text-[10px] font-medium text-orange-700">CorelDRAW</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Download Button -->
+      <button class="w-full flex items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-4 text-sm font-semibold text-white transition-all hover:bg-[var(--pro-accent-hover)] hover:shadow-lg" id="downloadBtn">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        <span id="downloadText">Download PNG (1000 x 1000px)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Preview -->
+  <div class="max-w-sm mx-auto mt-8 p-4 bg-gray-100 rounded-xl">
+    <div class="text-center text-xs font-semibold text-gray-500 mb-4 uppercase tracking-wide">Mobile Preview (375px)</div>
+    <div class="bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm" style="max-width: 375px;">
+      <div class="p-4">
+        <!-- Segmented Control - Mobile 2x2 -->
+        <div class="mb-4">
+          <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase">Format</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button class="p-3 rounded-lg bg-[var(--pro-accent-light)] border-2 border-[var(--pro-accent)] text-sm font-semibold text-[var(--pro-accent)] text-center">PNG</button>
+            <button class="p-3 rounded-lg bg-[var(--pro-muted-light)] border-2 border-transparent text-sm font-medium text-[var(--pro-muted)] text-center">SVG</button>
+            <button class="p-3 rounded-lg bg-[var(--pro-muted-light)] border-2 border-transparent text-sm font-medium text-[var(--pro-muted)] text-center">PDF</button>
+            <button class="p-3 rounded-lg bg-[var(--pro-muted-light)] border-2 border-transparent text-sm font-medium text-[var(--pro-muted)] text-center">EPS</button>
+          </div>
+        </div>
+
+        <!-- Format Panel - Mobile -->
+        <div class="mb-4 p-3 bg-green-50 rounded-lg border border-green-100">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-green-900">Resolution</span>
+            <span class="text-lg font-bold text-green-600">1000px</span>
+          </div>
+          <input type="range" min="200" max="2000" value="1000" class="resolution-slider w-full mb-2">
+          <div class="flex justify-between text-[10px] text-green-600">
+            <span>200</span>
+            <span>1000</span>
+            <span>2000</span>
+          </div>
+        </div>
+
+        <!-- Download - Mobile -->
+        <button class="w-full flex items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-3 text-sm font-semibold text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download PNG
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Segmented control functionality
+    const segments = document.querySelectorAll('.segment');
+    const panels = document.querySelectorAll('.format-panel');
+    const downloadText = document.getElementById('downloadText');
+    const pngSlider = document.getElementById('pngSlider');
+    const pngResolution = document.getElementById('pngResolution');
+    const pngResolution2 = document.getElementById('pngResolution2');
+    const pngFileSize = document.getElementById('pngFileSize');
+
+    let currentFormat = 'png';
+    let currentResolution = 1000;
+
+    const fileSizes = { 200: '~5 KB', 500: '~15 KB', 1000: '~45 KB', 1500: '~95 KB', 2000: '~160 KB' };
+
+    segments.forEach(segment => {
+      segment.addEventListener('click', () => {
+        segments.forEach(s => s.classList.remove('active'));
+        segment.classList.add('active');
+
+        const format = segment.dataset.format;
+        currentFormat = format;
+
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${format}`).classList.add('active');
+
+        updateDownloadButton();
+      });
+    });
+
+    function updateDownloadButton() {
+      if (currentFormat === 'png') {
+        downloadText.textContent = `Download PNG (${currentResolution} x ${currentResolution}px)`;
+      } else {
+        downloadText.textContent = `Download ${currentFormat.toUpperCase()}`;
+      }
+    }
+
+    // PNG slider
+    pngSlider.addEventListener('input', () => {
+      currentResolution = parseInt(pngSlider.value);
+      pngResolution.textContent = currentResolution;
+      pngResolution2.textContent = currentResolution;
+
+      const nearest = [200, 500, 1000, 1500, 2000].reduce((prev, curr) =>
+        Math.abs(curr - currentResolution) < Math.abs(prev - currentResolution) ? curr : prev
+      );
+      pngFileSize.textContent = fileSizes[nearest];
+
+      updateDownloadButton();
+
+      // Update size chips
+      document.querySelectorAll('.size-chip').forEach(chip => {
+        const size = parseInt(chip.dataset.size);
+        if (size === currentResolution) {
+          chip.classList.add('selected');
+          chip.querySelector('span').classList.remove('text-[var(--pro-muted)]');
+          chip.querySelector('span').classList.add('text-white/70');
+        } else {
+          chip.classList.remove('selected');
+          chip.querySelector('span').classList.add('text-[var(--pro-muted)]');
+          chip.querySelector('span').classList.remove('text-white/70');
+        }
+      });
+    });
+
+    // Size chips
+    document.querySelectorAll('.size-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const size = chip.dataset.size;
+        pngSlider.value = size;
+        pngSlider.dispatchEvent(new Event('input'));
+      });
+    });
+  </script>
+</body>
+</html>
