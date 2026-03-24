@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional QR Generator - Variation 3: Professional Enterprise</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --fg: #1a1a1a;
+            --accent: #ff4d00;
+            --accent-hover: #e64500;
+            --accent-light: #fff5f0;
+            --muted: #6c757d;
+            --muted-light: #adb5bd;
+            --border: #dee2e6;
+            --border-dark: #ced4da;
+            --surface: #ffffff;
+            --surface-hover: #f8f9fa;
+            --success: #198754;
+            --success-light: #d1e7dd;
+            --error: #dc3545;
+            --error-light: #f8d7da;
+            --warning: #ffc107;
+            --warning-light: #fff3cd;
+            --info: #0dcaf0;
+            --info-light: #cff4fc;
+            --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 8px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 16px rgba(0,0,0,0.10);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        /* Design Label */
+        .design-label {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            background: var(--fg);
+            color: #fff;
+            padding: 8px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            z-index: 1000;
+            border-radius: 4px;
+        }
+
+        .design-label span {
+            color: var(--accent);
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 24px;
+            color: var(--fg);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .breadcrumb svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .breadcrumb-current {
+            color: var(--fg);
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .header-btn:hover {
+            background: var(--surface-hover);
+            border-color: var(--border-dark);
+        }
+
+        .header-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .header-btn.primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .header-btn.primary:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* Panel */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-title svg {
+            width: 18px;
+            height: 18px;
+            color: var(--muted);
+        }
+
+        .panel-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .panel-body {
+            padding: 20px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--fg);
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: var(--error);
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.15s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .form-input.error {
+            border-color: var(--error);
+            box-shadow: 0 0 0 3px var(--error-light);
+        }
+
+        .form-input.success {
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px var(--success-light);
+        }
+
+        /* Input with Icon */
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon .form-input {
+            padding-left: 40px;
+            padding-right: 80px;
+        }
+
+        .input-icon-left {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+        }
+
+        .input-icon-left svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .input-status-right {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-indicator.success {
+            color: var(--success);
+        }
+
+        .status-indicator.error {
+            color: var(--error);
+        }
+
+        .status-indicator svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .quick-action {
+            padding: 6px 10px;
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s ease;
+        }
+
+        .quick-action:hover {
+            background: var(--accent-light);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .quick-action svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Section Divider */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-divider::before,
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* Color Row */
+        .color-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .color-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .color-input-wrapper {
+            display: flex;
+            gap: 8px;
+        }
+
+        .color-swatch {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .color-swatch input {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            cursor: pointer;
+        }
+
+        .color-hex {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .color-hex:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Contrast Alert */
+        .contrast-alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 16px;
+        }
+
+        .contrast-alert.success {
+            background: var(--success-light);
+            border: 1px solid var(--success);
+        }
+
+        .contrast-alert.warning {
+            background: var(--warning-light);
+            border: 1px solid var(--warning);
+        }
+
+        .contrast-alert.error {
+            background: var(--error-light);
+            border: 1px solid var(--error);
+        }
+
+        .contrast-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .contrast-alert.success .contrast-icon { color: var(--success); }
+        .contrast-alert.warning .contrast-icon { color: var(--warning); }
+        .contrast-alert.error .contrast-icon { color: var(--error); }
+
+        .contrast-content {
+            flex: 1;
+        }
+
+        .contrast-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .contrast-desc {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .contrast-badges {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .wcag-chip {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 3px;
+            background: var(--surface);
+        }
+
+        .wcag-chip.pass { color: var(--success); }
+        .wcag-chip.fail { color: var(--error); text-decoration: line-through; }
+
+        /* Option Selector */
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .option-card {
+            padding: 12px 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s ease;
+            background: var(--surface);
+        }
+
+        .option-card:hover {
+            border-color: var(--border-dark);
+            background: var(--surface-hover);
+        }
+
+        .option-card.active {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .option-icon {
+            width: 28px;
+            height: 28px;
+            margin: 0 auto 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .option-card.active .option-label {
+            color: var(--accent);
+        }
+
+        /* Tabs */
+        .tabs-container {
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+        }
+
+        .tab {
+            padding: 14px 16px;
+            border: none;
+            background: none;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.15s ease;
+        }
+
+        .tab:hover {
+            color: var(--fg);
+        }
+
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* Download Options Grid */
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .download-option {
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .download-option:hover {
+            border-color: var(--border-dark);
+        }
+
+        .download-option.active {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .download-option.recommended::before {
+            content: 'Recommended';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: var(--accent);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 3px;
+        }
+
+        .download-format {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .download-info {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        /* Range Slider */
+        .range-container {
+            margin-top: 16px;
+        }
+
+        .range-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .range-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .range-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .range-slider {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .range-marks {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+        }
+
+        .range-mark {
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        /* Preview Panel */
+        .preview-panel {
+            position: sticky;
+            top: 24px;
+        }
+
+        .preview-area {
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: repeating-conic-gradient(#f0f0f0 0% 25%, #fff 0% 50%) 50% / 16px 16px;
+            min-height: 300px;
+        }
+
+        .qr-frame {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .qr-image {
+            width: 200px;
+            height: 200px;
+            transition: transform 0.2s ease;
+        }
+
+        .qr-image svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Preview Controls */
+        .preview-controls {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .preview-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            transition: all 0.15s ease;
+        }
+
+        .preview-btn:hover {
+            background: var(--surface-hover);
+            color: var(--fg);
+        }
+
+        .preview-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .zoom-value {
+            font-size: 13px;
+            font-weight: 600;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        /* Action Bar */
+        .action-bar {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--surface-hover);
+        }
+
+        .action-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Generate Section */
+        .generate-section {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            background: var(--surface-hover);
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.15s ease;
+        }
+
+        .generate-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .generate-btn:disabled {
+            background: var(--muted-light);
+            cursor: not-allowed;
+        }
+
+        .generate-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .generate-hint {
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 12px;
+        }
+
+        .generate-hint kbd {
+            display: inline-block;
+            padding: 2px 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-family: inherit;
+            font-size: 11px;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: var(--fg);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow-lg);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--error);
+        }
+
+        .toast svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Focus Ring */
+        *:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* Design Description */
+        .design-description {
+            margin-top: 32px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .design-description h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .design-description p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .features-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            background: var(--surface-hover);
+            border-radius: 6px;
+        }
+
+        .feature-check {
+            width: 18px;
+            height: 18px;
+            background: var(--success-light);
+            color: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .feature-check svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        .feature-text {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-panel {
+                position: relative;
+                top: 0;
+                order: -1;
+            }
+
+            .features-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="design-label">Variation 3: <span>Professional Enterprise</span></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <a href="#" class="logo">QR<span>Spot</span></a>
+            <nav class="breadcrumb">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+                <span class="breadcrumb-current">QR Generator</span>
+            </nav>
+        </div>
+        <div class="header-actions">
+            <button class="header-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                </svg>
+                History
+            </button>
+            <button class="header-btn primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Export
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <div class="main-grid">
+            <!-- Configuration Panel -->
+            <div class="config-column">
+                <!-- URL Input Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                            </svg>
+                            Content
+                        </h2>
+                        <span class="panel-badge">Required</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="form-label">
+                                URL or Text <span class="required">*</span>
+                            </label>
+                            <div class="input-with-icon">
+                                <div class="input-icon-left">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                    </svg>
+                                </div>
+                                <input
+                                    type="url"
+                                    class="form-input success"
+                                    id="urlInput"
+                                    placeholder="https://example.com"
+                                    value="https://example.com"
+                                >
+                                <div class="input-status-right">
+                                    <div class="status-indicator success" id="urlStatus">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                        Valid
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="form-hint">Enter a URL, text, or use one of the quick actions below</p>
+                        </div>
+
+                        <div class="quick-actions">
+                            <button class="quick-action" onclick="setTemplate('website')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                                Website
+                            </button>
+                            <button class="quick-action" onclick="setTemplate('wifi')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/></svg>
+                                WiFi
+                            </button>
+                            <button class="quick-action" onclick="setTemplate('vcard')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                Contact
+                            </button>
+                            <button class="quick-action" onclick="setTemplate('email')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                Email
+                            </button>
+                            <button class="quick-action" onclick="setTemplate('sms')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                                SMS
+                            </button>
+                            <button class="quick-action" onclick="setTemplate('location')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                Location
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customization Panel -->
+                <div class="panel" style="margin-top: 16px;">
+                    <div class="tabs-container">
+                        <div class="tabs">
+                            <button class="tab active" onclick="switchTab('colors')">Colors</button>
+                            <button class="tab" onclick="switchTab('style')">Style</button>
+                            <button class="tab" onclick="switchTab('output')">Output</button>
+                        </div>
+                    </div>
+
+                    <!-- Colors Tab -->
+                    <div class="tab-panel active" id="colors-tab">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <div class="color-row">
+                                    <div class="color-field">
+                                        <label class="form-label">Foreground Color</label>
+                                        <div class="color-input-wrapper">
+                                            <div class="color-swatch" id="fgSwatch" style="background: #1a1a1a">
+                                                <input type="color" value="#1a1a1a" id="fgColor" onchange="updateColors()">
+                                            </div>
+                                            <input type="text" class="color-hex" value="#1A1A1A" id="fgHex">
+                                        </div>
+                                    </div>
+                                    <div class="color-field">
+                                        <label class="form-label">Background Color</label>
+                                        <div class="color-input-wrapper">
+                                            <div class="color-swatch" id="bgSwatch" style="background: #ffffff">
+                                                <input type="color" value="#ffffff" id="bgColor" onchange="updateColors()">
+                                            </div>
+                                            <input type="text" class="color-hex" value="#FFFFFF" id="bgHex">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contrast Alert -->
+                            <div class="contrast-alert success" id="contrastAlert">
+                                <svg class="contrast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                                <div class="contrast-content">
+                                    <div class="contrast-title">Excellent Contrast (21:1)</div>
+                                    <div class="contrast-desc">Your QR code will be easily scannable</div>
+                                    <div class="contrast-badges">
+                                        <span class="wcag-chip pass" id="wcagAA">AA ✓</span>
+                                        <span class="wcag-chip pass" id="wcagAAA">AAA ✓</span>
+                                        <span class="wcag-chip pass">Large Text ✓</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section-divider">Presets</div>
+
+                            <div class="option-grid">
+                                <div class="option-card active" onclick="selectColorPreset(this, '#1a1a1a')">
+                                    <div class="option-icon">
+                                        <div style="width: 24px; height: 24px; background: #1a1a1a; border-radius: 4px;"></div>
+                                    </div>
+                                    <span class="option-label">Black</span>
+                                </div>
+                                <div class="option-card" onclick="selectColorPreset(this, '#2563eb')">
+                                    <div class="option-icon">
+                                        <div style="width: 24px; height: 24px; background: #2563eb; border-radius: 4px;"></div>
+                                    </div>
+                                    <span class="option-label">Blue</span>
+                                </div>
+                                <div class="option-card" onclick="selectColorPreset(this, '#059669')">
+                                    <div class="option-icon">
+                                        <div style="width: 24px; height: 24px; background: #059669; border-radius: 4px;"></div>
+                                    </div>
+                                    <span class="option-label">Green</span>
+                                </div>
+                                <div class="option-card" onclick="selectColorPreset(this, '#ff4d00')">
+                                    <div class="option-icon">
+                                        <div style="width: 24px; height: 24px; background: #ff4d00; border-radius: 4px;"></div>
+                                    </div>
+                                    <span class="option-label">Orange</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Style Tab -->
+                    <div class="tab-panel" id="style-tab">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="form-label">Data Pattern</label>
+                                <div class="option-grid">
+                                    <div class="option-card active" onclick="selectPattern(this, 'square')">
+                                        <div class="option-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24">
+                                                <rect x="4" y="4" width="5" height="5" fill="currentColor"/>
+                                                <rect x="10" y="4" width="5" height="5" fill="currentColor"/>
+                                                <rect x="4" y="10" width="5" height="5" fill="currentColor"/>
+                                                <rect x="16" y="10" width="5" height="5" fill="currentColor"/>
+                                                <rect x="10" y="16" width="5" height="5" fill="currentColor"/>
+                                                <rect x="16" y="16" width="5" height="5" fill="currentColor"/>
+                                            </svg>
+                                        </div>
+                                        <span class="option-label">Square</span>
+                                    </div>
+                                    <div class="option-card" onclick="selectPattern(this, 'rounded')">
+                                        <div class="option-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24">
+                                                <rect x="4" y="4" width="5" height="5" rx="1" fill="currentColor"/>
+                                                <rect x="10" y="4" width="5" height="5" rx="1" fill="currentColor"/>
+                                                <rect x="4" y="10" width="5" height="5" rx="1" fill="currentColor"/>
+                                                <rect x="16" y="10" width="5" height="5" rx="1" fill="currentColor"/>
+                                                <rect x="10" y="16" width="5" height="5" rx="1" fill="currentColor"/>
+                                                <rect x="16" y="16" width="5" height="5" rx="1" fill="currentColor"/>
+                                            </svg>
+                                        </div>
+                                        <span class="option-label">Rounded</span>
+                                    </div>
+                                    <div class="option-card" onclick="selectPattern(this, 'dots')">
+                                        <div class="option-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24">
+                                                <circle cx="6.5" cy="6.5" r="2.5" fill="currentColor"/>
+                                                <circle cx="12.5" cy="6.5" r="2.5" fill="currentColor"/>
+                                                <circle cx="6.5" cy="12.5" r="2.5" fill="currentColor"/>
+                                                <circle cx="18.5" cy="12.5" r="2.5" fill="currentColor"/>
+                                                <circle cx="12.5" cy="18.5" r="2.5" fill="currentColor"/>
+                                                <circle cx="18.5" cy="18.5" r="2.5" fill="currentColor"/>
+                                            </svg>
+                                        </div>
+                                        <span class="option-label">Dots</span>
+                                    </div>
+                                    <div class="option-card" onclick="selectPattern(this, 'classy')">
+                                        <div class="option-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24">
+                                                <path d="M4 4h5v5H4z" fill="currentColor"/>
+                                                <path d="M10 4h5v5h-5z" fill="currentColor" style="border-radius: 50% 0"/>
+                                                <path d="M4 10h5v5H4z" fill="currentColor"/>
+                                                <path d="M16 10h5v5h-5z" fill="currentColor"/>
+                                                <path d="M10 16h5v5h-5z" fill="currentColor"/>
+                                                <path d="M16 16h5v5h-5z" fill="currentColor"/>
+                                            </svg>
+                                        </div>
+                                        <span class="option-label">Classy</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 20px;">
+                                <label class="form-label">Corner Style</label>
+                                <div class="option-grid">
+                                    <div class="option-card active" onclick="selectCorner(this, 'square')">
+                                        <div class="option-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="4" y="4" width="16" height="16"/>
+                                            </svg>
+                                        </div>
+                                        <span class="option-label">Square</span>
+                                    </div>
+                                    <div class="option-card" onclick="selectCorner(this, 'rounded')">
+                                        <div class="option-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="4" y="4" width="16" height="16" rx="4"/>
+                                            </svg>
+                                        </div>
+                                        <span class="option-label">Rounded</span>
+                                    </div>
+                                    <div class="option-card" onclick="selectCorner(this, 'extra')">
+                                        <div class="option-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="4" y="4" width="16" height="16" rx="8"/>
+                                            </svg>
+                                        </div>
+                                        <span class="option-label">Extra</span>
+                                    </div>
+                                    <div class="option-card" onclick="selectCorner(this, 'dot')">
+                                        <div class="option-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="8"/>
+                                            </svg>
+                                        </div>
+                                        <span class="option-label">Dot</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 20px;">
+                                <label class="form-label">Error Correction Level</label>
+                                <div class="option-grid">
+                                    <div class="option-card" onclick="selectEC(this, 'L')">
+                                        <div class="option-icon" style="font-size: 16px; font-weight: 700;">L</div>
+                                        <span class="option-label">7%</span>
+                                    </div>
+                                    <div class="option-card active" onclick="selectEC(this, 'M')">
+                                        <div class="option-icon" style="font-size: 16px; font-weight: 700;">M</div>
+                                        <span class="option-label">15%</span>
+                                    </div>
+                                    <div class="option-card" onclick="selectEC(this, 'Q')">
+                                        <div class="option-icon" style="font-size: 16px; font-weight: 700;">Q</div>
+                                        <span class="option-label">25%</span>
+                                    </div>
+                                    <div class="option-card" onclick="selectEC(this, 'H')">
+                                        <div class="option-icon" style="font-size: 16px; font-weight: 700;">H</div>
+                                        <span class="option-label">30%</span>
+                                    </div>
+                                </div>
+                                <p class="form-hint">Higher levels allow QR to work even when partially damaged</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Output Tab -->
+                    <div class="tab-panel" id="output-tab">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="form-label">Export Format</label>
+                                <div class="download-grid">
+                                    <div class="download-option active recommended" onclick="selectFormat(this, 'png')">
+                                        <div class="download-format">PNG</div>
+                                        <div class="download-info">~12 KB • Raster</div>
+                                    </div>
+                                    <div class="download-option" onclick="selectFormat(this, 'svg')">
+                                        <div class="download-format">SVG</div>
+                                        <div class="download-info">~4 KB • Vector</div>
+                                    </div>
+                                    <div class="download-option" onclick="selectFormat(this, 'pdf')">
+                                        <div class="download-format">PDF</div>
+                                        <div class="download-info">~8 KB • Print</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="range-container" id="qualityRange">
+                                <div class="range-header">
+                                    <span class="range-label">Quality (DPI)</span>
+                                    <span class="range-value" id="dpiValue">150 DPI</span>
+                                </div>
+                                <input type="range" class="range-slider" min="72" max="300" value="150" oninput="updateDPI(this.value)">
+                                <div class="range-marks">
+                                    <span class="range-mark">72 (Web)</span>
+                                    <span class="range-mark">150 (Standard)</span>
+                                    <span class="range-mark">300 (Print)</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 20px;">
+                                <label class="form-label">Output Size</label>
+                                <div class="option-grid">
+                                    <div class="option-card" onclick="selectSize(this, 256)">
+                                        <div class="option-icon" style="font-size: 12px; font-weight: 600;">256</div>
+                                        <span class="option-label">Small</span>
+                                    </div>
+                                    <div class="option-card active" onclick="selectSize(this, 512)">
+                                        <div class="option-icon" style="font-size: 12px; font-weight: 600;">512</div>
+                                        <span class="option-label">Medium</span>
+                                    </div>
+                                    <div class="option-card" onclick="selectSize(this, 1024)">
+                                        <div class="option-icon" style="font-size: 12px; font-weight: 600;">1024</div>
+                                        <span class="option-label">Large</span>
+                                    </div>
+                                    <div class="option-card" onclick="selectSize(this, 2048)">
+                                        <div class="option-icon" style="font-size: 12px; font-weight: 600;">2048</div>
+                                        <span class="option-label">XL</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <aside class="preview-panel panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                        Preview
+                    </h2>
+                    <span class="panel-badge" style="background: var(--success-light); color: var(--success);">Live</span>
+                </div>
+
+                <div class="preview-area">
+                    <div class="qr-frame">
+                        <div class="qr-image" id="qrPreview">
+                            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <rect fill="#ffffff" width="100" height="100" id="qrBg"/>
+                                <g id="qrFg" fill="#1a1a1a">
+                                    <rect x="4" y="4" width="24" height="24"/>
+                                    <rect x="7" y="7" width="18" height="18" fill="#ffffff"/>
+                                    <rect x="10" y="10" width="12" height="12"/>
+                                    <rect x="72" y="4" width="24" height="24"/>
+                                    <rect x="75" y="7" width="18" height="18" fill="#ffffff"/>
+                                    <rect x="78" y="10" width="12" height="12"/>
+                                    <rect x="4" y="72" width="24" height="24"/>
+                                    <rect x="7" y="75" width="18" height="18" fill="#ffffff"/>
+                                    <rect x="10" y="78" width="12" height="12"/>
+                                    <rect x="32" y="4" width="4" height="4"/>
+                                    <rect x="40" y="4" width="4" height="4"/>
+                                    <rect x="48" y="4" width="4" height="4"/>
+                                    <rect x="36" y="8" width="4" height="4"/>
+                                    <rect x="44" y="8" width="4" height="4"/>
+                                    <rect x="52" y="8" width="4" height="4"/>
+                                    <rect x="32" y="32" width="4" height="4"/>
+                                    <rect x="40" y="36" width="4" height="4"/>
+                                    <rect x="48" y="40" width="4" height="4"/>
+                                    <rect x="56" y="44" width="4" height="4"/>
+                                    <rect x="64" y="48" width="4" height="4"/>
+                                    <rect x="72" y="32" width="4" height="4"/>
+                                    <rect x="80" y="36" width="4" height="4"/>
+                                    <rect x="88" y="40" width="4" height="4"/>
+                                    <rect x="32" y="72" width="4" height="4"/>
+                                    <rect x="40" y="76" width="4" height="4"/>
+                                    <rect x="48" y="80" width="4" height="4"/>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-controls">
+                    <button class="preview-btn" onclick="zoomOut()" title="Zoom out">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/>
+                        </svg>
+                    </button>
+                    <span class="zoom-value" id="zoomValue">100%</span>
+                    <button class="preview-btn" onclick="zoomIn()" title="Zoom in">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+                        </svg>
+                    </button>
+                    <button class="preview-btn" onclick="resetZoom()" title="Reset zoom">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="action-bar">
+                    <button class="action-btn" onclick="copyToClipboard()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                        </svg>
+                        Copy
+                    </button>
+                    <button class="action-btn" onclick="shareQR()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                        </svg>
+                        Share
+                    </button>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" id="generateBtn" onclick="generateQR()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Download QR Code
+                    </button>
+                    <p class="generate-hint">
+                        Keyboard shortcut: <kbd>⌘</kbd> + <kbd>D</kbd>
+                    </p>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Design Description -->
+        <div class="design-description">
+            <h3>
+                <span style="color: var(--accent);">•</span>
+                Variation 3: Professional Enterprise
+            </h3>
+            <p>This design uses a structured, business-focused approach with clear information hierarchy, consistent spacing, and a neutral color palette. The interface resembles professional productivity tools with panel-based organization.</p>
+
+            <div class="features-list">
+                <div class="feature-item">
+                    <div class="feature-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="feature-text">Panel-based UI with clear section headers and badges</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="feature-text">WCAG contrast alert with detailed compliance info</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="feature-text">Tab navigation for organized customization options</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="feature-text">Error correction level selector with recovery percentages</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="feature-text">Export options with format cards and size presets</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="feature-text">Keyboard shortcuts and accessibility compliance</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="feature-text">Sticky preview panel with zoom controls</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="feature-text">Toast notifications for all user actions</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // URL Validation
+        const urlInput = document.getElementById('urlInput');
+        const urlStatus = document.getElementById('urlStatus');
+
+        urlInput.addEventListener('input', debounce(validateURL, 300));
+
+        function validateURL() {
+            const value = urlInput.value.trim();
+            urlInput.classList.remove('error', 'success');
+            urlStatus.classList.remove('error', 'success');
+
+            if (!value) {
+                urlStatus.innerHTML = '';
+                return;
+            }
+
+            try {
+                new URL(value);
+                urlInput.classList.add('success');
+                urlStatus.classList.add('success');
+                urlStatus.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Valid';
+            } catch {
+                urlInput.classList.add('error');
+                urlStatus.classList.add('error');
+                urlStatus.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Invalid';
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func(...args), wait);
+            };
+        }
+
+        function setTemplate(type) {
+            const templates = {
+                website: 'https://',
+                wifi: 'WIFI:T:WPA;S:NetworkName;P:Password;;',
+                vcard: 'BEGIN:VCARD\nVERSION:3.0\nFN:Name\nEND:VCARD',
+                email: 'mailto:email@example.com',
+                sms: 'sms:+1234567890',
+                location: 'geo:40.7128,-74.0060'
+            };
+            urlInput.value = templates[type];
+            validateURL();
+            showToast('Template loaded: ' + type, 'success');
+        }
+
+        // Colors
+        function updateColors() {
+            const fg = document.getElementById('fgColor').value;
+            const bg = document.getElementById('bgColor').value;
+
+            document.getElementById('fgHex').value = fg.toUpperCase();
+            document.getElementById('bgHex').value = bg.toUpperCase();
+            document.getElementById('fgSwatch').style.background = fg;
+            document.getElementById('bgSwatch').style.background = bg;
+
+            document.getElementById('qrFg').setAttribute('fill', fg);
+            document.getElementById('qrBg').setAttribute('fill', bg);
+
+            updateContrastAlert(fg, bg);
+        }
+
+        function updateContrastAlert(fg, bg) {
+            const ratio = getContrastRatio(fg, bg);
+            const alert = document.getElementById('contrastAlert');
+            const aaPass = ratio >= 4.5;
+            const aaaPass = ratio >= 7;
+
+            alert.className = 'contrast-alert ' + (aaaPass ? 'success' : aaPass ? 'warning' : 'error');
+
+            let title, desc, icon;
+            if (aaaPass) {
+                title = `Excellent Contrast (${ratio.toFixed(1)}:1)`;
+                desc = 'Your QR code will be easily scannable';
+                icon = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>';
+            } else if (aaPass) {
+                title = `Good Contrast (${ratio.toFixed(1)}:1)`;
+                desc = 'QR code should be scannable, but higher contrast recommended';
+                icon = '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+            } else {
+                title = `Low Contrast (${ratio.toFixed(1)}:1)`;
+                desc = 'QR code may be difficult to scan - increase contrast';
+                icon = '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>';
+            }
+
+            alert.querySelector('.contrast-icon').innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icon}</svg>`;
+            alert.querySelector('.contrast-title').textContent = title;
+            alert.querySelector('.contrast-desc').textContent = desc;
+
+            document.getElementById('wcagAA').className = 'wcag-chip ' + (aaPass ? 'pass' : 'fail');
+            document.getElementById('wcagAA').textContent = 'AA ' + (aaPass ? '✓' : '✗');
+            document.getElementById('wcagAAA').className = 'wcag-chip ' + (aaaPass ? 'pass' : 'fail');
+            document.getElementById('wcagAAA').textContent = 'AAA ' + (aaaPass ? '✓' : '✗');
+        }
+
+        function getContrastRatio(fg, bg) {
+            const l1 = getLuminance(fg);
+            const l2 = getLuminance(bg);
+            return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+        }
+
+        function getLuminance(hex) {
+            const rgb = hexToRgb(hex);
+            const [r, g, b] = [rgb.r, rgb.g, rgb.b].map(v => {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function selectColorPreset(el, color) {
+            el.parentElement.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('fgColor').value = color;
+            updateColors();
+        }
+
+        // Option selectors
+        function selectPattern(el, pattern) {
+            el.parentElement.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            showToast('Pattern: ' + pattern, 'success');
+        }
+
+        function selectCorner(el, style) {
+            el.parentElement.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            showToast('Corner style: ' + style, 'success');
+        }
+
+        function selectEC(el, level) {
+            el.parentElement.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            showToast('Error correction: Level ' + level, 'success');
+        }
+
+        function selectFormat(el, format) {
+            document.querySelectorAll('.download-option').forEach(d => d.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('qualityRange').style.display = format === 'png' ? 'block' : 'none';
+        }
+
+        function selectSize(el, size) {
+            el.parentElement.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            showToast('Output size: ' + size + 'px', 'success');
+        }
+
+        function updateDPI(value) {
+            document.getElementById('dpiValue').textContent = value + ' DPI';
+        }
+
+        // Zoom
+        let zoomLevel = 100;
+
+        function zoomIn() {
+            if (zoomLevel < 200) {
+                zoomLevel += 25;
+                updateZoom();
+            }
+        }
+
+        function zoomOut() {
+            if (zoomLevel > 50) {
+                zoomLevel -= 25;
+                updateZoom();
+            }
+        }
+
+        function resetZoom() {
+            zoomLevel = 100;
+            updateZoom();
+        }
+
+        function updateZoom() {
+            document.getElementById('qrPreview').style.transform = `scale(${zoomLevel / 100})`;
+            document.getElementById('zoomValue').textContent = zoomLevel + '%';
+        }
+
+        // Actions
+        async function copyToClipboard() {
+            try {
+                await navigator.clipboard.writeText(urlInput.value);
+                showToast('Copied to clipboard', 'success');
+            } catch {
+                showToast('Failed to copy', 'error');
+            }
+        }
+
+        async function shareQR() {
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: 'QR Code', url: urlInput.value });
+                } catch {}
+            } else {
+                copyToClipboard();
+            }
+        }
+
+        function generateQR() {
+            const btn = document.getElementById('generateBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<svg class="spinner" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/></svg> Generating...';
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download QR Code';
+                showToast('QR Code downloaded successfully!', 'success');
+            }, 1500);
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    ${type === 'success' ? '<polyline points="20 6 9 17 4 12"/>' : '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'}
+                </svg>
+                ${message}
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'd') {
+                e.preventDefault();
+                generateQR();
+            }
+        });
+
+        // Initialize
+        updateColors();
+    </script>
+</body>
+</html>
