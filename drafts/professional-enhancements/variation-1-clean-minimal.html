@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional QR Generator - Variation 1: Clean & Minimal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #fffef9;
+            --fg: #1a1a1a;
+            --accent: #ff4d00;
+            --accent-hover: #e64500;
+            --accent-light: #fff0e6;
+            --muted: #666;
+            --border: #e5e5e0;
+            --surface: #f7f6f1;
+            --white: #ffffff;
+            --success: #059669;
+            --success-light: #d1fae5;
+            --error: #dc2626;
+            --error-light: #fee2e2;
+            --warning: #d97706;
+            --warning-light: #fef3c7;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.05), 0 4px 6px rgba(0,0,0,0.05);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --transition-fast: 150ms ease;
+            --transition-normal: 200ms ease;
+            --transition-slow: 300ms ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.6;
+        }
+
+        /* Design Approach Label */
+        .design-label {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            background: var(--fg);
+            color: var(--bg);
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            z-index: 1000;
+            border-radius: var(--radius-sm);
+        }
+
+        .design-label span {
+            color: var(--accent);
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 80px auto 40px;
+            padding: 0 24px;
+        }
+
+        /* Main Layout - Two Column */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* Left Column - Controls */
+        .controls-column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Card Base */
+        .card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            transition: box-shadow var(--transition-normal);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent);
+        }
+
+        /* URL Input Section */
+        .url-section {
+            position: relative;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 16px 48px 16px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-family: inherit;
+            transition: all var(--transition-fast);
+            outline: none;
+        }
+
+        .url-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .url-input.error {
+            border-color: var(--error);
+            box-shadow: 0 0 0 3px var(--error-light);
+            animation: shake 0.4s ease-in-out;
+        }
+
+        .url-input.success {
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px var(--success-light);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .input-icon.success { color: var(--success); }
+        .input-icon.error { color: var(--error); }
+        .input-icon.loading { animation: spin 1s linear infinite; }
+
+        @keyframes spin {
+            from { transform: translateY(-50%) rotate(0deg); }
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 8px;
+            min-height: 18px;
+        }
+
+        .input-hint.error { color: var(--error); }
+        .input-hint.success { color: var(--success); }
+
+        /* URL Shortcuts */
+        .url-shortcuts {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .shortcut-btn {
+            padding: 6px 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .shortcut-btn:hover {
+            background: var(--accent-light);
+            border-color: var(--accent);
+        }
+
+        .shortcut-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Accordion Panels */
+        .accordion {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        .accordion-header {
+            width: 100%;
+            padding: 16px;
+            background: var(--white);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--fg);
+            transition: background var(--transition-fast);
+        }
+
+        .accordion-header:hover {
+            background: var(--surface);
+        }
+
+        .accordion-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .accordion-header svg {
+            width: 18px;
+            height: 18px;
+            color: var(--muted);
+        }
+
+        .accordion-chevron {
+            transition: transform var(--transition-normal);
+        }
+
+        .accordion-item.open .accordion-chevron {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height var(--transition-slow) ease-out;
+        }
+
+        .accordion-item.open .accordion-content {
+            max-height: 500px;
+        }
+
+        .accordion-body {
+            padding: 0 16px 16px;
+        }
+
+        /* Color Controls */
+        .color-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .color-group {
+            flex: 1;
+        }
+
+        .color-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .color-input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .color-swatch {
+            width: 44px;
+            height: 44px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .color-swatch input {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            cursor: pointer;
+        }
+
+        .hex-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .hex-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* WCAG Contrast Checker */
+        .contrast-checker {
+            background: var(--surface);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .contrast-preview {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .contrast-info {
+            flex: 1;
+        }
+
+        .contrast-ratio {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .contrast-badges {
+            display: flex;
+            gap: 6px;
+        }
+
+        .contrast-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .contrast-badge.pass {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .contrast-badge.fail {
+            background: var(--error-light);
+            color: var(--error);
+        }
+
+        /* Preset Colors */
+        .color-presets {
+            display: flex;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .preset-swatch {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .preset-swatch:hover {
+            transform: scale(1.15);
+            box-shadow: var(--shadow-md);
+        }
+
+        .preset-swatch.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-light);
+        }
+
+        /* Recent Colors */
+        .recent-colors {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .recent-label {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        /* QR Pattern Styles */
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .pattern-option {
+            aspect-ratio: 1;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            padding: 8px;
+            transition: all var(--transition-fast);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .pattern-option:hover {
+            border-color: var(--fg);
+        }
+
+        .pattern-option.active {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .pattern-preview {
+            width: 24px;
+            height: 24px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+        }
+
+        .pattern-dot {
+            background: var(--fg);
+        }
+
+        .pattern-dot.square { border-radius: 0; }
+        .pattern-dot.rounded { border-radius: 2px; }
+        .pattern-dot.circle { border-radius: 50%; }
+        .pattern-dot.diamond { transform: rotate(45deg); }
+
+        .pattern-label {
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        /* Download Options */
+        .download-formats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .format-option {
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            text-align: center;
+            transition: all var(--transition-fast);
+        }
+
+        .format-option:hover {
+            border-color: var(--fg);
+        }
+
+        .format-option.active {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .format-name {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .format-size {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        /* Quality Slider */
+        .quality-slider-container {
+            margin-top: 16px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .slider-label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .slider-value {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .quality-slider {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: var(--border);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .quality-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+        }
+
+        .quality-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Right Column - Preview */
+        .preview-column {
+            position: sticky;
+            top: 100px;
+        }
+
+        .preview-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .preview-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+        }
+
+        .preview-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--success);
+            background: var(--success-light);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* QR Preview Container */
+        .qr-preview-container {
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .qr-preview {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            transition: transform var(--transition-normal);
+        }
+
+        .qr-preview:hover {
+            transform: scale(1.02);
+        }
+
+        .qr-preview svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            display: flex;
+            gap: 4px;
+            margin-top: 16px;
+        }
+
+        .zoom-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .zoom-btn:hover {
+            background: var(--surface);
+            border-color: var(--fg);
+        }
+
+        .zoom-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .zoom-level {
+            padding: 0 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Preview Actions */
+        .preview-actions {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--white);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all var(--transition-fast);
+        }
+
+        .action-btn:hover {
+            background: var(--surface);
+            border-color: var(--fg);
+        }
+
+        .action-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Generate Button */
+        .generate-section {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--fg);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generate-btn:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .generate-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .generate-btn.loading {
+            pointer-events: none;
+        }
+
+        .generate-btn.loading::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--fg);
+            color: var(--white);
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            opacity: 0;
+            transition: all var(--transition-normal);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--error);
+        }
+
+        .toast svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Keyboard Shortcut Hints */
+        .kbd {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--muted);
+        }
+
+        /* Tooltip */
+        .tooltip-trigger {
+            position: relative;
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--fg);
+            color: var(--white);
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-fast);
+            margin-bottom: 8px;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--fg);
+        }
+
+        .tooltip-trigger:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Focus States */
+        *:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* Skip Link */
+        .skip-link {
+            position: fixed;
+            top: -100px;
+            left: 16px;
+            background: var(--fg);
+            color: var(--white);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            z-index: 10000;
+            transition: top var(--transition-fast);
+        }
+
+        .skip-link:focus {
+            top: 16px;
+        }
+
+        /* Design Description */
+        .design-description {
+            margin-top: 40px;
+            padding: 24px;
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+
+        .design-description h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .design-description p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .feature-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--success);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-column {
+                position: relative;
+                top: 0;
+                order: -1;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <div class="design-label">Variation 1: <span>Clean & Minimal</span></div>
+
+    <div class="container">
+        <main class="main-layout" id="main-content">
+            <!-- Left Column - Controls -->
+            <div class="controls-column">
+                <!-- URL Input Card -->
+                <div class="card">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                        </svg>
+                        Enter Your URL
+                    </h2>
+
+                    <div class="url-section">
+                        <div class="input-wrapper">
+                            <input
+                                type="url"
+                                class="url-input"
+                                id="urlInput"
+                                placeholder="https://yourwebsite.com"
+                                value="https://example.com"
+                                aria-describedby="urlHint"
+                                aria-invalid="false"
+                            >
+                            <div class="input-icon success" id="inputIcon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="input-hint success" id="urlHint">✓ Valid URL</p>
+                    </div>
+
+                    <div class="url-shortcuts">
+                        <button class="shortcut-btn" onclick="setTemplate('website')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            Website
+                        </button>
+                        <button class="shortcut-btn" onclick="setTemplate('wifi')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+                            WiFi
+                        </button>
+                        <button class="shortcut-btn" onclick="setTemplate('vcard')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/><path d="M16 8h2"/><path d="M16 12h2"/><path d="M4 14h6"/><path d="M4 18h4"/></svg>
+                            Contact
+                        </button>
+                        <button class="shortcut-btn" onclick="setTemplate('email')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            Email
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Customization Accordion -->
+                <div class="accordion" role="tablist">
+                    <!-- Colors Panel -->
+                    <div class="accordion-item open">
+                        <button class="accordion-header" role="tab" aria-expanded="true" aria-controls="colors-panel" onclick="toggleAccordion(this)">
+                            <span class="accordion-header-left">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <circle cx="12" cy="12" r="4"/>
+                                </svg>
+                                Colors
+                            </span>
+                            <svg class="accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="accordion-content" id="colors-panel" role="tabpanel">
+                            <div class="accordion-body">
+                                <div class="color-row">
+                                    <div class="color-group">
+                                        <div class="color-label">QR Code Color</div>
+                                        <div class="color-input-row">
+                                            <div class="color-swatch" style="background: #1a1a1a">
+                                                <input type="color" value="#1a1a1a" id="fgColor" onchange="updateColors()">
+                                            </div>
+                                            <input type="text" class="hex-input" value="#1A1A1A" id="fgHex">
+                                        </div>
+                                    </div>
+                                    <div class="color-group">
+                                        <div class="color-label">Background</div>
+                                        <div class="color-input-row">
+                                            <div class="color-swatch" style="background: #ffffff">
+                                                <input type="color" value="#ffffff" id="bgColor" onchange="updateColors()">
+                                            </div>
+                                            <input type="text" class="hex-input" value="#FFFFFF" id="bgHex">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- WCAG Contrast Checker -->
+                                <div class="contrast-checker">
+                                    <div class="contrast-preview" id="contrastPreview" style="background: #ffffff; color: #1a1a1a;">Aa</div>
+                                    <div class="contrast-info">
+                                        <div class="contrast-ratio">Contrast: <span id="contrastRatio">21:1</span></div>
+                                        <div class="contrast-badges">
+                                            <span class="contrast-badge pass" id="wcagAA">AA ✓</span>
+                                            <span class="contrast-badge pass" id="wcagAAA">AAA ✓</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="color-presets">
+                                    <div class="preset-swatch active" style="background: #1a1a1a" onclick="setPresetColor('#1a1a1a')"></div>
+                                    <div class="preset-swatch" style="background: #2563eb" onclick="setPresetColor('#2563eb')"></div>
+                                    <div class="preset-swatch" style="background: #059669" onclick="setPresetColor('#059669')"></div>
+                                    <div class="preset-swatch" style="background: #7c3aed" onclick="setPresetColor('#7c3aed')"></div>
+                                    <div class="preset-swatch" style="background: #dc2626" onclick="setPresetColor('#dc2626')"></div>
+                                    <div class="preset-swatch" style="background: #ff4d00" onclick="setPresetColor('#ff4d00')"></div>
+                                </div>
+
+                                <div class="recent-colors">
+                                    <div class="recent-label">Recently used</div>
+                                    <div class="color-presets" id="recentColors">
+                                        <div class="preset-swatch" style="background: #334155"></div>
+                                        <div class="preset-swatch" style="background: #0891b2"></div>
+                                        <div class="preset-swatch" style="background: #4f46e5"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pattern Panel -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" role="tab" aria-expanded="false" aria-controls="pattern-panel" onclick="toggleAccordion(this)">
+                            <span class="accordion-header-left">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"/>
+                                    <rect x="14" y="3" width="7" height="7"/>
+                                    <rect x="14" y="14" width="7" height="7"/>
+                                    <rect x="3" y="14" width="7" height="7"/>
+                                </svg>
+                                Pattern Style
+                            </span>
+                            <svg class="accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="accordion-content" id="pattern-panel" role="tabpanel">
+                            <div class="accordion-body">
+                                <div class="color-label">Data Pattern</div>
+                                <div class="pattern-grid">
+                                    <div class="pattern-option active" onclick="selectPattern(this, 'square')">
+                                        <div class="pattern-preview">
+                                            <div class="pattern-dot square"></div>
+                                            <div class="pattern-dot square"></div>
+                                            <div class="pattern-dot square"></div>
+                                            <div class="pattern-dot square"></div>
+                                            <div class="pattern-dot square"></div>
+                                            <div class="pattern-dot square"></div>
+                                            <div class="pattern-dot square"></div>
+                                            <div class="pattern-dot square"></div>
+                                            <div class="pattern-dot square"></div>
+                                        </div>
+                                        <span class="pattern-label">Square</span>
+                                    </div>
+                                    <div class="pattern-option" onclick="selectPattern(this, 'rounded')">
+                                        <div class="pattern-preview">
+                                            <div class="pattern-dot rounded"></div>
+                                            <div class="pattern-dot rounded"></div>
+                                            <div class="pattern-dot rounded"></div>
+                                            <div class="pattern-dot rounded"></div>
+                                            <div class="pattern-dot rounded"></div>
+                                            <div class="pattern-dot rounded"></div>
+                                            <div class="pattern-dot rounded"></div>
+                                            <div class="pattern-dot rounded"></div>
+                                            <div class="pattern-dot rounded"></div>
+                                        </div>
+                                        <span class="pattern-label">Rounded</span>
+                                    </div>
+                                    <div class="pattern-option" onclick="selectPattern(this, 'dots')">
+                                        <div class="pattern-preview">
+                                            <div class="pattern-dot circle"></div>
+                                            <div class="pattern-dot circle"></div>
+                                            <div class="pattern-dot circle"></div>
+                                            <div class="pattern-dot circle"></div>
+                                            <div class="pattern-dot circle"></div>
+                                            <div class="pattern-dot circle"></div>
+                                            <div class="pattern-dot circle"></div>
+                                            <div class="pattern-dot circle"></div>
+                                            <div class="pattern-dot circle"></div>
+                                        </div>
+                                        <span class="pattern-label">Dots</span>
+                                    </div>
+                                    <div class="pattern-option" onclick="selectPattern(this, 'diamond')">
+                                        <div class="pattern-preview">
+                                            <div class="pattern-dot diamond"></div>
+                                            <div class="pattern-dot diamond"></div>
+                                            <div class="pattern-dot diamond"></div>
+                                            <div class="pattern-dot diamond"></div>
+                                            <div class="pattern-dot diamond"></div>
+                                            <div class="pattern-dot diamond"></div>
+                                            <div class="pattern-dot diamond"></div>
+                                            <div class="pattern-dot diamond"></div>
+                                            <div class="pattern-dot diamond"></div>
+                                        </div>
+                                        <span class="pattern-label">Diamond</span>
+                                    </div>
+                                </div>
+
+                                <div class="color-label" style="margin-top: 16px;">Corner Style</div>
+                                <div class="pattern-grid">
+                                    <div class="pattern-option active" onclick="selectCorner(this, 'square')">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="18" height="18"/>
+                                            <rect x="7" y="7" width="10" height="10" fill="currentColor"/>
+                                        </svg>
+                                        <span class="pattern-label">Square</span>
+                                    </div>
+                                    <div class="pattern-option" onclick="selectCorner(this, 'rounded')">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="18" height="18" rx="3"/>
+                                            <rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/>
+                                        </svg>
+                                        <span class="pattern-label">Rounded</span>
+                                    </div>
+                                    <div class="pattern-option" onclick="selectCorner(this, 'extra-rounded')">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="18" height="18" rx="6"/>
+                                            <rect x="7" y="7" width="10" height="10" rx="4" fill="currentColor"/>
+                                        </svg>
+                                        <span class="pattern-label">Extra</span>
+                                    </div>
+                                    <div class="pattern-option" onclick="selectCorner(this, 'dot')">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="9"/>
+                                            <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                                        </svg>
+                                        <span class="pattern-label">Dot</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Download Panel -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" role="tab" aria-expanded="false" aria-controls="download-panel" onclick="toggleAccordion(this)">
+                            <span class="accordion-header-left">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download Options
+                            </span>
+                            <svg class="accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="accordion-content" id="download-panel" role="tabpanel">
+                            <div class="accordion-body">
+                                <div class="color-label">Format</div>
+                                <div class="download-formats">
+                                    <div class="format-option active" onclick="selectFormat(this, 'png')">
+                                        <div class="format-name">PNG</div>
+                                        <div class="format-size">~12 KB</div>
+                                    </div>
+                                    <div class="format-option" onclick="selectFormat(this, 'svg')">
+                                        <div class="format-name">SVG</div>
+                                        <div class="format-size">~4 KB</div>
+                                    </div>
+                                    <div class="format-option" onclick="selectFormat(this, 'pdf')">
+                                        <div class="format-name">PDF</div>
+                                        <div class="format-size">~8 KB</div>
+                                    </div>
+                                </div>
+
+                                <div class="quality-slider-container" id="qualitySlider">
+                                    <div class="slider-header">
+                                        <span class="slider-label">Quality (DPI)</span>
+                                        <span class="slider-value" id="dpiValue">150 DPI</span>
+                                    </div>
+                                    <input type="range" class="quality-slider" min="72" max="300" value="150" oninput="updateDPI(this.value)">
+                                </div>
+
+                                <button class="shortcut-btn" style="margin-top: 16px; width: 100%; justify-content: center;" onclick="downloadAll()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                        <polyline points="7 10 12 15 17 10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                    Download All Formats
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Preview -->
+            <aside class="preview-column">
+                <div class="preview-card">
+                    <div class="preview-header">
+                        <span class="preview-title">Live Preview</span>
+                        <span class="preview-badge">
+                            <span class="live-dot"></span>
+                            Auto-updating
+                        </span>
+                    </div>
+
+                    <div class="qr-preview-container">
+                        <div class="qr-preview" id="qrPreview">
+                            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <rect fill="#ffffff" width="100" height="100" id="qrBg"/>
+                                <g id="qrFg" fill="#1a1a1a">
+                                    <rect x="4" y="4" width="24" height="24"/>
+                                    <rect x="7" y="7" width="18" height="18" fill="#ffffff"/>
+                                    <rect x="10" y="10" width="12" height="12"/>
+                                    <rect x="72" y="4" width="24" height="24"/>
+                                    <rect x="75" y="7" width="18" height="18" fill="#ffffff"/>
+                                    <rect x="78" y="10" width="12" height="12"/>
+                                    <rect x="4" y="72" width="24" height="24"/>
+                                    <rect x="7" y="75" width="18" height="18" fill="#ffffff"/>
+                                    <rect x="10" y="78" width="12" height="12"/>
+                                    <rect x="32" y="4" width="4" height="4"/>
+                                    <rect x="40" y="4" width="4" height="4"/>
+                                    <rect x="48" y="4" width="4" height="4"/>
+                                    <rect x="36" y="8" width="4" height="4"/>
+                                    <rect x="44" y="8" width="4" height="4"/>
+                                    <rect x="52" y="8" width="4" height="4"/>
+                                    <rect x="32" y="32" width="4" height="4"/>
+                                    <rect x="40" y="36" width="4" height="4"/>
+                                    <rect x="48" y="40" width="4" height="4"/>
+                                    <rect x="56" y="44" width="4" height="4"/>
+                                    <rect x="64" y="48" width="4" height="4"/>
+                                    <rect x="72" y="32" width="4" height="4"/>
+                                    <rect x="80" y="36" width="4" height="4"/>
+                                    <rect x="88" y="40" width="4" height="4"/>
+                                    <rect x="32" y="72" width="4" height="4"/>
+                                    <rect x="40" y="76" width="4" height="4"/>
+                                    <rect x="48" y="80" width="4" height="4"/>
+                                </g>
+                            </svg>
+                        </div>
+
+                        <div class="zoom-controls">
+                            <button class="zoom-btn tooltip-trigger" onclick="zoomOut()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                    <line x1="8" y1="11" x2="14" y2="11"/>
+                                </svg>
+                                <span class="tooltip">Zoom out</span>
+                            </button>
+                            <span class="zoom-level" id="zoomLevel">100%</span>
+                            <button class="zoom-btn tooltip-trigger" onclick="zoomIn()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                    <line x1="11" y1="8" x2="11" y2="14"/>
+                                    <line x1="8" y1="11" x2="14" y2="11"/>
+                                </svg>
+                                <span class="tooltip">Zoom in</span>
+                            </button>
+                            <button class="zoom-btn tooltip-trigger" onclick="resetZoom()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                                <span class="tooltip">Reset</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="preview-actions">
+                        <button class="action-btn tooltip-trigger" onclick="copyToClipboard()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                            </svg>
+                            Copy
+                            <span class="tooltip">Copy to clipboard <kbd>⌘C</kbd></span>
+                        </button>
+                        <button class="action-btn tooltip-trigger" onclick="shareQR()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="18" cy="5" r="3"/>
+                                <circle cx="6" cy="12" r="3"/>
+                                <circle cx="18" cy="19" r="3"/>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                            </svg>
+                            Share
+                            <span class="tooltip">Share QR code</span>
+                        </button>
+                    </div>
+
+                    <div class="generate-section">
+                        <button class="generate-btn" id="generateBtn" onclick="generateQR()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Download QR Code
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Design Description -->
+        <div class="design-description">
+            <h3>Variation 1: Clean & Minimal</h3>
+            <p>This approach prioritizes clarity and ease of use with a spacious two-column layout. The accordion pattern keeps the interface uncluttered while still providing access to all advanced features.</p>
+
+            <div class="features-grid">
+                <div class="feature-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Real-time URL validation with clear error states</span>
+                </div>
+                <div class="feature-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>WCAG contrast checker for accessibility</span>
+                </div>
+                <div class="feature-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Multiple QR pattern and corner styles</span>
+                </div>
+                <div class="feature-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>PNG, SVG, PDF download with quality slider</span>
+                </div>
+                <div class="feature-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Copy to clipboard and native share support</span>
+                </div>
+                <div class="feature-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Full keyboard navigation and screen reader support</span>
+                </div>
+                <div class="feature-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>URL shortcuts for WiFi, vCard, email templates</span>
+                </div>
+                <div class="feature-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Zoom controls and responsive preview</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span id="toastMessage">Copied to clipboard!</span>
+    </div>
+
+    <script>
+        // URL Validation
+        const urlInput = document.getElementById('urlInput');
+        const inputIcon = document.getElementById('inputIcon');
+        const urlHint = document.getElementById('urlHint');
+
+        urlInput.addEventListener('input', debounce(validateURL, 300));
+
+        function validateURL() {
+            const value = urlInput.value.trim();
+
+            if (!value) {
+                setInputState('neutral', 'Enter a URL to generate QR code');
+                return;
+            }
+
+            // Show loading state
+            setInputState('loading', 'Validating...');
+
+            // Simulate validation delay
+            setTimeout(() => {
+                try {
+                    new URL(value);
+                    setInputState('success', '✓ Valid URL');
+                } catch {
+                    setInputState('error', 'Please enter a valid URL (e.g., https://example.com)');
+                }
+            }, 300);
+        }
+
+        function setInputState(state, message) {
+            urlInput.classList.remove('error', 'success');
+            inputIcon.classList.remove('error', 'success', 'loading');
+            urlHint.classList.remove('error', 'success');
+
+            if (state === 'error') {
+                urlInput.classList.add('error');
+                inputIcon.classList.add('error');
+                urlHint.classList.add('error');
+                inputIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+            } else if (state === 'success') {
+                urlInput.classList.add('success');
+                inputIcon.classList.add('success');
+                urlHint.classList.add('success');
+                inputIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+            } else if (state === 'loading') {
+                inputIcon.classList.add('loading');
+                inputIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
+            } else {
+                inputIcon.innerHTML = '';
+            }
+
+            urlHint.textContent = message;
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // URL Templates
+        function setTemplate(type) {
+            const templates = {
+                website: 'https://',
+                wifi: 'WIFI:T:WPA;S:NetworkName;P:Password;;',
+                vcard: 'BEGIN:VCARD\nVERSION:3.0\nN:LastName;FirstName\nFN:FirstName LastName\nTEL:+1234567890\nEMAIL:email@example.com\nEND:VCARD',
+                email: 'mailto:email@example.com?subject=Hello'
+            };
+            urlInput.value = templates[type];
+            validateURL();
+        }
+
+        // Accordion
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const isOpen = item.classList.contains('open');
+
+            // Close all
+            document.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('open'));
+
+            // Open clicked if it wasn't open
+            if (!isOpen) {
+                item.classList.add('open');
+            }
+
+            // Update ARIA
+            header.setAttribute('aria-expanded', !isOpen);
+        }
+
+        // Color Functions
+        function updateColors() {
+            const fgColor = document.getElementById('fgColor').value;
+            const bgColor = document.getElementById('bgColor').value;
+
+            document.getElementById('fgHex').value = fgColor.toUpperCase();
+            document.getElementById('bgHex').value = bgColor.toUpperCase();
+
+            // Update preview
+            document.getElementById('qrFg').setAttribute('fill', fgColor);
+            document.getElementById('qrBg').setAttribute('fill', bgColor);
+
+            // Update contrast checker
+            updateContrastChecker(fgColor, bgColor);
+
+            // Update color swatch backgrounds
+            document.querySelector('#fgColor').parentElement.style.background = fgColor;
+            document.querySelector('#bgColor').parentElement.style.background = bgColor;
+        }
+
+        function updateContrastChecker(fg, bg) {
+            const preview = document.getElementById('contrastPreview');
+            preview.style.background = bg;
+            preview.style.color = fg;
+
+            const ratio = getContrastRatio(fg, bg);
+            document.getElementById('contrastRatio').textContent = ratio.toFixed(1) + ':1';
+
+            const aaPass = ratio >= 4.5;
+            const aaaPass = ratio >= 7;
+
+            const aaBadge = document.getElementById('wcagAA');
+            const aaaBadge = document.getElementById('wcagAAA');
+
+            aaBadge.className = 'contrast-badge ' + (aaPass ? 'pass' : 'fail');
+            aaBadge.textContent = 'AA ' + (aaPass ? '✓' : '✗');
+
+            aaaBadge.className = 'contrast-badge ' + (aaaPass ? 'pass' : 'fail');
+            aaaBadge.textContent = 'AAA ' + (aaaPass ? '✓' : '✗');
+        }
+
+        function getContrastRatio(fg, bg) {
+            const l1 = getLuminance(fg);
+            const l2 = getLuminance(bg);
+            const lighter = Math.max(l1, l2);
+            const darker = Math.min(l1, l2);
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        function getLuminance(hex) {
+            const rgb = hexToRgb(hex);
+            const [r, g, b] = [rgb.r, rgb.g, rgb.b].map(v => {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function setPresetColor(color) {
+            document.getElementById('fgColor').value = color;
+            document.querySelectorAll('.color-presets .preset-swatch').forEach(s => s.classList.remove('active'));
+            event.target.classList.add('active');
+            updateColors();
+        }
+
+        // Pattern Selection
+        function selectPattern(el, pattern) {
+            el.parentElement.querySelectorAll('.pattern-option').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            showToast('Pattern updated to ' + pattern);
+        }
+
+        function selectCorner(el, style) {
+            el.parentElement.querySelectorAll('.pattern-option').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            showToast('Corner style updated');
+        }
+
+        // Download Options
+        function selectFormat(el, format) {
+            document.querySelectorAll('.format-option').forEach(f => f.classList.remove('active'));
+            el.classList.add('active');
+
+            const qualitySlider = document.getElementById('qualitySlider');
+            qualitySlider.style.display = format === 'png' ? 'block' : 'none';
+        }
+
+        function updateDPI(value) {
+            document.getElementById('dpiValue').textContent = value + ' DPI';
+        }
+
+        function downloadAll() {
+            showToast('Downloading all formats...');
+        }
+
+        // Zoom Controls
+        let zoomLevel = 100;
+
+        function zoomIn() {
+            if (zoomLevel < 200) {
+                zoomLevel += 25;
+                updateZoom();
+            }
+        }
+
+        function zoomOut() {
+            if (zoomLevel > 50) {
+                zoomLevel -= 25;
+                updateZoom();
+            }
+        }
+
+        function resetZoom() {
+            zoomLevel = 100;
+            updateZoom();
+        }
+
+        function updateZoom() {
+            document.getElementById('qrPreview').style.transform = `scale(${zoomLevel / 100})`;
+            document.getElementById('zoomLevel').textContent = zoomLevel + '%';
+        }
+
+        // Copy to Clipboard
+        async function copyToClipboard() {
+            try {
+                // In real implementation, would copy actual QR image
+                await navigator.clipboard.writeText(urlInput.value);
+                showToast('Copied to clipboard!', 'success');
+            } catch (err) {
+                showToast('Failed to copy', 'error');
+            }
+        }
+
+        // Share
+        async function shareQR() {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'QR Code',
+                        text: 'Check out this QR code!',
+                        url: urlInput.value
+                    });
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        showToast('Failed to share', 'error');
+                    }
+                }
+            } else {
+                copyToClipboard();
+            }
+        }
+
+        // Generate
+        function generateQR() {
+            const btn = document.getElementById('generateBtn');
+            btn.classList.add('loading');
+            btn.innerHTML = '<svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg> Generating...';
+
+            setTimeout(() => {
+                btn.classList.remove('loading');
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download QR Code';
+                showToast('QR Code downloaded!', 'success');
+            }, 1500);
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toast.className = 'toast ' + type;
+            toastMessage.textContent = message;
+
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'c' && !e.shiftKey) {
+                // Let default copy behavior work
+            }
+            if ((e.metaKey || e.ctrlKey) && e.key === 'd') {
+                e.preventDefault();
+                generateQR();
+            }
+        });
+
+        // Initialize
+        updateColors();
+    </script>
+</body>
+</html>
