@@ -28,16 +28,6 @@ export default function Home() {
             >
               The QR <span className="text-accent">Spot</span>
             </Link>
-
-
-            {/* CTA Button */}
-            <Link
-              href="#qr-generator"
-              className="bg-fg px-7 py-3 text-sm font-semibold text-bg transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
-              role="button"
-            >
-              Get Started
-            </Link>
           </div>
         </nav>
       </header>
