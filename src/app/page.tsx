@@ -44,7 +44,8 @@ export default function Home() {
               id="hero-heading"
               className="font-serif text-4xl leading-[1.1] tracking-tight text-fg md:text-5xl lg:text-6xl"
             >
-              Create QR codes. <span className="italic text-accent">Free</span> forever.
+              Create QR codes. <span className="italic text-accent">Free</span>{" "}
+              forever.
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
               No account required. No credit card. No limits.

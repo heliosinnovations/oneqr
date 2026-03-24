@@ -1,1479 +1,1597 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OneQR - Ad Placement Mockup (Final: 2 Placements)</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #fffef9;
-      --fg: #1a1a1a;
-      --accent: #ff4d00;
-      --accent-light: #fff0e6;
-      --muted: #666;
-      --border: #e5e5e0;
-      --surface: #f7f6f1;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--fg);
-      line-height: 1.6;
-    }
-
-    .serif {
-      font-family: 'DM Serif Display', serif;
-    }
-
-    /* Grain texture overlay */
-    .grain {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 1000;
-      opacity: 0.03;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    }
-
-    /* NAVIGATION */
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-    }
-
-    nav .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 72px;
-      padding: 0 48px;
-      max-width: 1600px;
-      margin: 0 auto;
-    }
-
-    .logo {
-      font-family: 'DM Serif Display', serif;
-      font-size: 28px;
-      font-style: italic;
-      color: var(--fg);
-    }
-
-    .logo span {
-      color: var(--accent);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 40px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: var(--fg);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      position: relative;
-      transition: color 0.2s;
-    }
-
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--accent);
-      transition: width 0.3s ease;
-    }
-
-    .nav-links a:hover::after {
-      width: 100%;
-    }
-
-    .nav-cta {
-      background: var(--fg);
-      color: var(--bg);
-      padding: 12px 28px;
-      font-weight: 600;
-      text-decoration: none;
-      font-size: 14px;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .nav-cta:hover {
-      background: var(--accent);
-    }
-
-    /* HERO - Newspaper layout */
-    .hero {
-      min-height: 100vh;
-      padding: 120px 48px 80px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      max-width: 1600px;
-      margin: 0 auto;
-      align-items: center;
-    }
-
-    .hero-content {
-      max-width: 600px;
-    }
-
-    .hero-date {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      color: var(--muted);
-      margin-bottom: 24px;
-    }
-
-    .hero h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(48px, 6vw, 80px);
-      line-height: 1.05;
-      letter-spacing: -2px;
-      margin-bottom: 32px;
-    }
-
-    .hero h1 .accent {
-      color: var(--accent);
-      font-style: italic;
-    }
-
-    .hero-lead {
-      font-size: 20px;
-      line-height: 1.7;
-      color: var(--muted);
-      margin-bottom: 48px;
-      max-width: 480px;
-    }
-
-    .hero-lead strong {
-      color: var(--fg);
-    }
-
-    /* Stats row */
-    .hero-stats {
-      display: flex;
-      gap: 48px;
-      padding-top: 32px;
-      border-top: 1px solid var(--border);
-    }
-
-    .stat {
-      text-align: left;
-    }
-
-    .stat-value {
-      font-family: 'DM Serif Display', serif;
-      font-size: 48px;
-      color: var(--accent);
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-
-    .stat-label {
-      font-size: 13px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    /* QR Generator - Editorial card style */
-    .hero-generator {
-      background: var(--surface);
-      padding: 48px;
-      position: relative;
-    }
-
-    .hero-generator::before {
-      content: 'TRY IT NOW';
-      position: absolute;
-      top: -12px;
-      left: 32px;
-      background: var(--accent);
-      color: white;
-      padding: 6px 16px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 2px;
-    }
-
-    .generator-label {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--muted);
-      margin-bottom: 16px;
-    }
-
-    .qr-input {
-      width: 100%;
-      padding: 20px 0;
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid var(--border);
-      color: var(--fg);
-      font-family: 'DM Serif Display', serif;
-      font-size: 24px;
-      outline: none;
-      transition: border-color 0.3s ease;
-    }
-
-    .qr-input:focus {
-      border-color: var(--accent);
-    }
-
-    .qr-input::placeholder {
-      color: var(--muted);
-      font-style: italic;
-    }
-
-    .qr-generate-btn {
-      width: 100%;
-      margin-top: 32px;
-      padding: 20px;
-      background: var(--fg);
-      color: var(--bg);
-      border: none;
-      font-family: inherit;
-      font-weight: 600;
-      font-size: 16px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .qr-generate-btn:hover {
-      background: var(--accent);
-    }
-
-    .qr-generate-btn svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    .generator-note {
-      margin-top: 24px;
-      font-size: 13px;
-      color: var(--muted);
-      font-style: italic;
-    }
-
-    /* PRICING SECTION */
-    .pricing {
-      padding: 120px 48px;
-      background: var(--fg);
-      color: var(--bg);
-    }
-
-    .pricing .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .section-header {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
-      align-items: end;
-      margin-bottom: 64px;
-    }
-
-    .section-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 56px;
-      line-height: 1.1;
-    }
-
-    .section-title .italic {
-      font-style: italic;
-      color: var(--accent);
-    }
-
-    .section-subtitle {
-      font-size: 18px;
-      opacity: 0.7;
-      line-height: 1.7;
-    }
-
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 2px;
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .pricing-card {
-      background: var(--fg);
-      padding: 56px 48px;
-      position: relative;
-    }
-
-    .pricing-card.featured {
-      background: var(--accent);
-    }
-
-    .pricing-tag {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      opacity: 0.5;
-      margin-bottom: 24px;
-    }
-
-    .pricing-price {
-      font-family: 'DM Serif Display', serif;
-      font-size: 72px;
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .pricing-price .currency {
-      font-size: 36px;
-      vertical-align: top;
-      opacity: 0.6;
-    }
-
-    .pricing-label {
-      font-size: 16px;
-      opacity: 0.7;
-      margin-bottom: 32px;
-    }
-
-    .pricing-features {
-      list-style: none;
-      margin-bottom: 40px;
-    }
-
-    .pricing-features li {
-      padding: 14px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 15px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .pricing-features li::before {
-      content: '→';
-      opacity: 0.5;
-    }
-
-    .pricing-btn {
-      width: 100%;
-      padding: 18px;
-      background: var(--bg);
-      color: var(--fg);
-      border: none;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .pricing-card.featured .pricing-btn {
-      background: var(--fg);
-      color: var(--bg);
-    }
-
-    .pricing-btn:hover {
-      transform: translateY(-2px);
-    }
-
-    /* HOW IT WORKS */
-    .how-it-works {
-      padding: 120px 48px;
-    }
-
-    .how-it-works .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .how-it-works .section-header {
-      text-align: center;
-      display: block;
-      margin-bottom: 80px;
-    }
-
-    .how-it-works .section-title {
-      color: var(--fg);
-    }
-
-    .steps-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      border: 1px solid var(--border);
-    }
-
-    .step {
-      padding: 56px 40px;
-      position: relative;
-      border-right: 1px solid var(--border);
-    }
-
-    .step:last-child {
-      border-right: none;
-    }
-
-    .step-number {
-      font-family: 'DM Serif Display', serif;
-      font-size: 120px;
-      line-height: 1;
-      color: var(--surface);
-      position: absolute;
-      top: 24px;
-      right: 24px;
-      z-index: 0;
-    }
-
-    .step-content {
-      position: relative;
-      z-index: 1;
-    }
-
-    .step-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 28px;
-      margin-bottom: 16px;
-    }
-
-    .step-title .accent {
-      color: var(--accent);
-    }
-
-    .step-desc {
-      font-size: 15px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    /* FOOTER */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 48px;
-    }
-
-    footer .container {
-      max-width: 1600px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      gap: 48px;
-    }
-
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      list-style: none;
-    }
-
-    .footer-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 14px;
-      transition: color 0.2s;
-    }
-
-    .footer-links a:hover {
-      color: var(--fg);
-    }
-
-    .footer-copy {
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    /* ========================================
-       DASHBOARD PAGE
-       ======================================== */
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    .dashboard-header {
-      padding: 120px 48px 48px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .dashboard-header .container {
-      max-width: 1600px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-
-    .dashboard-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 56px;
-      line-height: 1;
-    }
-
-    .dashboard-subtitle {
-      font-size: 14px;
-      color: var(--muted);
-      margin-top: 12px;
-    }
-
-    .btn-create-new {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 18px 32px;
-      background: var(--fg);
-      color: var(--bg);
-      border: none;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .btn-create-new:hover {
-      background: var(--accent);
-    }
-
-    .btn-create-new svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    /* QR List - Editorial style */
-    .qr-list {
-      padding: 0 48px 80px;
-    }
-
-    .qr-list .container {
-      max-width: 1600px;
-      margin: 0 auto;
-    }
-
-    .qr-item {
-      display: grid;
-      grid-template-columns: 100px 1fr 160px 120px 180px;
-      gap: 32px;
-      align-items: center;
-      padding: 32px 0;
-      border-bottom: 1px solid var(--border);
-      transition: background 0.2s;
-    }
-
-    .qr-item:hover {
-      background: var(--surface);
-      margin: 0 -24px;
-      padding: 32px 24px;
-    }
-
-    .qr-thumb {
-      width: 80px;
-      height: 80px;
-      background: white;
-      border: 1px solid var(--border);
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .qr-thumb svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    .qr-info {
-      min-width: 0;
-    }
-
-    .qr-url-short {
-      font-family: 'DM Serif Display', serif;
-      font-size: 20px;
-      margin-bottom: 4px;
-    }
-
-    .qr-url-short a {
-      color: var(--fg);
-      text-decoration: none;
-    }
-
-    .qr-url-short a:hover {
-      color: var(--accent);
-    }
-
-    .qr-url-dest {
-      font-size: 14px;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .qr-date {
-      font-size: 14px;
-      color: var(--muted);
-    }
-
-    .qr-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 600;
-    }
-
-    .qr-status.paid {
-      color: #059669;
-    }
-
-    .qr-status.unpaid {
-      color: var(--accent);
-    }
-
-    .qr-status::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: currentColor;
-    }
-
-    .qr-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .qr-action-btn {
-      padding: 10px 20px;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--fg);
-      font-weight: 500;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .qr-action-btn:hover {
-      background: var(--fg);
-      color: var(--bg);
-      border-color: var(--fg);
-    }
-
-    .qr-action-btn.primary {
-      background: var(--fg);
-      color: var(--bg);
-      border-color: var(--fg);
-    }
-
-    .qr-action-btn.primary:hover {
-      background: var(--accent);
-      border-color: var(--accent);
-    }
-
-    /* ========================================
-       EDIT MODAL
-       ======================================== */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(26, 26, 26, 0.6);
-      backdrop-filter: blur(4px);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal {
-      background: var(--bg);
-      max-width: 520px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal-header {
-      padding: 32px 40px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 28px;
-    }
-
-    .modal-close {
-      width: 44px;
-      height: 44px;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--fg);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-
-    .modal-close:hover {
-      background: var(--fg);
-      color: var(--bg);
-    }
-
-    .modal-body {
-      padding: 40px;
-    }
-
-    /* QR Preview */
-    .modal-qr-preview {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 40px;
-    }
-
-    .modal-qr-preview svg {
-      width: 140px;
-      height: 140px;
-    }
-
-    /* Paywall */
-    .paywall {
-      background: var(--surface);
-      padding: 48px;
-      text-align: center;
-    }
-
-    .paywall-icon {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 24px;
-      border: 2px solid var(--accent);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .paywall-icon svg {
-      width: 28px;
-      height: 28px;
-      stroke: var(--accent);
-    }
-
-    .paywall-label-top {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .paywall-price {
-      font-family: 'DM Serif Display', serif;
-      font-size: 64px;
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .paywall-label {
-      font-size: 15px;
-      color: var(--muted);
-      margin-bottom: 32px;
-    }
-
-    .paywall-btn {
-      width: 100%;
-      padding: 18px;
-      background: var(--accent);
-      border: none;
-      color: white;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .paywall-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(255, 77, 0, 0.3);
-    }
-
-    .paywall-alt {
-      margin-top: 24px;
-      font-size: 14px;
-      color: var(--muted);
-    }
-
-    .paywall-alt a {
-      color: var(--accent);
-      text-decoration: underline;
-    }
-
-    /* Edit Form */
-    .edit-form {
-      display: none;
-    }
-
-    .edit-form.active {
-      display: block;
-    }
-
-    .form-label {
-      display: block;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-
-    .form-input {
-      width: 100%;
-      padding: 18px 0;
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid var(--border);
-      color: var(--fg);
-      font-family: 'DM Serif Display', serif;
-      font-size: 20px;
-      outline: none;
-      transition: border-color 0.3s ease;
-      margin-bottom: 32px;
-    }
-
-    .form-input:focus {
-      border-color: var(--accent);
-    }
-
-    .warning-box {
-      background: var(--accent-light);
-      border-left: 4px solid var(--accent);
-      padding: 20px 24px;
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    .warning-box svg {
-      width: 24px;
-      height: 24px;
-      stroke: var(--accent);
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    .warning-box p {
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--fg);
-    }
-
-    .warning-box strong {
-      color: var(--accent);
-    }
-
-    .form-submit {
-      width: 100%;
-      padding: 18px;
-      background: var(--fg);
-      border: none;
-      color: var(--bg);
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .form-submit:hover {
-      background: var(--accent);
-    }
-
-    /* Responsive */
-    @media (max-width: 1024px) {
-      .hero {
-        grid-template-columns: 1fr;
-        gap: 48px;
-        padding: 120px 24px 80px;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OneQR - Ad Placement Mockup (Final: 2 Placements)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #fffef9;
+        --fg: #1a1a1a;
+        --accent: #ff4d00;
+        --accent-light: #fff0e6;
+        --muted: #666;
+        --border: #e5e5e0;
+        --surface: #f7f6f1;
       }
 
-      .hero-generator {
-        max-width: 100%;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
 
-      .section-header {
-        grid-template-columns: 1fr;
-        text-align: center;
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+        line-height: 1.6;
       }
 
-      .steps-row {
-        grid-template-columns: 1fr;
+      .serif {
+        font-family: "DM Serif Display", serif;
       }
 
-      .step {
-        border-right: none;
+      /* Grain texture overlay */
+      .grain {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1000;
+        opacity: 0.03;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      }
+
+      /* NAVIGATION */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background: var(--bg);
         border-bottom: 1px solid var(--border);
       }
 
-      .step:last-child {
-        border-bottom: none;
-      }
-    }
-
-    @media (max-width: 768px) {
       nav .container {
-        padding: 0 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 72px;
+        padding: 0 48px;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
+      .logo {
+        font-family: "DM Serif Display", serif;
+        font-size: 28px;
+        font-style: italic;
+        color: var(--fg);
+      }
+
+      .logo span {
+        color: var(--accent);
       }
 
       .nav-links {
-        display: none;
+        display: flex;
+        gap: 40px;
+        list-style: none;
       }
 
+      .nav-links a {
+        color: var(--fg);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        position: relative;
+        transition: color 0.2s;
+      }
+
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--accent);
+        transition: width 0.3s ease;
+      }
+
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+
+      .nav-cta {
+        background: var(--fg);
+        color: var(--bg);
+        padding: 12px 28px;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .nav-cta:hover {
+        background: var(--accent);
+      }
+
+      /* HERO - Newspaper layout */
+      .hero {
+        min-height: 100vh;
+        padding: 120px 48px 80px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        max-width: 1600px;
+        margin: 0 auto;
+        align-items: center;
+      }
+
+      .hero-content {
+        max-width: 600px;
+      }
+
+      .hero-date {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+
+      .hero h1 {
+        font-family: "DM Serif Display", serif;
+        font-size: clamp(48px, 6vw, 80px);
+        line-height: 1.05;
+        letter-spacing: -2px;
+        margin-bottom: 32px;
+      }
+
+      .hero h1 .accent {
+        color: var(--accent);
+        font-style: italic;
+      }
+
+      .hero-lead {
+        font-size: 20px;
+        line-height: 1.7;
+        color: var(--muted);
+        margin-bottom: 48px;
+        max-width: 480px;
+      }
+
+      .hero-lead strong {
+        color: var(--fg);
+      }
+
+      /* Stats row */
+      .hero-stats {
+        display: flex;
+        gap: 48px;
+        padding-top: 32px;
+        border-top: 1px solid var(--border);
+      }
+
+      .stat {
+        text-align: left;
+      }
+
+      .stat-value {
+        font-family: "DM Serif Display", serif;
+        font-size: 48px;
+        color: var(--accent);
+        line-height: 1;
+        margin-bottom: 4px;
+      }
+
+      .stat-label {
+        font-size: 13px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* QR Generator - Editorial card style */
+      .hero-generator {
+        background: var(--surface);
+        padding: 48px;
+        position: relative;
+      }
+
+      .hero-generator::before {
+        content: "TRY IT NOW";
+        position: absolute;
+        top: -12px;
+        left: 32px;
+        background: var(--accent);
+        color: white;
+        padding: 6px 16px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+      }
+
+      .generator-label {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+
+      .qr-input {
+        width: 100%;
+        padding: 20px 0;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid var(--border);
+        color: var(--fg);
+        font-family: "DM Serif Display", serif;
+        font-size: 24px;
+        outline: none;
+        transition: border-color 0.3s ease;
+      }
+
+      .qr-input:focus {
+        border-color: var(--accent);
+      }
+
+      .qr-input::placeholder {
+        color: var(--muted);
+        font-style: italic;
+      }
+
+      .qr-generate-btn {
+        width: 100%;
+        margin-top: 32px;
+        padding: 20px;
+        background: var(--fg);
+        color: var(--bg);
+        border: none;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      .qr-generate-btn:hover {
+        background: var(--accent);
+      }
+
+      .qr-generate-btn svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .generator-note {
+        margin-top: 24px;
+        font-size: 13px;
+        color: var(--muted);
+        font-style: italic;
+      }
+
+      /* PRICING SECTION */
       .pricing {
-        padding: 80px 24px;
+        padding: 120px 48px;
+        background: var(--fg);
+        color: var(--bg);
+      }
+
+      .pricing .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .section-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px;
+        align-items: end;
+        margin-bottom: 64px;
+      }
+
+      .section-title {
+        font-family: "DM Serif Display", serif;
+        font-size: 56px;
+        line-height: 1.1;
+      }
+
+      .section-title .italic {
+        font-style: italic;
+        color: var(--accent);
+      }
+
+      .section-subtitle {
+        font-size: 18px;
+        opacity: 0.7;
+        line-height: 1.7;
       }
 
       .pricing-grid {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2px;
+        background: rgba(255, 255, 255, 0.1);
       }
 
-      .qr-item {
-        grid-template-columns: 1fr;
+      .pricing-card {
+        background: var(--fg);
+        padding: 56px 48px;
+        position: relative;
+      }
+
+      .pricing-card.featured {
+        background: var(--accent);
+      }
+
+      .pricing-tag {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        opacity: 0.5;
+        margin-bottom: 24px;
+      }
+
+      .pricing-price {
+        font-family: "DM Serif Display", serif;
+        font-size: 72px;
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+
+      .pricing-price .currency {
+        font-size: 36px;
+        vertical-align: top;
+        opacity: 0.6;
+      }
+
+      .pricing-label {
+        font-size: 16px;
+        opacity: 0.7;
+        margin-bottom: 32px;
+      }
+
+      .pricing-features {
+        list-style: none;
+        margin-bottom: 40px;
+      }
+
+      .pricing-features li {
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 15px;
+        display: flex;
+        align-items: center;
         gap: 16px;
       }
 
-      .dashboard-header {
-        padding: 120px 24px 48px;
+      .pricing-features li::before {
+        content: "→";
+        opacity: 0.5;
       }
 
-      .dashboard-header .container {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 24px;
+      .pricing-btn {
+        width: 100%;
+        padding: 18px;
+        background: var(--bg);
+        color: var(--fg);
+        border: none;
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .pricing-card.featured .pricing-btn {
+        background: var(--fg);
+        color: var(--bg);
+      }
+
+      .pricing-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      /* HOW IT WORKS */
+      .how-it-works {
+        padding: 120px 48px;
+      }
+
+      .how-it-works .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .how-it-works .section-header {
+        text-align: center;
+        display: block;
+        margin-bottom: 80px;
+      }
+
+      .how-it-works .section-title {
+        color: var(--fg);
+      }
+
+      .steps-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border: 1px solid var(--border);
+      }
+
+      .step {
+        padding: 56px 40px;
+        position: relative;
+        border-right: 1px solid var(--border);
+      }
+
+      .step:last-child {
+        border-right: none;
+      }
+
+      .step-number {
+        font-family: "DM Serif Display", serif;
+        font-size: 120px;
+        line-height: 1;
+        color: var(--surface);
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        z-index: 0;
+      }
+
+      .step-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .step-title {
+        font-family: "DM Serif Display", serif;
+        font-size: 28px;
+        margin-bottom: 16px;
+      }
+
+      .step-title .accent {
+        color: var(--accent);
+      }
+
+      .step-desc {
+        font-size: 15px;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      /* FOOTER */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 48px;
       }
 
       footer .container {
-        grid-template-columns: 1fr;
-        text-align: center;
-        gap: 24px;
+        max-width: 1600px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 48px;
       }
 
       .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        list-style: none;
+      }
+
+      .footer-links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.2s;
+      }
+
+      .footer-links a:hover {
+        color: var(--fg);
+      }
+
+      .footer-copy {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      /* ========================================
+       DASHBOARD PAGE
+       ======================================== */
+      .page {
+        display: none;
+      }
+
+      .page.active {
+        display: block;
+      }
+
+      .dashboard-header {
+        padding: 120px 48px 48px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .dashboard-header .container {
+        max-width: 1600px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+
+      .dashboard-title {
+        font-family: "DM Serif Display", serif;
+        font-size: 56px;
+        line-height: 1;
+      }
+
+      .dashboard-subtitle {
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 12px;
+      }
+
+      .btn-create-new {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 32px;
+        background: var(--fg);
+        color: var(--bg);
+        border: none;
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-create-new:hover {
+        background: var(--accent);
+      }
+
+      .btn-create-new svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* QR List - Editorial style */
+      .qr-list {
+        padding: 0 48px 80px;
+      }
+
+      .qr-list .container {
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
+      .qr-item {
+        display: grid;
+        grid-template-columns: 100px 1fr 160px 120px 180px;
+        gap: 32px;
+        align-items: center;
+        padding: 32px 0;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.2s;
+      }
+
+      .qr-item:hover {
+        background: var(--surface);
+        margin: 0 -24px;
+        padding: 32px 24px;
+      }
+
+      .qr-thumb {
+        width: 80px;
+        height: 80px;
+        background: white;
+        border: 1px solid var(--border);
+        padding: 12px;
+        display: flex;
+        align-items: center;
         justify-content: center;
       }
-    }
 
-    /* ========================================
+      .qr-thumb svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      .qr-info {
+        min-width: 0;
+      }
+
+      .qr-url-short {
+        font-family: "DM Serif Display", serif;
+        font-size: 20px;
+        margin-bottom: 4px;
+      }
+
+      .qr-url-short a {
+        color: var(--fg);
+        text-decoration: none;
+      }
+
+      .qr-url-short a:hover {
+        color: var(--accent);
+      }
+
+      .qr-url-dest {
+        font-size: 14px;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .qr-date {
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .qr-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+      }
+
+      .qr-status.paid {
+        color: #059669;
+      }
+
+      .qr-status.unpaid {
+        color: var(--accent);
+      }
+
+      .qr-status::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .qr-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .qr-action-btn {
+        padding: 10px 20px;
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--fg);
+        font-weight: 500;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .qr-action-btn:hover {
+        background: var(--fg);
+        color: var(--bg);
+        border-color: var(--fg);
+      }
+
+      .qr-action-btn.primary {
+        background: var(--fg);
+        color: var(--bg);
+        border-color: var(--fg);
+      }
+
+      .qr-action-btn.primary:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+
+      /* ========================================
+       EDIT MODAL
+       ======================================== */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(26, 26, 26, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal {
+        background: var(--bg);
+        max-width: 520px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        padding: 32px 40px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-title {
+        font-family: "DM Serif Display", serif;
+        font-size: 28px;
+      }
+
+      .modal-close {
+        width: 44px;
+        height: 44px;
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--fg);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+
+      .modal-close:hover {
+        background: var(--fg);
+        color: var(--bg);
+      }
+
+      .modal-body {
+        padding: 40px;
+      }
+
+      /* QR Preview */
+      .modal-qr-preview {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 40px;
+      }
+
+      .modal-qr-preview svg {
+        width: 140px;
+        height: 140px;
+      }
+
+      /* Paywall */
+      .paywall {
+        background: var(--surface);
+        padding: 48px;
+        text-align: center;
+      }
+
+      .paywall-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 24px;
+        border: 2px solid var(--accent);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .paywall-icon svg {
+        width: 28px;
+        height: 28px;
+        stroke: var(--accent);
+      }
+
+      .paywall-label-top {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      .paywall-price {
+        font-family: "DM Serif Display", serif;
+        font-size: 64px;
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+
+      .paywall-label {
+        font-size: 15px;
+        color: var(--muted);
+        margin-bottom: 32px;
+      }
+
+      .paywall-btn {
+        width: 100%;
+        padding: 18px;
+        background: var(--accent);
+        border: none;
+        color: white;
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .paywall-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(255, 77, 0, 0.3);
+      }
+
+      .paywall-alt {
+        margin-top: 24px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .paywall-alt a {
+        color: var(--accent);
+        text-decoration: underline;
+      }
+
+      /* Edit Form */
+      .edit-form {
+        display: none;
+      }
+
+      .edit-form.active {
+        display: block;
+      }
+
+      .form-label {
+        display: block;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 18px 0;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid var(--border);
+        color: var(--fg);
+        font-family: "DM Serif Display", serif;
+        font-size: 20px;
+        outline: none;
+        transition: border-color 0.3s ease;
+        margin-bottom: 32px;
+      }
+
+      .form-input:focus {
+        border-color: var(--accent);
+      }
+
+      .warning-box {
+        background: var(--accent-light);
+        border-left: 4px solid var(--accent);
+        padding: 20px 24px;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+
+      .warning-box svg {
+        width: 24px;
+        height: 24px;
+        stroke: var(--accent);
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .warning-box p {
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--fg);
+      }
+
+      .warning-box strong {
+        color: var(--accent);
+      }
+
+      .form-submit {
+        width: 100%;
+        padding: 18px;
+        background: var(--fg);
+        border: none;
+        color: var(--bg);
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .form-submit:hover {
+        background: var(--accent);
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .hero {
+          grid-template-columns: 1fr;
+          gap: 48px;
+          padding: 120px 24px 80px;
+        }
+
+        .hero-generator {
+          max-width: 100%;
+        }
+
+        .section-header {
+          grid-template-columns: 1fr;
+          text-align: center;
+        }
+
+        .steps-row {
+          grid-template-columns: 1fr;
+        }
+
+        .step {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .step:last-child {
+          border-bottom: none;
+        }
+      }
+
+      @media (max-width: 768px) {
+        nav .container {
+          padding: 0 24px;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .pricing {
+          padding: 80px 24px;
+        }
+
+        .pricing-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .qr-item {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .dashboard-header {
+          padding: 120px 24px 48px;
+        }
+
+        .dashboard-header .container {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 24px;
+        }
+
+        footer .container {
+          grid-template-columns: 1fr;
+          text-align: center;
+          gap: 24px;
+        }
+
+        .footer-links {
+          justify-content: center;
+        }
+      }
+
+      /* ========================================
        AD PLACEMENT STYLES
        ======================================== */
 
-    /* AD PLACEMENT #1: Below Hero Section */
-    .ad-below-hero {
-      max-width: 1200px;
-      margin: 80px auto;
-      padding: 0 48px;
-    }
-
-    .ad-container {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 32px;
-      text-align: center;
-      position: relative;
-    }
-
-    /* Grain texture on ad containers */
-    .ad-container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-      opacity: 0.02;
-      pointer-events: none;
-    }
-
-    .ad-label {
-      font-family: 'DM Serif Display', serif;
-      font-size: 11px;
-      font-style: italic;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      color: var(--muted);
-      margin-bottom: 16px;
-    }
-
-    /* Ad slot placeholder */
-    .ad-slot {
-      background: rgba(255, 77, 0, 0.03);
-      border: 2px dashed var(--border);
-      padding: 40px;
-      min-height: 90px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.8;
-    }
-
-    /* Leaderboard size */
-    .ad-slot.leaderboard {
-      min-height: 90px;
-    }
-
-    /* AD PLACEMENT #2: Footer Ad */
-    .ad-footer {
-      max-width: 1600px;
-      margin: 0 auto 48px;
-      padding: 0 48px;
-    }
-
-    /* Mobile responsive ads */
-    @media (max-width: 768px) {
-      .ad-below-hero,
-      .ad-footer {
-        padding: 0 24px;
+      /* AD PLACEMENT #1: Below Hero Section */
+      .ad-below-hero {
+        max-width: 1200px;
+        margin: 80px auto;
+        padding: 0 48px;
       }
 
+      .ad-container {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 32px;
+        text-align: center;
+        position: relative;
+      }
+
+      /* Grain texture on ad containers */
+      .ad-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        opacity: 0.02;
+        pointer-events: none;
+      }
+
+      .ad-label {
+        font-family: "DM Serif Display", serif;
+        font-size: 11px;
+        font-style: italic;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+
+      /* Ad slot placeholder */
       .ad-slot {
-        min-height: 50px;
+        background: rgba(255, 77, 0, 0.03);
+        border: 2px dashed var(--border);
+        padding: 40px;
+        min-height: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.8;
       }
-    }
-  </style>
-</head>
-<body>
-  <div class="grain"></div>
 
-  <!-- Navigation -->
-  <nav>
-    <div class="container">
-      <div class="logo">One<span>QR</span></div>
-      <ul class="nav-links">
-        <li><a href="#" onclick="showPage('home')">Home</a></li>
-        <li><a href="#pricing">Pricing</a></li>
-        <li><a href="#how-it-works">How it Works</a></li>
-        <li><a href="#" onclick="showPage('dashboard')">Dashboard</a></li>
-      </ul>
-      <button class="nav-cta" onclick="showPage('dashboard')">Dashboard</button>
-    </div>
-  </nav>
+      /* Leaderboard size */
+      .ad-slot.leaderboard {
+        min-height: 90px;
+      }
 
-  <!-- HOMEPAGE -->
-  <div id="page-home" class="page active">
-    <!-- Hero -->
-    <section class="hero">
-      <div class="hero-content">
-        <div class="hero-date">Est. 2026 — No Subscriptions</div>
+      /* AD PLACEMENT #2: Footer Ad */
+      .ad-footer {
+        max-width: 1600px;
+        margin: 0 auto 48px;
+        padding: 0 48px;
+      }
 
-        <h1>
-          The QR code<br>
-          that's <span class="accent">yours</span><br>
-          forever.
-        </h1>
+      /* Mobile responsive ads */
+      @media (max-width: 768px) {
+        .ad-below-hero,
+        .ad-footer {
+          padding: 0 24px;
+        }
 
-        <p class="hero-lead">
-          Generate free. Pay <strong>$3.99 once</strong> to edit.
-          Keep your QR code working forever. No monthly fees.
-          No expiring links. Just honest, simple pricing.
-        </p>
+        .ad-slot {
+          min-height: 50px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grain"></div>
 
-        <div class="hero-stats">
-          <div class="stat">
-            <div class="stat-value">∞</div>
-            <div class="stat-label">Edits included</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">$0</div>
-            <div class="stat-label">Monthly fees</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">1x</div>
-            <div class="stat-label">Payment only</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="hero-generator">
-        <div class="generator-label">Enter Your URL</div>
-        <input type="text" class="qr-input" placeholder="https://yoursite.com">
-        <button class="qr-generate-btn">
-          Generate QR Code
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </button>
-        <p class="generator-note">Free to generate. Save to dashboard for editing capabilities.</p>
-      </div>
-    </section>
-
-    <!-- ✨ AD PLACEMENT #1: Below Hero Section (Leaderboard 728×90) -->
-    <div class="ad-below-hero">
-      <div class="ad-container">
-        <div class="ad-label">Advertisement</div>
-        <div class="ad-slot leaderboard">
-          📍 AD PLACEMENT #1: Leaderboard (728×90)<br>
-          Below Hero — Natural break after QR generator
-        </div>
-      </div>
-    </div>
-
-    <!-- Pricing -->
-    <section class="pricing" id="pricing">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">
-            Simple, <span class="italic">honest</span><br>
-            pricing.
-          </h2>
-          <p class="section-subtitle">
-            Pay once. Edit forever. No subscriptions, no tricks.
-            Your QR code, your rules.
-          </p>
-        </div>
-
-        <div class="pricing-grid">
-          <div class="pricing-card">
-            <div class="pricing-tag">Single QR Code</div>
-            <div class="pricing-price"><span class="currency">$</span>3.99</div>
-            <div class="pricing-label">One-time payment</div>
-            <ul class="pricing-features">
-              <li>Make one QR editable</li>
-              <li>Unlimited future edits</li>
-              <li>Never expires</li>
-              <li>Scan analytics</li>
-            </ul>
-            <button class="pricing-btn">Get Started</button>
-          </div>
-
-          <div class="pricing-card featured">
-            <div class="pricing-tag">Unlimited QR Codes</div>
-            <div class="pricing-price"><span class="currency">$</span>9.99</div>
-            <div class="pricing-label">One-time payment</div>
-            <ul class="pricing-features">
-              <li>All QR codes editable</li>
-              <li>Unlimited future edits</li>
-              <li>Never expires</li>
-              <li>Bulk generation</li>
-              <li>Priority support</li>
-            </ul>
-            <button class="pricing-btn">Get Unlimited</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- How it works -->
-    <section class="how-it-works" id="how-it-works">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">
-            How it <span class="italic">works</span>
-          </h2>
-        </div>
-
-        <div class="steps-row">
-          <div class="step">
-            <div class="step-number">01</div>
-            <div class="step-content">
-              <h3 class="step-title">Create your <span class="accent">QR</span></h3>
-              <p class="step-desc">Enter any URL. Your QR code generates instantly. Download as PNG or SVG. No account required.</p>
-            </div>
-          </div>
-
-          <div class="step">
-            <div class="step-number">02</div>
-            <div class="step-content">
-              <h3 class="step-title">Save to your <span class="accent">dashboard</span></h3>
-              <p class="step-desc">Enter your email for magic link access. Your QR lives in the cloud, ready whenever you need it.</p>
-            </div>
-          </div>
-
-          <div class="step">
-            <div class="step-number">03</div>
-            <div class="step-content">
-              <h3 class="step-title">Edit <span class="accent">forever</span></h3>
-              <p class="step-desc">Pay once. Update the destination URL as many times as you want. The printed QR keeps working.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ✨ AD PLACEMENT #2: Above Footer (Leaderboard 728×90 / 320×50 mobile) -->
-    <div class="ad-footer">
-      <div class="ad-container">
-        <div class="ad-label">Advertisement</div>
-        <div class="ad-slot leaderboard">
-          📍 AD PLACEMENT #2: Leaderboard (728×90 desktop / 320×50 mobile)<br>
-          Above Footer — Least intrusive placement
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <footer>
+    <!-- Navigation -->
+    <nav>
       <div class="container">
         <div class="logo">One<span>QR</span></div>
-        <ul class="footer-links">
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Terms of Service</a></li>
-          <li><a href="#">Support</a></li>
-          <li><a href="#">Twitter</a></li>
+        <ul class="nav-links">
+          <li><a href="#" onclick="showPage('home')">Home</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#how-it-works">How it Works</a></li>
+          <li><a href="#" onclick="showPage('dashboard')">Dashboard</a></li>
         </ul>
-        <div class="footer-copy">&copy; 2026 Helios Innovations</div>
-      </div>
-    </footer>
-  </div>
-
-  <!-- DASHBOARD PAGE -->
-  <div id="page-dashboard" class="page">
-    <div class="dashboard-header">
-      <div class="container">
-        <div>
-          <h1 class="dashboard-title">Your QR Codes</h1>
-          <p class="dashboard-subtitle">3 codes saved • 2 active redirects</p>
-        </div>
-        <button class="btn-create-new">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 5v14M5 12h14"/>
-          </svg>
-          Create New QR
+        <button class="nav-cta" onclick="showPage('dashboard')">
+          Dashboard
         </button>
       </div>
-    </div>
+    </nav>
 
-    <div class="qr-list">
-      <div class="container">
-        <div class="qr-item">
-          <div class="qr-thumb">
-            <svg viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="41" height="41" fill="white"/>
-              <path fill="#000" d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"/>
-            </svg>
-          </div>
-          <div class="qr-info">
-            <div class="qr-url-short"><a href="#">oneqr.app/abc123</a></div>
-            <div class="qr-url-dest">→ https://myrestaurant.com/menu</div>
-          </div>
-          <div class="qr-date">March 15, 2026</div>
-          <span class="qr-status paid">Active</span>
-          <div class="qr-actions">
-            <button class="qr-action-btn primary" onclick="openModal('edit-paid')">Edit</button>
-            <button class="qr-action-btn">Download</button>
+    <!-- HOMEPAGE -->
+    <div id="page-home" class="page active">
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-content">
+          <div class="hero-date">Est. 2026 — No Subscriptions</div>
+
+          <h1>
+            The QR code<br />
+            that's <span class="accent">yours</span><br />
+            forever.
+          </h1>
+
+          <p class="hero-lead">
+            Generate free. Pay <strong>$3.99 once</strong> to edit. Keep your QR
+            code working forever. No monthly fees. No expiring links. Just
+            honest, simple pricing.
+          </p>
+
+          <div class="hero-stats">
+            <div class="stat">
+              <div class="stat-value">∞</div>
+              <div class="stat-label">Edits included</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">$0</div>
+              <div class="stat-label">Monthly fees</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">1x</div>
+              <div class="stat-label">Payment only</div>
+            </div>
           </div>
         </div>
 
-        <div class="qr-item">
-          <div class="qr-thumb">
-            <svg viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="41" height="41" fill="white"/>
-              <path fill="#000" d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"/>
+        <div class="hero-generator">
+          <div class="generator-label">Enter Your URL</div>
+          <input
+            type="text"
+            class="qr-input"
+            placeholder="https://yoursite.com"
+          />
+          <button class="qr-generate-btn">
+            Generate QR Code
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
-          </div>
-          <div class="qr-info">
-            <div class="qr-url-short"><a href="#">oneqr.app/xyz789</a></div>
-            <div class="qr-url-dest">→ https://mybusiness.com/promo</div>
-          </div>
-          <div class="qr-date">March 10, 2026</div>
-          <span class="qr-status paid">Active</span>
-          <div class="qr-actions">
-            <button class="qr-action-btn primary" onclick="openModal('edit-paid')">Edit</button>
-            <button class="qr-action-btn">Download</button>
-          </div>
-        </div>
-
-        <div class="qr-item">
-          <div class="qr-thumb">
-            <svg viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="41" height="41" fill="white"/>
-              <path fill="#ccc" d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"/>
-            </svg>
-          </div>
-          <div class="qr-info">
-            <div class="qr-url-short" style="opacity: 0.5">Not activated</div>
-            <div class="qr-url-dest">→ https://event.com/tickets</div>
-          </div>
-          <div class="qr-date">March 1, 2026</div>
-          <span class="qr-status unpaid">Inactive</span>
-          <div class="qr-actions">
-            <button class="qr-action-btn primary" onclick="openModal('edit-unpaid')">Activate</button>
-            <button class="qr-action-btn">Download</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <footer>
-      <div class="container">
-        <div class="logo">One<span>QR</span></div>
-        <ul class="footer-links">
-          <li><a href="#">Privacy</a></li>
-          <li><a href="#">Terms</a></li>
-          <li><a href="#">Support</a></li>
-        </ul>
-        <div class="footer-copy">&copy; 2026 Helios Innovations</div>
-      </div>
-    </footer>
-  </div>
-
-  <!-- EDIT MODAL - Unpaid (Paywall) -->
-  <div id="modal-edit-unpaid" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Activate QR Code</h3>
-        <button class="modal-close" onclick="closeModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-            <path d="M18 6L6 18M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="modal-qr-preview">
-          <svg viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="41" height="41" fill="white"/>
-            <path fill="#ccc" d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"/>
-          </svg>
-        </div>
-
-        <div class="paywall">
-          <div class="paywall-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-          </div>
-          <div class="paywall-label-top">One-time payment</div>
-          <div class="paywall-price">$3.99</div>
-          <div class="paywall-label">to make this QR editable forever</div>
-          <button class="paywall-btn">Unlock Editing</button>
-          <p class="paywall-alt">
-            Or <a href="#">get unlimited QRs for $9.99</a>
+          </button>
+          <p class="generator-note">
+            Free to generate. Save to dashboard for editing capabilities.
           </p>
         </div>
-      </div>
-    </div>
-  </div>
+      </section>
 
-  <!-- EDIT MODAL - Paid (Edit Form) -->
-  <div id="modal-edit-paid" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Edit QR Code</h3>
-        <button class="modal-close" onclick="closeModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-            <path d="M18 6L6 18M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="modal-qr-preview">
-          <svg viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="41" height="41" fill="white"/>
-            <path fill="#000" d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"/>
-          </svg>
+      <!-- ✨ AD PLACEMENT #1: Below Hero Section (Leaderboard 728×90) -->
+      <div class="ad-below-hero">
+        <div class="ad-container">
+          <div class="ad-label">Advertisement</div>
+          <div class="ad-slot leaderboard">
+            📍 AD PLACEMENT #1: Leaderboard (728×90)<br />
+            Below Hero — Natural break after QR generator
+          </div>
         </div>
+      </div>
 
-        <div class="edit-form active">
-          <label class="form-label">New Destination URL</label>
-          <input type="text" class="form-input" placeholder="https://..." value="https://myrestaurant.com/menu">
-
-          <div class="warning-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-              <line x1="12" y1="9" x2="12" y2="13"/>
-              <line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-            <p>
-              <strong>Important:</strong> Your old QR won't work anymore.
-              You'll need to download and <strong>reprint this new one</strong>.
+      <!-- Pricing -->
+      <section class="pricing" id="pricing">
+        <div class="container">
+          <div class="section-header">
+            <h2 class="section-title">
+              Simple, <span class="italic">honest</span><br />
+              pricing.
+            </h2>
+            <p class="section-subtitle">
+              Pay once. Edit forever. No subscriptions, no tricks. Your QR code,
+              your rules.
             </p>
           </div>
 
-          <button class="form-submit">Save Changes</button>
+          <div class="pricing-grid">
+            <div class="pricing-card">
+              <div class="pricing-tag">Single QR Code</div>
+              <div class="pricing-price">
+                <span class="currency">$</span>3.99
+              </div>
+              <div class="pricing-label">One-time payment</div>
+              <ul class="pricing-features">
+                <li>Make one QR editable</li>
+                <li>Unlimited future edits</li>
+                <li>Never expires</li>
+                <li>Scan analytics</li>
+              </ul>
+              <button class="pricing-btn">Get Started</button>
+            </div>
+
+            <div class="pricing-card featured">
+              <div class="pricing-tag">Unlimited QR Codes</div>
+              <div class="pricing-price">
+                <span class="currency">$</span>9.99
+              </div>
+              <div class="pricing-label">One-time payment</div>
+              <ul class="pricing-features">
+                <li>All QR codes editable</li>
+                <li>Unlimited future edits</li>
+                <li>Never expires</li>
+                <li>Bulk generation</li>
+                <li>Priority support</li>
+              </ul>
+              <button class="pricing-btn">Get Unlimited</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How it works -->
+      <section class="how-it-works" id="how-it-works">
+        <div class="container">
+          <div class="section-header">
+            <h2 class="section-title">
+              How it <span class="italic">works</span>
+            </h2>
+          </div>
+
+          <div class="steps-row">
+            <div class="step">
+              <div class="step-number">01</div>
+              <div class="step-content">
+                <h3 class="step-title">
+                  Create your <span class="accent">QR</span>
+                </h3>
+                <p class="step-desc">
+                  Enter any URL. Your QR code generates instantly. Download as
+                  PNG or SVG. No account required.
+                </p>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-number">02</div>
+              <div class="step-content">
+                <h3 class="step-title">
+                  Save to your <span class="accent">dashboard</span>
+                </h3>
+                <p class="step-desc">
+                  Enter your email for magic link access. Your QR lives in the
+                  cloud, ready whenever you need it.
+                </p>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-number">03</div>
+              <div class="step-content">
+                <h3 class="step-title">
+                  Edit <span class="accent">forever</span>
+                </h3>
+                <p class="step-desc">
+                  Pay once. Update the destination URL as many times as you
+                  want. The printed QR keeps working.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ✨ AD PLACEMENT #2: Above Footer (Leaderboard 728×90 / 320×50 mobile) -->
+      <div class="ad-footer">
+        <div class="ad-container">
+          <div class="ad-label">Advertisement</div>
+          <div class="ad-slot leaderboard">
+            📍 AD PLACEMENT #2: Leaderboard (728×90 desktop / 320×50 mobile)<br />
+            Above Footer — Least intrusive placement
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer>
+        <div class="container">
+          <div class="logo">One<span>QR</span></div>
+          <ul class="footer-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Support</a></li>
+            <li><a href="#">Twitter</a></li>
+          </ul>
+          <div class="footer-copy">&copy; 2026 Helios Innovations</div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div id="page-dashboard" class="page">
+      <div class="dashboard-header">
+        <div class="container">
+          <div>
+            <h1 class="dashboard-title">Your QR Codes</h1>
+            <p class="dashboard-subtitle">3 codes saved • 2 active redirects</p>
+          </div>
+          <button class="btn-create-new">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Create New QR
+          </button>
+        </div>
+      </div>
+
+      <div class="qr-list">
+        <div class="container">
+          <div class="qr-item">
+            <div class="qr-thumb">
+              <svg
+                viewBox="0 0 41 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="41" height="41" fill="white" />
+                <path
+                  fill="#000"
+                  d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"
+                />
+              </svg>
+            </div>
+            <div class="qr-info">
+              <div class="qr-url-short"><a href="#">oneqr.app/abc123</a></div>
+              <div class="qr-url-dest">→ https://myrestaurant.com/menu</div>
+            </div>
+            <div class="qr-date">March 15, 2026</div>
+            <span class="qr-status paid">Active</span>
+            <div class="qr-actions">
+              <button
+                class="qr-action-btn primary"
+                onclick="openModal('edit-paid')"
+              >
+                Edit
+              </button>
+              <button class="qr-action-btn">Download</button>
+            </div>
+          </div>
+
+          <div class="qr-item">
+            <div class="qr-thumb">
+              <svg
+                viewBox="0 0 41 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="41" height="41" fill="white" />
+                <path
+                  fill="#000"
+                  d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"
+                />
+              </svg>
+            </div>
+            <div class="qr-info">
+              <div class="qr-url-short"><a href="#">oneqr.app/xyz789</a></div>
+              <div class="qr-url-dest">→ https://mybusiness.com/promo</div>
+            </div>
+            <div class="qr-date">March 10, 2026</div>
+            <span class="qr-status paid">Active</span>
+            <div class="qr-actions">
+              <button
+                class="qr-action-btn primary"
+                onclick="openModal('edit-paid')"
+              >
+                Edit
+              </button>
+              <button class="qr-action-btn">Download</button>
+            </div>
+          </div>
+
+          <div class="qr-item">
+            <div class="qr-thumb">
+              <svg
+                viewBox="0 0 41 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="41" height="41" fill="white" />
+                <path
+                  fill="#ccc"
+                  d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"
+                />
+              </svg>
+            </div>
+            <div class="qr-info">
+              <div class="qr-url-short" style="opacity: 0.5">Not activated</div>
+              <div class="qr-url-dest">→ https://event.com/tickets</div>
+            </div>
+            <div class="qr-date">March 1, 2026</div>
+            <span class="qr-status unpaid">Inactive</span>
+            <div class="qr-actions">
+              <button
+                class="qr-action-btn primary"
+                onclick="openModal('edit-unpaid')"
+              >
+                Activate
+              </button>
+              <button class="qr-action-btn">Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="container">
+          <div class="logo">One<span>QR</span></div>
+          <ul class="footer-links">
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Support</a></li>
+          </ul>
+          <div class="footer-copy">&copy; 2026 Helios Innovations</div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- EDIT MODAL - Unpaid (Paywall) -->
+    <div id="modal-edit-unpaid" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Activate QR Code</h3>
+          <button class="modal-close" onclick="closeModal()">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              width="20"
+              height="20"
+            >
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-qr-preview">
+            <svg
+              viewBox="0 0 41 41"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="41" height="41" fill="white" />
+              <path
+                fill="#ccc"
+                d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"
+              />
+            </svg>
+          </div>
+
+          <div class="paywall">
+            <div class="paywall-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            <div class="paywall-label-top">One-time payment</div>
+            <div class="paywall-price">$3.99</div>
+            <div class="paywall-label">to make this QR editable forever</div>
+            <button class="paywall-btn">Unlock Editing</button>
+            <p class="paywall-alt">
+              Or <a href="#">get unlimited QRs for $9.99</a>
+            </p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById('page-' + pageId).classList.add('active');
-      window.scrollTo(0, 0);
-    }
+    <!-- EDIT MODAL - Paid (Edit Form) -->
+    <div id="modal-edit-paid" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Edit QR Code</h3>
+          <button class="modal-close" onclick="closeModal()">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              width="20"
+              height="20"
+            >
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-qr-preview">
+            <svg
+              viewBox="0 0 41 41"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="41" height="41" fill="white" />
+              <path
+                fill="#000"
+                d="M4 4h8v8H4zM14 4h2v2h-2zM18 4h2v2h-2zM22 4h4v2h-4zM29 4h8v8h-8zM4 14h2v2H4zM8 14h4v2H8zM14 14h4v4h-4zM20 14h2v6h-2zM24 14h2v2h-2zM29 14h2v2h-2zM33 14h4v2h-4zM4 18h2v2H4zM8 18h2v2H8zM14 20h4v2h-4zM24 20h4v2h-4zM4 22h2v4H4zM8 22h6v2H8zM18 22h2v6h-2zM22 24h2v2h-2zM26 24h2v4h-2zM30 24h4v2h-4zM4 29h8v8H4zM14 29h2v2h-2zM20 30h4v2h-4zM29 29h8v8h-8zM14 33h2v4h-2zM20 34h2v2h-2zM24 34h2v2h-2z"
+              />
+            </svg>
+          </div>
 
-    function openModal(type) {
-      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
-      document.getElementById('modal-edit-' + type).classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
+          <div class="edit-form active">
+            <label class="form-label">New Destination URL</label>
+            <input
+              type="text"
+              class="form-input"
+              placeholder="https://..."
+              value="https://myrestaurant.com/menu"
+            />
 
-    function closeModal() {
-      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
-      document.body.style.overflow = '';
-    }
+            <div class="warning-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <path
+                  d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+                />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <p>
+                <strong>Important:</strong> Your old QR won't work anymore.
+                You'll need to download and
+                <strong>reprint this new one</strong>.
+              </p>
+            </div>
 
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) closeModal();
+            <button class="form-submit">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showPage(pageId) {
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById("page-" + pageId).classList.add("active");
+        window.scrollTo(0, 0);
+      }
+
+      function openModal(type) {
+        document
+          .querySelectorAll(".modal-overlay")
+          .forEach((m) => m.classList.remove("active"));
+        document.getElementById("modal-edit-" + type).classList.add("active");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeModal() {
+        document
+          .querySelectorAll(".modal-overlay")
+          .forEach((m) => m.classList.remove("active"));
+        document.body.style.overflow = "";
+      }
+
+      document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) closeModal();
+        });
       });
-    });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
-    });
-  </script>
-</body>
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal();
+      });
+    </script>
+  </body>
 </html>
