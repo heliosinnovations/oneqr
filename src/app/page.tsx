@@ -70,76 +70,62 @@ export default function Home() {
       </header>
 
       <main id="main-content" className="min-h-screen bg-bg">
-        {/* Hero Section - Two column layout */}
+        {/* Hero Section - Full width QR generator */}
         <section
-          className="mx-auto grid min-h-screen max-w-7xl items-center gap-12 px-6 pb-20 pt-32 md:gap-20 lg:grid-cols-2 lg:px-12 lg:pb-24 lg:pt-36"
+          className="mx-auto max-w-7xl px-6 pb-20 pt-24 lg:px-12 lg:pb-24 lg:pt-28"
           aria-labelledby="hero-heading"
         >
-          {/* Left Column - Hero Content */}
-          <article className="max-w-xl">
-            {/* Date/Tagline */}
-            <p className="mb-6 text-xs uppercase tracking-[3px] text-muted">
-              Est. 2026 — Completely Free
-            </p>
-
-            {/* Headline - Single H1 */}
+          {/* Minimal heading above the fold */}
+          <header className="mb-12 text-center">
             <h1
               id="hero-heading"
-              className="font-serif text-5xl leading-[1.05] tracking-tight text-fg md:text-6xl lg:text-7xl"
+              className="font-serif text-4xl leading-[1.1] tracking-tight text-fg md:text-5xl lg:text-6xl"
             >
-              Create, download,
-              <br />
-              and print QR codes.
-              <br />
-              <span className="italic text-accent">Free</span> forever.
+              Create QR codes. <span className="italic text-accent">Free</span> forever.
             </h1>
-
-            {/* Description */}
-            <p className="mt-8 max-w-[480px] text-xl leading-[1.7] text-muted">
-              Generate unlimited QR codes. Download as PNG or SVG. Print and
-              share anywhere. No account required, no credit card, no expiration
-              dates. Completely free.
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
+              No account required. No credit card. No limits.
             </p>
+          </header>
 
-            {/* Stats */}
-            <div
-              className="mt-12 flex gap-12 border-t border-border pt-8"
-              role="list"
-              aria-label="Key statistics"
-            >
-              <div className="text-left" role="listitem">
-                <div
-                  className="font-serif text-5xl leading-none text-accent"
-                  aria-hidden="true"
-                >
-                  &infin;
-                </div>
-                <div className="mt-1 text-[13px] uppercase tracking-wider text-muted">
-                  <span className="sr-only">Unlimited</span> QR codes to create
-                </div>
+          {/* Full-width QR Generator - Above the fold */}
+          <div id="qr-generator" className="mx-auto max-w-2xl scroll-mt-24">
+            <QRGenerator />
+          </div>
+
+          {/* Stats - Below generator */}
+          <div
+            className="mx-auto mt-20 flex max-w-3xl justify-center gap-12 border-t border-border pt-12 md:gap-20"
+            role="list"
+            aria-label="Key statistics"
+          >
+            <div className="text-center" role="listitem">
+              <div
+                className="font-serif text-5xl leading-none text-accent"
+                aria-hidden="true"
+              >
+                &infin;
               </div>
-              <div className="text-left" role="listitem">
-                <div className="font-serif text-5xl leading-none text-accent">
-                  $0
-                </div>
-                <div className="mt-1 text-[13px] uppercase tracking-wider text-muted">
-                  Forever
-                </div>
-              </div>
-              <div className="text-left" role="listitem">
-                <div className="font-serif text-5xl leading-none text-accent">
-                  0
-                </div>
-                <div className="mt-1 text-[13px] uppercase tracking-wider text-muted">
-                  Accounts required
-                </div>
+              <div className="mt-2 text-[13px] uppercase tracking-wider text-muted">
+                <span className="sr-only">Unlimited</span> QR codes
               </div>
             </div>
-          </article>
-
-          {/* Right Column - QR Generator */}
-          <div id="qr-generator" className="w-full scroll-mt-24 lg:max-w-none">
-            <QRGenerator />
+            <div className="text-center" role="listitem">
+              <div className="font-serif text-5xl leading-none text-accent">
+                $0
+              </div>
+              <div className="mt-2 text-[13px] uppercase tracking-wider text-muted">
+                Forever
+              </div>
+            </div>
+            <div className="text-center" role="listitem">
+              <div className="font-serif text-5xl leading-none text-accent">
+                0
+              </div>
+              <div className="mt-2 text-[13px] uppercase tracking-wider text-muted">
+                Accounts
+              </div>
+            </div>
           </div>
         </section>
 
