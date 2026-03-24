@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Format Export - Variation 2: Compact Dropdown</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --pro-bg: #f8f9fa;
+      --pro-fg: #1a1a1a;
+      --pro-accent: #2563eb;
+      --pro-accent-hover: #1d4ed8;
+      --pro-accent-light: #eff6ff;
+      --pro-muted: #6b7280;
+      --pro-muted-light: #e5e7eb;
+      --pro-border: #e5e7eb;
+      --pro-border-dark: #d1d5db;
+      --pro-surface: #ffffff;
+      --pro-surface-hover: #f9fafb;
+    }
+
+    .custom-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 20px;
+      padding-right: 44px;
+    }
+
+    .dropdown-container {
+      position: relative;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      margin-top: 4px;
+      background: white;
+      border: 1px solid var(--pro-border);
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
+
+    .dropdown-menu.open {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+
+    .dropdown-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .dropdown-option:hover {
+      background: var(--pro-accent-light);
+    }
+
+    .dropdown-option.selected {
+      background: var(--pro-accent-light);
+    }
+
+    .dropdown-option.selected::after {
+      content: '';
+      margin-left: auto;
+      width: 20px;
+      height: 20px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%232563eb'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 13l4 4L19 7'%3E%3C/path%3E%3C/svg%3E");
+      background-size: contain;
+    }
+
+    .format-icon-sm {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .resolution-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(to right, var(--pro-accent) 44%, var(--pro-muted-light) 44%);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .resolution-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--pro-accent);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+      border: 3px solid white;
+    }
+
+    .dropdown-trigger {
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .dropdown-trigger:hover {
+      border-color: var(--pro-border-dark);
+    }
+
+    .dropdown-trigger:focus {
+      outline: none;
+      border-color: var(--pro-accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .inline-export-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .inline-export-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[var(--pro-bg)] min-h-screen p-4 md:p-8">
+  <!-- Design Info Banner -->
+  <div class="max-w-2xl mx-auto mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+    <h1 class="text-lg font-semibold text-emerald-900 mb-1">Variation 2: Compact Dropdown with Inline Layout</h1>
+    <p class="text-sm text-emerald-700">
+      <strong>Design Approach:</strong> Space-efficient dropdown selector with format and resolution side-by-side.
+      Best for power users who want quick access without visual clutter.
+    </p>
+    <ul class="mt-2 text-xs text-emerald-600 space-y-1">
+      <li>- Custom styled dropdown with rich format previews</li>
+      <li>- Format and resolution on same row (desktop)</li>
+      <li>- Compact vertical layout on mobile</li>
+      <li>- Quick format switching without extra UI space</li>
+      <li>- Format badges visible in dropdown options</li>
+    </ul>
+  </div>
+
+  <!-- Export Tab Content -->
+  <div class="max-w-2xl mx-auto bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm">
+    <!-- Tab Header -->
+    <div class="border-b border-[var(--pro-border)] px-5">
+      <div class="flex">
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Content</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Colors</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Style</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-[var(--pro-accent)] text-[var(--pro-accent)]">Export</button>
+      </div>
+    </div>
+
+    <!-- Export Content -->
+    <div class="p-6">
+      <!-- Inline Export Row: Format + Resolution -->
+      <div class="inline-export-row mb-6">
+        <!-- Format Dropdown -->
+        <div>
+          <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide">Format</label>
+          <div class="dropdown-container" id="formatDropdown">
+            <button class="dropdown-trigger w-full flex items-center gap-3 p-3 rounded-lg border border-[var(--pro-border)] bg-white text-left" id="dropdownTrigger">
+              <div class="format-icon-sm bg-green-100">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-semibold text-[var(--pro-fg)]" id="selectedFormat">PNG</div>
+                <div class="text-xs text-[var(--pro-muted)]" id="selectedDescription">Raster image for web</div>
+              </div>
+              <svg class="w-5 h-5 text-[var(--pro-muted)] transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="dropdownArrow">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div class="dropdown-menu" id="dropdownMenu">
+              <!-- PNG -->
+              <div class="dropdown-option selected" data-format="png" data-raster="true">
+                <div class="format-icon-sm bg-green-100">
+                  <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-[var(--pro-fg)]">PNG</span>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-medium">RASTER</span>
+                  </div>
+                  <div class="text-xs text-[var(--pro-muted)]">Best for web, social media, digital use</div>
+                </div>
+              </div>
+
+              <!-- SVG -->
+              <div class="dropdown-option" data-format="svg" data-raster="false">
+                <div class="format-icon-sm bg-purple-100">
+                  <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-[var(--pro-fg)]">SVG</span>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 font-medium">VECTOR</span>
+                  </div>
+                  <div class="text-xs text-[var(--pro-muted)]">Infinitely scalable, perfect for print</div>
+                </div>
+              </div>
+
+              <!-- PDF -->
+              <div class="dropdown-option" data-format="pdf" data-raster="false">
+                <div class="format-icon-sm bg-red-100">
+                  <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-[var(--pro-fg)]">PDF</span>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-red-100 text-red-700 font-medium">PRINT</span>
+                  </div>
+                  <div class="text-xs text-[var(--pro-muted)]">Universal document format for printing</div>
+                </div>
+              </div>
+
+              <!-- EPS -->
+              <div class="dropdown-option" data-format="eps" data-raster="false">
+                <div class="format-icon-sm bg-orange-100">
+                  <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-[var(--pro-fg)]">EPS</span>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-orange-100 text-orange-700 font-medium">ADOBE</span>
+                  </div>
+                  <div class="text-xs text-[var(--pro-muted)]">Illustrator & InDesign compatible</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resolution (only for raster) -->
+        <div id="resolutionColumn">
+          <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide">Resolution</label>
+          <div class="p-3 rounded-lg border border-[var(--pro-border)] bg-white h-[72px] flex flex-col justify-center">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-semibold text-[var(--pro-accent)]" id="resolutionValue">1000px</span>
+              <span class="text-xs text-[var(--pro-muted)]" id="fileSize">~45 KB</span>
+            </div>
+            <input type="range" min="200" max="2000" value="1000" step="100" class="resolution-slider w-full" id="resolutionSlider">
+          </div>
+        </div>
+
+        <!-- Vector Message (hidden by default) -->
+        <div id="vectorColumn" class="hidden">
+          <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide">Resolution</label>
+          <div class="p-3 rounded-lg border border-purple-200 bg-purple-50 h-[72px] flex items-center gap-3">
+            <svg class="w-5 h-5 text-purple-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+            </svg>
+            <div>
+              <div class="text-sm font-medium text-purple-900">Infinitely Scalable</div>
+              <div class="text-xs text-purple-600">Vector - no resolution needed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Size Presets (only for PNG) -->
+      <div class="mb-6" id="presetsSection">
+        <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide">Quick Presets</label>
+        <div class="flex flex-wrap gap-2">
+          <button class="px-3 py-1.5 text-xs font-medium rounded-full border border-[var(--pro-border)] hover:border-[var(--pro-accent)] hover:bg-[var(--pro-accent-light)] transition-all" data-size="200">200px - Icon</button>
+          <button class="px-3 py-1.5 text-xs font-medium rounded-full border border-[var(--pro-border)] hover:border-[var(--pro-accent)] hover:bg-[var(--pro-accent-light)] transition-all" data-size="500">500px - Social</button>
+          <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-[var(--pro-accent-light)] border border-[var(--pro-accent)] text-[var(--pro-accent)] transition-all" data-size="1000">1000px - Default</button>
+          <button class="px-3 py-1.5 text-xs font-medium rounded-full border border-[var(--pro-border)] hover:border-[var(--pro-accent)] hover:bg-[var(--pro-accent-light)] transition-all" data-size="1500">1500px - HD</button>
+          <button class="px-3 py-1.5 text-xs font-medium rounded-full border border-[var(--pro-border)] hover:border-[var(--pro-accent)] hover:bg-[var(--pro-accent-light)] transition-all" data-size="2000">2000px - Print</button>
+        </div>
+      </div>
+
+      <!-- Download Button -->
+      <button class="w-full flex items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-4 text-sm font-semibold text-white transition-all hover:bg-[var(--pro-accent-hover)] hover:shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        <span id="downloadText">Download PNG (1000 x 1000px)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Preview -->
+  <div class="max-w-sm mx-auto mt-8 p-4 bg-gray-100 rounded-xl">
+    <div class="text-center text-xs font-semibold text-gray-500 mb-4 uppercase tracking-wide">Mobile Preview (375px)</div>
+    <div class="bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm" style="max-width: 375px;">
+      <div class="p-4">
+        <!-- Stacked layout on mobile -->
+        <div class="space-y-4">
+          <!-- Format Dropdown - Mobile -->
+          <div>
+            <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase">Format</label>
+            <select class="custom-select w-full p-3 rounded-lg border border-[var(--pro-border)] bg-white text-sm font-medium">
+              <option>PNG - Raster image</option>
+              <option>SVG - Vector graphic</option>
+              <option>PDF - Print document</option>
+              <option>EPS - Adobe compatible</option>
+            </select>
+          </div>
+
+          <!-- Resolution - Mobile -->
+          <div>
+            <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase">Resolution</label>
+            <div class="p-3 rounded-lg border border-[var(--pro-border)] bg-white">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-semibold text-[var(--pro-accent)]">1000px</span>
+                <span class="text-xs text-[var(--pro-muted)]">~45 KB</span>
+              </div>
+              <input type="range" min="200" max="2000" value="1000" class="resolution-slider w-full">
+            </div>
+          </div>
+
+          <!-- Download - Mobile -->
+          <button class="w-full flex items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-3 text-sm font-semibold text-white">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Download PNG
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Dropdown functionality
+    const dropdownTrigger = document.getElementById('dropdownTrigger');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const dropdownArrow = document.getElementById('dropdownArrow');
+    const options = document.querySelectorAll('.dropdown-option');
+    const selectedFormat = document.getElementById('selectedFormat');
+    const selectedDescription = document.getElementById('selectedDescription');
+    const resolutionColumn = document.getElementById('resolutionColumn');
+    const vectorColumn = document.getElementById('vectorColumn');
+    const presetsSection = document.getElementById('presetsSection');
+    const downloadText = document.getElementById('downloadText');
+    const resolutionSlider = document.getElementById('resolutionSlider');
+    const resolutionValue = document.getElementById('resolutionValue');
+    const fileSize = document.getElementById('fileSize');
+
+    const formatData = {
+      png: { name: 'PNG', desc: 'Raster image for web', color: 'green', raster: true },
+      svg: { name: 'SVG', desc: 'Infinitely scalable vector', color: 'purple', raster: false },
+      pdf: { name: 'PDF', desc: 'Print-ready document', color: 'red', raster: false },
+      eps: { name: 'EPS', desc: 'Adobe compatible vector', color: 'orange', raster: false }
+    };
+
+    const fileSizes = { 200: '~5 KB', 500: '~15 KB', 1000: '~45 KB', 1500: '~95 KB', 2000: '~160 KB' };
+
+    let isOpen = false;
+    let currentFormat = 'png';
+
+    dropdownTrigger.addEventListener('click', () => {
+      isOpen = !isOpen;
+      dropdownMenu.classList.toggle('open', isOpen);
+      dropdownArrow.style.transform = isOpen ? 'rotate(180deg)' : '';
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#formatDropdown')) {
+        isOpen = false;
+        dropdownMenu.classList.remove('open');
+        dropdownArrow.style.transform = '';
+      }
+    });
+
+    options.forEach(option => {
+      option.addEventListener('click', () => {
+        const format = option.dataset.format;
+        const isRaster = option.dataset.raster === 'true';
+        currentFormat = format;
+
+        options.forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+
+        selectedFormat.textContent = formatData[format].name;
+        selectedDescription.textContent = formatData[format].desc;
+
+        // Update icon color in trigger
+        const triggerIcon = dropdownTrigger.querySelector('.format-icon-sm');
+        triggerIcon.className = `format-icon-sm bg-${formatData[format].color}-100`;
+        triggerIcon.querySelector('svg').className = `w-5 h-5 text-${formatData[format].color}-600`;
+
+        // Show/hide resolution controls
+        if (isRaster) {
+          resolutionColumn.classList.remove('hidden');
+          vectorColumn.classList.add('hidden');
+          presetsSection.classList.remove('hidden');
+          updateDownloadText();
+        } else {
+          resolutionColumn.classList.add('hidden');
+          vectorColumn.classList.remove('hidden');
+          presetsSection.classList.add('hidden');
+          downloadText.textContent = `Download ${formatData[format].name}`;
+        }
+
+        // Close dropdown
+        isOpen = false;
+        dropdownMenu.classList.remove('open');
+        dropdownArrow.style.transform = '';
+      });
+    });
+
+    function updateDownloadText() {
+      const size = resolutionSlider.value;
+      downloadText.textContent = `Download ${formatData[currentFormat].name} (${size} x ${size}px)`;
+    }
+
+    // Resolution slider
+    resolutionSlider.addEventListener('input', () => {
+      const value = resolutionSlider.value;
+      resolutionValue.textContent = value + 'px';
+      const nearest = [200, 500, 1000, 1500, 2000].reduce((prev, curr) =>
+        Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
+      );
+      fileSize.textContent = fileSizes[nearest];
+      updateDownloadText();
+
+      // Update preset buttons
+      document.querySelectorAll('[data-size]').forEach(btn => {
+        const size = parseInt(btn.dataset.size);
+        if (size === parseInt(value)) {
+          btn.className = 'px-3 py-1.5 text-xs font-medium rounded-full bg-[var(--pro-accent-light)] border border-[var(--pro-accent)] text-[var(--pro-accent)] transition-all';
+        } else {
+          btn.className = 'px-3 py-1.5 text-xs font-medium rounded-full border border-[var(--pro-border)] hover:border-[var(--pro-accent)] hover:bg-[var(--pro-accent-light)] transition-all';
+        }
+      });
+    });
+
+    // Preset buttons
+    document.querySelectorAll('[data-size]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const size = btn.dataset.size;
+        resolutionSlider.value = size;
+        resolutionSlider.dispatchEvent(new Event('input'));
+      });
+    });
+  </script>
+</body>
+</html>
