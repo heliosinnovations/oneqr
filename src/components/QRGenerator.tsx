@@ -742,31 +742,6 @@ export default function QRGenerator() {
         <p className="mt-5 text-center text-sm italic text-muted">
           Free to generate. Save to dashboard for editing capabilities.
         </p>
-
-        {/* Advanced Design Link */}
-        <div className="mt-4 text-center">
-          <a
-            href="/design"
-            className="inline-flex items-center gap-2 text-sm font-medium text-accent transition-colors hover:text-fg"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              className="h-4 w-4"
-            >
-              <rect x="3" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" />
-              <rect x="14" y="14" width="7" height="7" rx="1" />
-            </svg>
-            Try Advanced Design Customization
-            <span className="bg-accent-light px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
-              Beta
-            </span>
-          </a>
-        </div>
       </div>
 
       {/* Hidden canvas for potential future use */}
