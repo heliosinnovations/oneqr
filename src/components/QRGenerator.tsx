@@ -194,10 +194,10 @@ export default function QRGenerator() {
         Try it now
       </div>
 
-      {/* Split Layout: Controls Left | Preview Right */}
-      <div className="grid gap-0 md:grid-cols-[1fr_320px]">
-        {/* Left Panel: Controls */}
-        <div className="border-r border-border p-8 md:p-12">
+      {/* Single column layout - preview appears after controls */}
+      <div className="grid gap-0">
+        {/* Controls Panel */}
+        <div className="p-8 md:p-12">
           {/* URL Input */}
           <div className="mb-8">
             <label
@@ -420,8 +420,8 @@ export default function QRGenerator() {
           </div>
         </div>
 
-        {/* Right Panel: Sticky Preview */}
-        <div className="sticky top-0 flex min-h-[600px] flex-col items-center justify-center bg-white p-8"
+        {/* Preview Panel - Shows after generate */}
+        <div className="flex flex-col items-center justify-center border-t border-border bg-white p-8"
           role="region"
           aria-label="QR Code Preview"
         >
