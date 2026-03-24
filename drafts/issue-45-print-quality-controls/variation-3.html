@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Print Quality Controls - Variation 3: Minimal Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --pro-bg: #f8f9fa;
+      --pro-fg: #1a1a1a;
+      --pro-accent: #2563eb;
+      --pro-accent-hover: #1d4ed8;
+      --pro-accent-light: #eff6ff;
+      --pro-muted: #6b7280;
+      --pro-muted-light: #e5e7eb;
+      --pro-border: #e5e7eb;
+      --pro-border-dark: #d1d5db;
+      --pro-surface: #ffffff;
+      --pro-surface-hover: #f9fafb;
+      --pro-success: #059669;
+      --pro-success-light: #d1fae5;
+      --pro-warning: #d97706;
+      --pro-warning-light: #fef3c7;
+    }
+
+    .resolution-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(to right, var(--pro-accent) 44%, var(--pro-muted-light) 44%);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .resolution-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--pro-accent);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+      border: 3px solid white;
+    }
+
+    .dpi-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    .dpi-select:focus {
+      outline: none;
+      border-color: var(--pro-accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .size-readout {
+      font-variant-numeric: tabular-nums;
+      transition: all 0.2s ease;
+    }
+
+    .size-readout.pulse {
+      animation: sizePulse 0.3s ease;
+    }
+
+    @keyframes sizePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    .tooltip {
+      position: relative;
+    }
+
+    .tooltip:hover .tooltip-text {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .tooltip-text {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: var(--pro-fg);
+      color: white;
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s ease;
+      z-index: 10;
+      margin-bottom: 8px;
+    }
+
+    .tooltip-text::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--pro-fg);
+    }
+  </style>
+</head>
+<body class="bg-[var(--pro-bg)] min-h-screen p-4 md:p-8">
+  <!-- Design Info Banner -->
+  <div class="max-w-2xl mx-auto mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+    <h1 class="text-lg font-semibold text-blue-900 mb-1">Variation 3: Minimal Calculator</h1>
+    <p class="text-sm text-blue-700">
+      <strong>Design Approach:</strong> Ultra-clean, focused design with just the essential information.
+      DPI as dropdown, size shown inline. Maximum simplicity, minimum clutter.
+    </p>
+    <ul class="mt-2 text-xs text-blue-600 space-y-1">
+      <li>- Single dropdown for DPI selection</li>
+      <li>- Physical size shown as simple text beside resolution</li>
+      <li>- Warning only appears when needed (non-intrusive)</li>
+      <li>- Ideal for users who prioritize simplicity</li>
+      <li>- Best for: Quick exports, non-technical users</li>
+    </ul>
+  </div>
+
+  <!-- Export Tab Content -->
+  <div class="max-w-2xl mx-auto bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm">
+    <!-- Tab Header -->
+    <div class="border-b border-[var(--pro-border)] px-5">
+      <div class="flex">
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Content</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Colors</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Style</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-[var(--pro-accent)] text-[var(--pro-accent)]">Export</button>
+      </div>
+    </div>
+
+    <!-- Export Content -->
+    <div class="p-6">
+      <!-- Format Selector -->
+      <div class="mb-6">
+        <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide">Format</label>
+        <div class="grid grid-cols-4 gap-2">
+          <button class="rounded-lg border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] p-3 text-center">
+            <div class="text-sm font-bold">PNG</div>
+          </button>
+          <button class="rounded-lg border border-[var(--pro-border)] p-3 text-center hover:border-[var(--pro-border-dark)]">
+            <div class="text-sm font-bold">SVG</div>
+          </button>
+          <button class="rounded-lg border border-[var(--pro-border)] p-3 text-center hover:border-[var(--pro-border-dark)]">
+            <div class="text-sm font-bold">PDF</div>
+          </button>
+          <button class="rounded-lg border border-[var(--pro-border)] p-3 text-center hover:border-[var(--pro-border-dark)]">
+            <div class="text-sm font-bold">EPS</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Resolution + DPI Row -->
+      <div class="mb-5 p-4 bg-[var(--pro-surface-hover)] rounded-xl border border-[var(--pro-border)]">
+        <div class="flex flex-col md:flex-row md:items-end gap-4">
+          <!-- Resolution -->
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-3">
+              <label class="text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide">Resolution</label>
+              <span class="text-2xl font-bold text-[var(--pro-accent)]" id="resolutionValue">1000</span>
+            </div>
+            <input type="range" min="200" max="2000" value="1000" step="100" class="resolution-slider w-full" id="resolutionSlider">
+            <div class="flex justify-between text-[10px] text-[var(--pro-muted)] mt-1">
+              <span>200px</span>
+              <span>2000px</span>
+            </div>
+          </div>
+
+          <!-- DPI Dropdown -->
+          <div class="md:w-40">
+            <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide">DPI</label>
+            <select class="dpi-select w-full px-3 py-2.5 bg-white border border-[var(--pro-border)] rounded-lg text-sm font-medium text-[var(--pro-fg)] cursor-pointer" id="dpiSelect">
+              <option value="72">72 (Web)</option>
+              <option value="150">150 (Print)</option>
+              <option value="300" selected>300 (High Quality)</option>
+              <option value="600">600 (Professional)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEW: Minimal Print Size Display -->
+      <div class="mb-5 flex items-center justify-between p-4 bg-white rounded-xl border border-[var(--pro-border)]">
+        <div class="flex items-center gap-3">
+          <div class="tooltip">
+            <div class="w-10 h-10 rounded-lg bg-[var(--pro-accent-light)] flex items-center justify-center cursor-help">
+              <svg class="w-5 h-5 text-[var(--pro-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+              </svg>
+            </div>
+            <span class="tooltip-text">Physical print size at selected DPI</span>
+          </div>
+          <div>
+            <div class="text-xs text-[var(--pro-muted)]">Print Size</div>
+            <div class="text-sm font-semibold text-[var(--pro-fg)]">Physical dimensions when printed</div>
+          </div>
+        </div>
+        <div class="text-right size-readout" id="sizeDisplay">
+          <div class="text-xl font-bold text-[var(--pro-fg)]" id="sizeInches">3.3" x 3.3"</div>
+          <div class="text-xs text-[var(--pro-muted)]" id="sizeCm">8.5cm x 8.5cm</div>
+        </div>
+      </div>
+
+      <!-- Size Warning (appears only when needed) -->
+      <div class="mb-5 hidden" id="sizeWarning">
+        <div class="flex items-center gap-3 p-3 bg-[var(--pro-warning-light)] border border-yellow-300 rounded-lg">
+          <svg class="w-5 h-5 text-[var(--pro-warning)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <div class="text-sm text-[var(--pro-warning)]">
+            <span class="font-semibold">Size too small for scanning.</span> Minimum recommended: 0.8" (2cm)
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Tip -->
+      <div class="mb-5 flex items-start gap-2 text-xs text-[var(--pro-muted)]">
+        <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span><strong>Tip:</strong> Use 300 DPI for most printed materials. Higher DPI for small sizes or professional print.</span>
+      </div>
+
+      <!-- Download Button -->
+      <button class="w-full flex items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-4 text-sm font-semibold text-white transition-all hover:bg-[var(--pro-accent-hover)] hover:shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        <span id="downloadText">Download PNG (1000px @ 300 DPI)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Preview -->
+  <div class="max-w-sm mx-auto mt-8 p-4 bg-gray-100 rounded-xl">
+    <div class="text-center text-xs font-semibold text-gray-500 mb-4 uppercase tracking-wide">Mobile Preview (375px)</div>
+    <div class="bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm" style="max-width: 375px;">
+      <div class="p-4">
+        <!-- Format - Mobile -->
+        <div class="mb-3">
+          <div class="grid grid-cols-4 gap-1.5">
+            <div class="rounded border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] p-2 text-center">
+              <div class="text-xs font-bold">PNG</div>
+            </div>
+            <div class="rounded border border-[var(--pro-border)] p-2 text-center">
+              <div class="text-xs font-bold">SVG</div>
+            </div>
+            <div class="rounded border border-[var(--pro-border)] p-2 text-center">
+              <div class="text-xs font-bold">PDF</div>
+            </div>
+            <div class="rounded border border-[var(--pro-border)] p-2 text-center">
+              <div class="text-xs font-bold">EPS</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resolution - Mobile -->
+        <div class="mb-3 p-3 bg-[var(--pro-surface-hover)] rounded-lg border border-[var(--pro-border)]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[10px] font-semibold text-[var(--pro-fg)]">Resolution</span>
+            <span class="text-lg font-bold text-[var(--pro-accent)]">1000px</span>
+          </div>
+          <input type="range" min="200" max="2000" value="1000" class="resolution-slider w-full">
+        </div>
+
+        <!-- DPI + Size - Mobile (Horizontal) -->
+        <div class="mb-3 flex gap-2">
+          <div class="flex-1 p-2.5 bg-[var(--pro-surface-hover)] rounded-lg border border-[var(--pro-border)]">
+            <div class="text-[9px] text-[var(--pro-muted)] mb-1">DPI</div>
+            <select class="dpi-select w-full px-2 py-1 bg-white border border-[var(--pro-border)] rounded text-xs font-medium">
+              <option>72</option>
+              <option>150</option>
+              <option selected>300</option>
+              <option>600</option>
+            </select>
+          </div>
+          <div class="flex-1 p-2.5 bg-[var(--pro-surface-hover)] rounded-lg border border-[var(--pro-border)]">
+            <div class="text-[9px] text-[var(--pro-muted)] mb-1">Print Size</div>
+            <div class="text-sm font-bold text-[var(--pro-fg)]">3.3" x 3.3"</div>
+            <div class="text-[9px] text-[var(--pro-muted)]">8.5cm x 8.5cm</div>
+          </div>
+        </div>
+
+        <!-- Download - Mobile -->
+        <button class="w-full flex items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-3 text-xs font-semibold text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download PNG
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alternative Ultra-Minimal Version -->
+  <div class="max-w-2xl mx-auto mt-8 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+    <h2 class="text-sm font-semibold text-purple-900 mb-3">Alternative: Inline Size Display</h2>
+    <p class="text-xs text-purple-700 mb-4">For even more minimal integration, show print size as a single line beneath the resolution slider:</p>
+
+    <div class="bg-white rounded-lg p-4 border border-purple-200">
+      <div class="flex items-center justify-between mb-3">
+        <label class="text-xs font-semibold text-[var(--pro-fg)] uppercase">Resolution</label>
+        <span class="text-xl font-bold text-[var(--pro-accent)]">1000px</span>
+      </div>
+      <input type="range" min="200" max="2000" value="1000" class="resolution-slider w-full mb-2">
+
+      <!-- Inline DPI + Size -->
+      <div class="flex items-center justify-between text-xs text-[var(--pro-muted)]">
+        <span class="flex items-center gap-2">
+          at
+          <select class="px-2 py-1 bg-[var(--pro-surface-hover)] border border-[var(--pro-border)] rounded text-xs">
+            <option>72 DPI</option>
+            <option>150 DPI</option>
+            <option selected>300 DPI</option>
+            <option>600 DPI</option>
+          </select>
+        </span>
+        <span class="font-medium text-[var(--pro-fg)]">= 3.3" x 3.3" (8.5cm)</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const resolutionSlider = document.getElementById('resolutionSlider');
+    const resolutionValue = document.getElementById('resolutionValue');
+    const dpiSelect = document.getElementById('dpiSelect');
+    const sizeInches = document.getElementById('sizeInches');
+    const sizeCm = document.getElementById('sizeCm');
+    const sizeWarning = document.getElementById('sizeWarning');
+    const sizeDisplay = document.getElementById('sizeDisplay');
+    const downloadText = document.getElementById('downloadText');
+
+    function updateCalculations() {
+      const resolution = parseInt(resolutionSlider.value);
+      const dpi = parseInt(dpiSelect.value);
+      const physicalInches = resolution / dpi;
+      const physicalCm = physicalInches * 2.54;
+
+      resolutionValue.textContent = resolution;
+      sizeInches.textContent = `${physicalInches.toFixed(1)}" x ${physicalInches.toFixed(1)}"`;
+      sizeCm.textContent = `${physicalCm.toFixed(1)}cm x ${physicalCm.toFixed(1)}cm`;
+
+      // Animate
+      sizeDisplay.classList.add('pulse');
+      setTimeout(() => sizeDisplay.classList.remove('pulse'), 300);
+
+      // Warning
+      if (physicalInches < 0.8) {
+        sizeWarning.classList.remove('hidden');
+      } else {
+        sizeWarning.classList.add('hidden');
+      }
+
+      downloadText.textContent = `Download PNG (${resolution}px @ ${dpi} DPI)`;
+    }
+
+    resolutionSlider.addEventListener('input', updateCalculations);
+    dpiSelect.addEventListener('change', updateCalculations);
+
+    updateCalculations();
+  </script>
+</body>
+</html>
