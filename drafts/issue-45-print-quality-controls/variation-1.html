@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Print Quality Controls - Variation 1: Compact Integrated</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --pro-bg: #f8f9fa;
+      --pro-fg: #1a1a1a;
+      --pro-accent: #2563eb;
+      --pro-accent-hover: #1d4ed8;
+      --pro-accent-light: #eff6ff;
+      --pro-muted: #6b7280;
+      --pro-muted-light: #e5e7eb;
+      --pro-border: #e5e7eb;
+      --pro-border-dark: #d1d5db;
+      --pro-surface: #ffffff;
+      --pro-surface-hover: #f9fafb;
+      --pro-success: #059669;
+      --pro-success-light: #d1fae5;
+      --pro-warning: #d97706;
+      --pro-warning-light: #fef3c7;
+      --pro-error: #dc2626;
+      --pro-error-light: #fee2e2;
+    }
+
+    .resolution-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(to right, var(--pro-accent) 44%, var(--pro-muted-light) 44%);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .resolution-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--pro-accent);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+      border: 3px solid white;
+    }
+
+    .dpi-option {
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    .dpi-option:hover {
+      background: var(--pro-surface-hover);
+      border-color: var(--pro-border-dark);
+    }
+
+    .dpi-option.selected {
+      background: var(--pro-accent-light);
+      border-color: var(--pro-accent);
+      color: var(--pro-accent);
+    }
+
+    .dpi-option.selected .dpi-label {
+      color: var(--pro-accent);
+      font-weight: 600;
+    }
+
+    .size-display {
+      transition: all 0.2s ease;
+    }
+
+    .size-display.updated {
+      animation: pulse 0.3s ease;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    .warning-badge {
+      animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      75% { transform: translateX(2px); }
+    }
+  </style>
+</head>
+<body class="bg-[var(--pro-bg)] min-h-screen p-4 md:p-8">
+  <!-- Design Info Banner -->
+  <div class="max-w-2xl mx-auto mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+    <h1 class="text-lg font-semibold text-blue-900 mb-1">Variation 1: Compact Integrated Design</h1>
+    <p class="text-sm text-blue-700">
+      <strong>Design Approach:</strong> Streamlined, inline controls that blend with existing UI.
+      DPI as segmented buttons, physical size displayed compactly below resolution.
+    </p>
+    <ul class="mt-2 text-xs text-blue-600 space-y-1">
+      <li>- DPI selector as horizontal segmented buttons</li>
+      <li>- Physical size displayed inline with resolution</li>
+      <li>- Minimal vertical space - fits tight layouts</li>
+      <li>- Warning appears subtly when size is too small</li>
+      <li>- Best for: Users who want quick access without clutter</li>
+    </ul>
+  </div>
+
+  <!-- Export Tab Content -->
+  <div class="max-w-2xl mx-auto bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm">
+    <!-- Tab Header -->
+    <div class="border-b border-[var(--pro-border)] px-5">
+      <div class="flex">
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Content</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Colors</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]">Style</button>
+        <button class="px-4 py-3.5 text-sm font-medium border-b-2 border-[var(--pro-accent)] text-[var(--pro-accent)]">Export</button>
+      </div>
+    </div>
+
+    <!-- Export Content -->
+    <div class="p-6">
+      <!-- Format Selector (existing from Issue #43) -->
+      <div class="mb-6">
+        <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide">Export Format</label>
+        <div class="grid grid-cols-4 gap-2">
+          <button class="rounded-lg border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] p-3 text-center">
+            <div class="text-sm font-bold">PNG</div>
+            <div class="text-[10px] text-[var(--pro-muted)]">Raster</div>
+          </button>
+          <button class="rounded-lg border border-[var(--pro-border)] p-3 text-center hover:border-[var(--pro-border-dark)]">
+            <div class="text-sm font-bold">SVG</div>
+            <div class="text-[10px] text-[var(--pro-muted)]">Vector</div>
+          </button>
+          <button class="rounded-lg border border-[var(--pro-border)] p-3 text-center hover:border-[var(--pro-border-dark)]">
+            <div class="text-sm font-bold">PDF</div>
+            <div class="text-[10px] text-[var(--pro-muted)]">Print</div>
+          </button>
+          <button class="rounded-lg border border-[var(--pro-border)] p-3 text-center hover:border-[var(--pro-border-dark)]">
+            <div class="text-sm font-bold">EPS</div>
+            <div class="text-[10px] text-[var(--pro-muted)]">Adobe</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Resolution Slider (from Issue #42) -->
+      <div class="mb-5 p-4 bg-[var(--pro-surface-hover)] rounded-xl border border-[var(--pro-border)]">
+        <div class="flex items-center justify-between mb-3">
+          <label class="text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide flex items-center gap-2">
+            <svg class="w-4 h-4 text-[var(--pro-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+            </svg>
+            Resolution
+          </label>
+          <div class="text-right">
+            <span class="text-2xl font-bold text-[var(--pro-accent)]" id="resolutionValue">1000</span>
+            <span class="text-sm text-[var(--pro-muted)]">px</span>
+          </div>
+        </div>
+        <input type="range" min="200" max="2000" value="1000" step="100" class="resolution-slider w-full mb-2" id="resolutionSlider">
+        <div class="flex justify-between text-[10px] text-[var(--pro-muted)]">
+          <span>200px</span>
+          <span>1000px</span>
+          <span>2000px</span>
+        </div>
+      </div>
+
+      <!-- NEW: Print Quality Controls - Compact Integrated -->
+      <div class="mb-5 p-4 bg-[var(--pro-surface-hover)] rounded-xl border border-[var(--pro-border)]">
+        <!-- DPI Selector - Segmented Buttons -->
+        <div class="mb-4">
+          <label class="mb-2 block text-xs font-semibold text-[var(--pro-fg)] uppercase tracking-wide flex items-center gap-2">
+            <svg class="w-4 h-4 text-[var(--pro-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+            </svg>
+            Print Quality (DPI)
+          </label>
+          <div class="grid grid-cols-4 gap-2">
+            <button class="dpi-option rounded-lg border border-[var(--pro-border)] bg-white p-2 text-center" data-dpi="72">
+              <div class="dpi-label text-sm font-medium text-[var(--pro-fg)]">72</div>
+              <div class="text-[9px] text-[var(--pro-muted)]">Web</div>
+            </button>
+            <button class="dpi-option rounded-lg border border-[var(--pro-border)] bg-white p-2 text-center" data-dpi="150">
+              <div class="dpi-label text-sm font-medium text-[var(--pro-fg)]">150</div>
+              <div class="text-[9px] text-[var(--pro-muted)]">Print</div>
+            </button>
+            <button class="dpi-option selected rounded-lg border border-[var(--pro-border)] bg-white p-2 text-center" data-dpi="300">
+              <div class="dpi-label text-sm font-medium text-[var(--pro-fg)]">300</div>
+              <div class="text-[9px] text-[var(--pro-muted)]">High Quality</div>
+            </button>
+            <button class="dpi-option rounded-lg border border-[var(--pro-border)] bg-white p-2 text-center" data-dpi="600">
+              <div class="dpi-label text-sm font-medium text-[var(--pro-fg)]">600</div>
+              <div class="text-[9px] text-[var(--pro-muted)]">Pro</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Physical Size Calculator - Compact Inline -->
+        <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-[var(--pro-border)]">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-[var(--pro-accent-light)] flex items-center justify-center">
+              <svg class="w-4 h-4 text-[var(--pro-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z"/>
+              </svg>
+            </div>
+            <span class="text-xs font-medium text-[var(--pro-fg)]">Print Size</span>
+          </div>
+          <div class="text-right size-display" id="sizeDisplay">
+            <span class="text-sm font-bold text-[var(--pro-fg)]" id="sizeInches">3.3" x 3.3"</span>
+            <span class="text-xs text-[var(--pro-muted)] ml-1">(<span id="sizeCm">8.5</span>cm)</span>
+          </div>
+        </div>
+
+        <!-- Minimum Size Warning (shows conditionally) -->
+        <div class="mt-3 hidden" id="sizeWarning">
+          <div class="warning-badge flex items-center gap-2 p-2 bg-[var(--pro-warning-light)] border border-yellow-300 rounded-lg">
+            <svg class="w-4 h-4 text-[var(--pro-warning)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <span class="text-xs text-[var(--pro-warning)] font-medium">Size too small for reliable scanning (min 0.8")</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Download Button -->
+      <button class="w-full flex items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-4 text-sm font-semibold text-white transition-all hover:bg-[var(--pro-accent-hover)] hover:shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        <span id="downloadText">Download PNG (1000px @ 300 DPI)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Preview -->
+  <div class="max-w-sm mx-auto mt-8 p-4 bg-gray-100 rounded-xl">
+    <div class="text-center text-xs font-semibold text-gray-500 mb-4 uppercase tracking-wide">Mobile Preview (375px)</div>
+    <div class="bg-[var(--pro-surface)] rounded-lg border border-[var(--pro-border)] overflow-hidden shadow-sm" style="max-width: 375px;">
+      <div class="p-4">
+        <!-- Format - Mobile -->
+        <div class="mb-3">
+          <label class="mb-1.5 block text-[10px] font-semibold text-[var(--pro-fg)] uppercase">Format</label>
+          <div class="grid grid-cols-4 gap-1.5">
+            <div class="rounded border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] p-2 text-center">
+              <div class="text-xs font-bold">PNG</div>
+            </div>
+            <div class="rounded border border-[var(--pro-border)] p-2 text-center">
+              <div class="text-xs font-bold">SVG</div>
+            </div>
+            <div class="rounded border border-[var(--pro-border)] p-2 text-center">
+              <div class="text-xs font-bold">PDF</div>
+            </div>
+            <div class="rounded border border-[var(--pro-border)] p-2 text-center">
+              <div class="text-xs font-bold">EPS</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resolution - Mobile -->
+        <div class="mb-3 p-3 bg-[var(--pro-surface-hover)] rounded-lg border border-[var(--pro-border)]">
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-[10px] font-semibold text-[var(--pro-fg)]">Resolution</label>
+            <span class="text-lg font-bold text-[var(--pro-accent)]">1000px</span>
+          </div>
+          <input type="range" min="200" max="2000" value="1000" class="resolution-slider w-full">
+        </div>
+
+        <!-- DPI - Mobile (Compact 2x2) -->
+        <div class="mb-3 p-3 bg-[var(--pro-surface-hover)] rounded-lg border border-[var(--pro-border)]">
+          <label class="mb-2 block text-[10px] font-semibold text-[var(--pro-fg)] uppercase">Print Quality (DPI)</label>
+          <div class="grid grid-cols-4 gap-1.5">
+            <div class="rounded border border-[var(--pro-border)] bg-white p-1.5 text-center text-[10px]">72</div>
+            <div class="rounded border border-[var(--pro-border)] bg-white p-1.5 text-center text-[10px]">150</div>
+            <div class="rounded border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] p-1.5 text-center text-[10px] font-bold text-[var(--pro-accent)]">300</div>
+            <div class="rounded border border-[var(--pro-border)] bg-white p-1.5 text-center text-[10px]">600</div>
+          </div>
+          <!-- Print Size - Mobile -->
+          <div class="mt-2 flex items-center justify-between text-[10px]">
+            <span class="text-[var(--pro-muted)]">Print size:</span>
+            <span class="font-semibold">3.3" x 3.3" (8.5cm)</span>
+          </div>
+        </div>
+
+        <!-- Download - Mobile -->
+        <button class="w-full flex items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-3 text-xs font-semibold text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download (1000px @ 300 DPI)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const resolutionSlider = document.getElementById('resolutionSlider');
+    const resolutionValue = document.getElementById('resolutionValue');
+    const sizeInches = document.getElementById('sizeInches');
+    const sizeCm = document.getElementById('sizeCm');
+    const sizeWarning = document.getElementById('sizeWarning');
+    const sizeDisplay = document.getElementById('sizeDisplay');
+    const downloadText = document.getElementById('downloadText');
+    const dpiOptions = document.querySelectorAll('.dpi-option');
+
+    let currentDpi = 300;
+    let currentResolution = 1000;
+
+    function updateCalculations() {
+      // Physical size = Pixels / DPI
+      const physicalInches = currentResolution / currentDpi;
+      const physicalCm = physicalInches * 2.54;
+
+      sizeInches.textContent = `${physicalInches.toFixed(1)}" x ${physicalInches.toFixed(1)}"`;
+      sizeCm.textContent = physicalCm.toFixed(1);
+
+      // Animation feedback
+      sizeDisplay.classList.add('updated');
+      setTimeout(() => sizeDisplay.classList.remove('updated'), 300);
+
+      // Warning for sizes < 0.8 inches
+      if (physicalInches < 0.8) {
+        sizeWarning.classList.remove('hidden');
+      } else {
+        sizeWarning.classList.add('hidden');
+      }
+
+      // Update download button
+      downloadText.textContent = `Download PNG (${currentResolution}px @ ${currentDpi} DPI)`;
+    }
+
+    // Resolution slider
+    resolutionSlider.addEventListener('input', (e) => {
+      currentResolution = parseInt(e.target.value);
+      resolutionValue.textContent = currentResolution;
+      updateCalculations();
+    });
+
+    // DPI selection
+    dpiOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        dpiOptions.forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+        currentDpi = parseInt(option.dataset.dpi);
+        updateCalculations();
+      });
+    });
+
+    // Initial calculation
+    updateCalculations();
+  </script>
+</body>
+</html>
