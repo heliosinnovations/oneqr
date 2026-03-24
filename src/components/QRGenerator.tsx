@@ -18,6 +18,10 @@ export default function QRGenerator() {
   const [errorLevel, setErrorLevel] = useState<"L" | "M" | "Q" | "H">("M");
   const [showCustomize, setShowCustomize] = useState(false);
 
+  // Custom text for printable page
+  const [customTitle, setCustomTitle] = useState("");
+  const [customMessage, setCustomMessage] = useState("");
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const printFrameRef = useRef<HTMLIFrameElement>(null);
 
@@ -112,32 +116,61 @@ export default function QRGenerator() {
         <!DOCTYPE html>
         <html lang="en">
           <head>
-            <title>Print QR Code - OneQR</title>
+            <title>Print QR Code - The QR Spot</title>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
               body {
                 display: flex;
+                flex-direction: column;
                 justify-content: center;
                 align-items: center;
                 min-height: 100vh;
                 margin: 0;
-                padding: 20px;
+                padding: 40px;
                 box-sizing: border-box;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+              }
+              .container {
+                text-align: center;
+                max-width: 600px;
+              }
+              .title {
+                font-size: 24px;
+                font-weight: 600;
+                color: #1a1a1a;
+                margin-bottom: 12px;
+              }
+              .message {
+                font-size: 16px;
+                color: #666;
+                margin-bottom: 32px;
+                line-height: 1.5;
               }
               img {
-                max-width: 100%;
+                max-width: 400px;
                 height: auto;
+                margin: 0 auto;
               }
               @media print {
                 body {
-                  padding: 0;
+                  padding: 20px;
+                }
+                .title {
+                  margin-bottom: 8px;
+                }
+                .message {
+                  margin-bottom: 24px;
                 }
               }
             </style>
           </head>
           <body>
-            <img src="${qrDataUrl}" alt="QR Code for ${generatedUrl}" />
+            <div class="container">
+              ${customTitle ? `<div class="title">${customTitle}</div>` : ''}
+              ${customMessage ? `<div class="message">${customMessage}</div>` : ''}
+              <img src="${qrDataUrl}" alt="QR Code for ${generatedUrl}" />
+            </div>
           </body>
         </html>
       `);
@@ -146,7 +179,7 @@ export default function QRGenerator() {
         printWindow.print();
       };
     }
-  }, [qrDataUrl, generatedUrl]);
+  }, [qrDataUrl, generatedUrl, customTitle, customMessage]);
 
   return (
     <div
@@ -221,10 +254,58 @@ export default function QRGenerator() {
       {showCustomize && (
         <div
           id="customize-panel"
-          className="mb-6 grid gap-4 border border-border bg-white/50 p-6 md:grid-cols-2"
+          className="mb-6 space-y-6 border border-border bg-white/50 p-6"
         >
-          {/* Foreground Color */}
-          <div>
+          {/* Custom Text Section */}
+          <div className="space-y-4 border-b border-border pb-6">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-fg">
+              Printable Page Text
+            </h3>
+
+            {/* Title Input */}
+            <div>
+              <label
+                htmlFor="custom-title"
+                className="mb-2 block text-xs uppercase tracking-wider text-muted"
+              >
+                Title (Optional)
+              </label>
+              <input
+                type="text"
+                id="custom-title"
+                value={customTitle}
+                onChange={(e) => setCustomTitle(e.target.value)}
+                placeholder="e.g., Visit Our Website"
+                className="w-full border border-border bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              />
+            </div>
+
+            {/* Message Input */}
+            <div>
+              <label
+                htmlFor="custom-message"
+                className="mb-2 block text-xs uppercase tracking-wider text-muted"
+              >
+                Message (Optional)
+              </label>
+              <textarea
+                id="custom-message"
+                value={customMessage}
+                onChange={(e) => setCustomMessage(e.target.value)}
+                placeholder="e.g., Scan this QR code to access our menu"
+                rows={3}
+                className="w-full border border-border bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              />
+            </div>
+          </div>
+
+          {/* QR Code Customization */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <h3 className="col-span-full text-sm font-semibold uppercase tracking-wider text-fg">
+              QR Code Appearance
+            </h3>
+            {/* Foreground Color */}
+            <div>
             <label
               htmlFor="fg-color"
               className="mb-2 block text-xs uppercase tracking-wider text-muted"
@@ -318,6 +399,7 @@ export default function QRGenerator() {
               <option value="Q">Quartile (25%)</option>
               <option value="H">High (30%)</option>
             </select>
+            </div>
           </div>
         </div>
       )}
@@ -354,8 +436,18 @@ export default function QRGenerator() {
       {/* QR Code Display */}
       {qrDataUrl && (
         <div className="mt-8" role="region" aria-label="Generated QR Code">
-          {/* QR Code Image - using img for data URL which can't be optimized by Next.js Image */}
-          <figure className="mb-6 flex justify-center rounded-none border border-border bg-white p-6">
+          {/* QR Code Image with Custom Text Preview */}
+          <figure className="mb-6 flex flex-col items-center justify-center rounded-none border border-border bg-white p-6">
+            {customTitle && (
+              <h3 className="mb-3 text-center text-xl font-semibold text-fg">
+                {customTitle}
+              </h3>
+            )}
+            {customMessage && (
+              <p className="mb-6 max-w-md text-center text-sm text-muted">
+                {customMessage}
+              </p>
+            )}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={qrDataUrl}
