@@ -10,6 +10,31 @@
   --muted: #666;
   --border: #e5e5e0;
   --surface: #f7f6f1;
+
+  /* Professional Enterprise Theme Variables */
+  --pro-bg: #f8f9fa;
+  --pro-fg: #1a1a1a;
+  --pro-accent: #ff4d00;
+  --pro-accent-hover: #e64500;
+  --pro-accent-light: #fff5f0;
+  --pro-muted: #6c757d;
+  --pro-muted-light: #adb5bd;
+  --pro-border: #dee2e6;
+  --pro-border-dark: #ced4da;
+  --pro-surface: #ffffff;
+  --pro-surface-hover: #f8f9fa;
+  --pro-success: #198754;
+  --pro-success-light: #d1e7dd;
+  --pro-error: #dc3545;
+  --pro-error-light: #f8d7da;
+  --pro-warning: #ffc107;
+  --pro-warning-light: #fff3cd;
+  --pro-info: #0dcaf0;
+  --pro-info-light: #cff4fc;
+  --pro-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --pro-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
+  --pro-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+  --pro-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 * {
