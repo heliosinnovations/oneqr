@@ -98,16 +98,23 @@ export default function QRGenerator() {
     setError(null);
 
     try {
-      // Generate base QR code
-      const baseDataUrl = await QRCode.toDataURL(processedUrl, {
-        width: size,
-        margin: 2,
-        color: {
-          dark: fgColor,
-          light: bgColor,
-        },
-        errorCorrectionLevel: errorLevel,
-      });
+      let baseDataUrl: string;
+
+      if (gradientType === "solid") {
+        // Use standard library for solid colors
+        baseDataUrl = await QRCode.toDataURL(processedUrl, {
+          width: size,
+          margin: 2,
+          color: {
+            dark: fgColor,
+            light: bgColor,
+          },
+          errorCorrectionLevel: errorLevel,
+        });
+      } else {
+        // Generate with gradient using canvas
+        baseDataUrl = await generateQRWithGradient(processedUrl);
+      }
 
       // If there's a logo, overlay it on the QR code
       if (logoDataUrl) {
@@ -130,7 +137,85 @@ export default function QRGenerator() {
       setTimeout(() => setIsUpdating(false), 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url, size, fgColor, bgColor, errorLevel, logoDataUrl]);
+  }, [url, size, fgColor, bgColor, errorLevel, logoDataUrl, gradientType, fgColorEnd]);
+
+  // Generate QR with gradient
+  const generateQRWithGradient = async (data: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      // First generate a base QR to get the matrix
+      QRCode.toCanvas(
+        canvasRef.current!,
+        data,
+        {
+          width: size,
+          margin: 2,
+          color: {
+            dark: "#000000",
+            light: "#FFFFFF",
+          },
+          errorCorrectionLevel: errorLevel,
+        },
+        (error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          const canvas = canvasRef.current!;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            reject(new Error("Canvas context not available"));
+            return;
+          }
+
+          // Get image data to identify dark/light modules
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imageData.data;
+
+          // Create gradient
+          let gradient: CanvasGradient;
+          if (gradientType === "linear") {
+            gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+          } else {
+            // radial
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.max(canvas.width, canvas.height) / 2;
+            gradient = ctx.createRadialGradient(
+              centerX,
+              centerY,
+              0,
+              centerX,
+              centerY,
+              radius
+            );
+          }
+          gradient.addColorStop(0, fgColor);
+          gradient.addColorStop(1, fgColorEnd);
+
+          // Redraw with gradient
+          ctx.fillStyle = bgColor;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          ctx.fillStyle = gradient;
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+
+            // If pixel is dark (QR module)
+            if (r < 128 && g < 128 && b < 128) {
+              const x = (i / 4) % canvas.width;
+              const y = Math.floor(i / 4 / canvas.width);
+              ctx.fillRect(x, y, 1, 1);
+            }
+          }
+
+          resolve(canvas.toDataURL("image/png"));
+        }
+      );
+    });
+  };
 
   // Overlay logo on QR code using canvas
   const overlayLogoOnQR = async (
@@ -269,7 +354,7 @@ export default function QRGenerator() {
       generateQR();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fgColor, bgColor, size, errorLevel, logoDataUrl]);
+  }, [fgColor, bgColor, size, errorLevel, logoDataUrl, gradientType, fgColorEnd]);
 
   // Tab icons
   const TabIcon = ({ type }: { type: TabType }) => {
@@ -408,17 +493,66 @@ export default function QRGenerator() {
           aria-labelledby="colors-tab"
           className={`${activeTab === "colors" ? "animate-fadeIn block" : "hidden"}`}
         >
+          {/* Gradient Type Selector */}
+          <div className="mb-5">
+            <label className="mb-3 block text-[11px] font-semibold uppercase tracking-wider text-muted">
+              Fill Type
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {GRADIENT_TYPES.map((type) => (
+                <button
+                  key={type.value}
+                  onClick={() => setGradientType(type.value)}
+                  className={`border-2 bg-white p-3 text-center transition-all ${
+                    gradientType === type.value
+                      ? "border-accent bg-accent-light"
+                      : "border-border hover:border-fg"
+                  }`}
+                >
+                  <div
+                    className={`mb-1 text-xs font-bold ${
+                      gradientType === type.value ? "text-accent" : "text-fg"
+                    }`}
+                  >
+                    {type.label}
+                  </div>
+                  <div
+                    className="mx-auto h-6 w-full"
+                    style={{
+                      background:
+                        type.value === "solid"
+                          ? fgColor
+                          : type.value === "linear"
+                            ? `linear-gradient(135deg, ${fgColor}, ${fgColorEnd})`
+                            : `radial-gradient(circle, ${fgColor}, ${fgColorEnd})`,
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Color Preview Strip */}
           <div className="mb-5 flex h-12 overflow-hidden border border-border">
-            <div className="flex-1" style={{ backgroundColor: fgColor }} />
+            <div
+              className="flex-1"
+              style={{
+                background:
+                  gradientType === "solid"
+                    ? fgColor
+                    : gradientType === "linear"
+                      ? `linear-gradient(135deg, ${fgColor}, ${fgColorEnd})`
+                      : `radial-gradient(circle, ${fgColor}, ${fgColorEnd})`,
+              }}
+            />
             <div className="flex-1" style={{ backgroundColor: bgColor }} />
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            {/* Foreground Color */}
+            {/* Foreground Color Start */}
             <div className="border border-border bg-white p-4">
               <label className="mb-3 block text-[11px] font-semibold uppercase tracking-wider text-muted">
-                Foreground Color
+                {gradientType === "solid" ? "Foreground Color" : "Start Color"}
               </label>
               <div className="mb-3 flex items-center gap-3">
                 <input
@@ -448,8 +582,61 @@ export default function QRGenerator() {
               </div>
             </div>
 
-            {/* Background Color */}
+            {/* End Color (for gradients) or Background */}
             <div className="border border-border bg-white p-4">
+              <label className="mb-3 block text-[11px] font-semibold uppercase tracking-wider text-muted">
+                {gradientType === "solid" ? "Background Color" : "End Color"}
+              </label>
+              <div className="mb-3 flex items-center gap-3">
+                <input
+                  type="color"
+                  value={gradientType === "solid" ? bgColor : fgColorEnd}
+                  onChange={(e) =>
+                    gradientType === "solid"
+                      ? setBgColor(e.target.value)
+                      : setFgColorEnd(e.target.value)
+                  }
+                  className="h-10 w-10 cursor-pointer border-2 border-border p-0"
+                />
+                <input
+                  type="text"
+                  value={
+                    gradientType === "solid"
+                      ? bgColor.toUpperCase()
+                      : fgColorEnd.toUpperCase()
+                  }
+                  onChange={(e) =>
+                    gradientType === "solid"
+                      ? setBgColor(e.target.value)
+                      : setFgColorEnd(e.target.value)
+                  }
+                  className="flex-1 border border-border px-3 py-2.5 font-mono text-sm uppercase outline-none focus:border-accent"
+                />
+              </div>
+              <div className="flex gap-1.5">
+                {(gradientType === "solid" ? BG_PRESETS : FG_PRESETS).map(
+                  (preset) => (
+                    <button
+                      key={preset.color}
+                      onClick={() =>
+                        gradientType === "solid"
+                          ? setBgColor(preset.color)
+                          : setFgColorEnd(preset.color)
+                      }
+                      className="h-6 w-6 border border-border transition-transform hover:scale-110"
+                      style={{ backgroundColor: preset.color }}
+                      title={preset.name}
+                      aria-label={`Set ${gradientType === "solid" ? "background" : "end color"} to ${preset.name}`}
+                    />
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Background color for gradients */}
+          {gradientType !== "solid" && (
+            <div className="mt-4 border border-border bg-white p-4">
               <label className="mb-3 block text-[11px] font-semibold uppercase tracking-wider text-muted">
                 Background Color
               </label>
@@ -480,7 +667,7 @@ export default function QRGenerator() {
                 ))}
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Logo Panel */}
@@ -755,8 +942,8 @@ export default function QRGenerator() {
         </p>
       </div>
 
-      {/* Hidden canvas for potential future use */}
-      <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
+      {/* Hidden canvas for QR generation */}
+      <canvas ref={canvasRef} className="hidden" aria-hidden="true" width={512} height={512} />
 
       <style jsx>{`
         @keyframes fadeIn {
