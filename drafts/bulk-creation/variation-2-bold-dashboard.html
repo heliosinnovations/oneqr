@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk QR Creation | Variation 2: Bold Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-hover: #e64500;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --error: #ef4444;
+      --error-light: #fee2e2;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --gradient-1: linear-gradient(135deg, #ff4d00 0%, #ff8c42 100%);
+      --gradient-2: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--fg);
+      color: var(--bg);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+      font-family: 'DM Serif Display', serif;
+    }
+
+    /* Layout */
+    .app {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: #111;
+      border-right: 1px solid #333;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 24px;
+      border-bottom: 1px solid #333;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      padding: 6px;
+    }
+
+    .logo-icon span {
+      background: rgba(255,255,255,0.9);
+    }
+
+    .logo-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+    }
+
+    /* Navigation */
+    .nav {
+      padding: 24px 16px;
+      flex: 1;
+    }
+
+    .nav-section {
+      margin-bottom: 24px;
+    }
+
+    .nav-title {
+      font-size: 0.625rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #666;
+      padding: 0 12px;
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      color: #999;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin-bottom: 4px;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+      color: white;
+    }
+
+    .nav-item.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      padding: 2px 8px;
+      background: var(--accent);
+      color: white;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      border-radius: 10px;
+    }
+
+    /* Progress Steps (Horizontal in sidebar) */
+    .progress-steps {
+      padding: 24px;
+      border-top: 1px solid #333;
+    }
+
+    .progress-title {
+      font-size: 0.625rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .step-pills {
+      display: flex;
+      gap: 4px;
+    }
+
+    .step-pill {
+      flex: 1;
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+    }
+
+    .step-pill.completed {
+      background: var(--success);
+    }
+
+    .step-pill.active {
+      background: var(--accent);
+    }
+
+    .step-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.625rem;
+      color: #666;
+    }
+
+    .step-labels span.active {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Main Content */
+    .main {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      color: var(--fg);
+    }
+
+    /* Top Bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      background: white;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      color: var(--accent);
+    }
+
+    .breadcrumb-current {
+      color: var(--fg);
+      font-weight: 600;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border: none;
+      background: var(--surface);
+      color: var(--fg);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--border);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-large {
+      padding: 14px 28px;
+      font-size: 1rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--fg);
+      background: transparent;
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Content Area */
+    .content {
+      flex: 1;
+      padding: 32px;
+      overflow-y: auto;
+    }
+
+    /* Hero Section */
+    .hero-card {
+      background: var(--gradient-2);
+      color: white;
+      padding: 32px;
+      border-radius: 16px;
+      margin-bottom: 32px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .hero-content h1 {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
+
+    .hero-content p {
+      color: rgba(255,255,255,0.7);
+      font-size: 1rem;
+      margin-bottom: 24px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .hero-stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .hero-preview {
+      width: 200px;
+      height: 200px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .hero-preview svg {
+      width: 150px;
+      height: 150px;
+    }
+
+    .hero-preview-badge {
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* Panel Grid */
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-header h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-header h3 svg {
+      width: 20px;
+      height: 20px;
+      color: var(--accent);
+    }
+
+    .panel-badge {
+      padding: 4px 10px;
+      background: var(--success-light);
+      color: var(--success);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      border-radius: 20px;
+    }
+
+    .panel-badge.warning {
+      background: var(--warning-light);
+      color: var(--warning);
+    }
+
+    .panel-badge.error {
+      background: var(--error-light);
+      color: var(--error);
+    }
+
+    .panel-content {
+      padding: 24px;
+    }
+
+    /* Upload Panel */
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface);
+    }
+
+    .upload-area:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .upload-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 16px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .upload-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .upload-area h4 {
+      font-size: 1.125rem;
+      margin-bottom: 8px;
+    }
+
+    .upload-area p {
+      color: var(--muted);
+      font-size: 0.875rem;
+      margin-bottom: 16px;
+    }
+
+    .file-types {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .file-type {
+      padding: 6px 12px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    /* File Loaded State */
+    .file-loaded {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--success-light);
+      border-radius: 12px;
+    }
+
+    .file-loaded-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--success);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .file-loaded-info {
+      flex: 1;
+    }
+
+    .file-loaded-name {
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .file-loaded-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .file-loaded-action {
+      padding: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      border-radius: 6px;
+    }
+
+    .file-loaded-action:hover {
+      background: rgba(0,0,0,0.05);
+      color: var(--error);
+    }
+
+    /* Data Preview Grid */
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .data-cell {
+      padding: 12px;
+      background: var(--surface);
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .data-cell-header {
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .data-cell-value {
+      font-size: 0.875rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Design Options Panel */
+    .design-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .design-option {
+      padding: 16px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .design-option:hover {
+      border-color: var(--fg);
+    }
+
+    .design-option.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .design-option-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .design-option-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--surface);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+    }
+
+    .design-option.selected .design-option-icon {
+      background: var(--accent);
+      color: white;
+    }
+
+    .design-option h5 {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .design-option p {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* Pattern Selector */
+    .pattern-selector {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pattern-btn {
+      width: 48px;
+      height: 48px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      transition: all 0.2s;
+    }
+
+    .pattern-btn:hover {
+      border-color: var(--fg);
+    }
+
+    .pattern-btn.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .pattern-preview-mini {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .pattern-preview-mini .dot {
+      background: var(--fg);
+      border-radius: 50%;
+    }
+
+    .pattern-preview-mini .square {
+      background: var(--fg);
+    }
+
+    .pattern-preview-mini .rounded {
+      background: var(--fg);
+      border-radius: 20%;
+    }
+
+    /* Color Picker Row */
+    .color-row {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .color-picker {
+      flex: 1;
+    }
+
+    .color-picker-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .color-picker-input {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      background: var(--surface);
+      border-radius: 8px;
+    }
+
+    .color-picker-input input[type="color"] {
+      width: 32px;
+      height: 32px;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .color-picker-input input[type="text"] {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: monospace;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    /* Validation Panel */
+    .validation-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .validation-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border-radius: 8px;
+    }
+
+    .validation-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .validation-icon.success {
+      background: var(--success);
+      color: white;
+    }
+
+    .validation-icon.error {
+      background: var(--error);
+      color: white;
+    }
+
+    .validation-icon.warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .validation-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .validation-text {
+      flex: 1;
+      font-size: 0.875rem;
+    }
+
+    .validation-action {
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .validation-action:hover {
+      text-decoration: underline;
+    }
+
+    /* Progress Section */
+    .progress-panel {
+      background: var(--fg);
+      color: white;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .progress-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .progress-header-stats {
+      display: flex;
+      gap: 24px;
+    }
+
+    .progress-stat {
+      text-align: right;
+    }
+
+    .progress-stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .progress-stat-label {
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .progress-bar-wrapper {
+      margin-bottom: 24px;
+    }
+
+    .progress-bar-bg {
+      height: 12px;
+      background: #333;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--gradient-1);
+      border-radius: 6px;
+      transition: width 0.3s ease;
+      position: relative;
+    }
+
+    .progress-bar-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .progress-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    /* Download Options */
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .download-option {
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .download-option:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+
+    .download-option.selected {
+      border-color: var(--accent);
+    }
+
+    .download-option-header {
+      padding: 24px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .download-option-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--fg);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .download-option.selected .download-option-icon {
+      background: var(--accent);
+    }
+
+    .download-option-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .download-option-title {
+      font-size: 1.25rem;
+      font-family: 'DM Serif Display', serif;
+    }
+
+    .download-option-desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .download-option-body {
+      padding: 24px;
+    }
+
+    .download-config-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .download-config-field {
+      flex: 1;
+    }
+
+    .download-config-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .download-select,
+    .download-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      background: white;
+    }
+
+    .download-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+      transition: all 0.2s;
+    }
+
+    .download-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .download-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Footer Bar */
+    .footer-bar {
+      padding: 16px 32px;
+      background: white;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-info {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    .footer-info strong {
+      color: var(--fg);
+    }
+
+    /* Responsive */
+    @media (max-width: 1280px) {
+      .panel-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .hero-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero-preview {
+        display: none;
+      }
+
+      .hero-stats {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        padding: 16px;
+      }
+
+      .panel-grid,
+      .download-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .design-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .data-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="logo">
+          <div class="logo-icon">
+            <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+          </div>
+          <span class="logo-text">OneQR</span>
+        </a>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-section">
+          <div class="nav-title">Create</div>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            Single QR
+          </a>
+          <a href="#" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+            </svg>
+            Bulk Create
+            <span class="nav-badge">Pro</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-title">Manage</div>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <line x1="3" y1="9" x2="21" y2="9"/>
+              <line x1="9" y1="21" x2="9" y2="9"/>
+            </svg>
+            Dashboard
+          </a>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+            </svg>
+            Templates
+          </a>
+          <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            Analytics
+          </a>
+        </div>
+      </nav>
+
+      <div class="progress-steps">
+        <div class="progress-title">Current Progress</div>
+        <div class="step-pills">
+          <div class="step-pill completed"></div>
+          <div class="step-pill completed"></div>
+          <div class="step-pill active"></div>
+          <div class="step-pill"></div>
+          <div class="step-pill"></div>
+        </div>
+        <div class="step-labels">
+          <span>Upload</span>
+          <span>Design</span>
+          <span class="active">Preview</span>
+          <span>Generate</span>
+          <span>Download</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Top Bar -->
+      <div class="topbar">
+        <div class="breadcrumb">
+          <a href="#">Dashboard</a>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+          <span class="breadcrumb-current">Bulk Create</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-outline">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            Help
+          </button>
+          <button class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Save Draft
+          </button>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <!-- Hero Card -->
+        <div class="hero-card">
+          <div class="hero-content">
+            <h1>Bulk QR Creation</h1>
+            <p>Generate thousands of unique QR codes from your data in minutes</p>
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <div class="hero-stat-value">1,247</div>
+                <div class="hero-stat-label">Total Codes</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-value">1,239</div>
+                <div class="hero-stat-label">Valid</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-value">~2m</div>
+                <div class="hero-stat-label">Est. Time</div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-preview">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect x="5" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+              <rect x="11" y="11" width="13" height="13" fill="#1a1a1a"/>
+              <rect x="70" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+              <rect x="76" y="11" width="13" height="13" fill="#1a1a1a"/>
+              <rect x="5" y="70" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+              <rect x="11" y="76" width="13" height="13" fill="#1a1a1a"/>
+              <circle cx="50" cy="40" r="3" fill="#1a1a1a"/>
+              <circle cx="40" cy="50" r="3" fill="#1a1a1a"/>
+              <circle cx="60" cy="50" r="3" fill="#1a1a1a"/>
+              <circle cx="50" cy="60" r="3" fill="#1a1a1a"/>
+              <circle cx="80" cy="50" r="3" fill="#1a1a1a"/>
+              <circle cx="50" cy="80" r="3" fill="#1a1a1a"/>
+            </svg>
+            <span class="hero-preview-badge">Sample Preview</span>
+          </div>
+        </div>
+
+        <!-- Panel Grid -->
+        <div class="panel-grid">
+          <!-- Upload Panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Data Upload
+              </h3>
+              <span class="panel-badge">Complete</span>
+            </div>
+            <div class="panel-content">
+              <div class="file-loaded">
+                <div class="file-loaded-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+                </div>
+                <div class="file-loaded-info">
+                  <div class="file-loaded-name">event_tickets.csv</div>
+                  <div class="file-loaded-meta">1,247 rows &bull; 45 KB &bull; CSV</div>
+                </div>
+                <button class="file-loaded-action">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+
+              <div style="margin-top: 16px;">
+                <div class="data-grid">
+                  <div class="data-cell">
+                    <div class="data-cell-header">Type</div>
+                    <div class="data-cell-value">URL</div>
+                  </div>
+                  <div class="data-cell">
+                    <div class="data-cell-header">Content</div>
+                    <div class="data-cell-value">ticket/001</div>
+                  </div>
+                  <div class="data-cell">
+                    <div class="data-cell-header">Label</div>
+                    <div class="data-cell-value">Ticket #001</div>
+                  </div>
+                  <div class="data-cell">
+                    <div class="data-cell-header">Row 2</div>
+                    <div class="data-cell-value">ticket/002</div>
+                  </div>
+                  <div class="data-cell">
+                    <div class="data-cell-header">Row 3</div>
+                    <div class="data-cell-value">ticket/003</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Design Panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="13.5" cy="6.5" r="4"/>
+                  <circle cx="17.5" cy="13.5" r="4"/>
+                  <circle cx="8.5" cy="13.5" r="4"/>
+                </svg>
+                Design Template
+              </h3>
+              <span class="panel-badge">Complete</span>
+            </div>
+            <div class="panel-content">
+              <div style="margin-bottom: 16px;">
+                <div class="color-picker-label" style="margin-bottom: 8px;">Pattern Style</div>
+                <div class="pattern-selector">
+                  <button class="pattern-btn" onclick="selectPattern(this)">
+                    <div class="pattern-preview-mini">
+                      <div class="square"></div><div class="square"></div><div class="square"></div>
+                      <div class="square"></div><div class="square"></div><div class="square"></div>
+                      <div class="square"></div><div class="square"></div><div class="square"></div>
+                    </div>
+                  </button>
+                  <button class="pattern-btn selected" onclick="selectPattern(this)">
+                    <div class="pattern-preview-mini">
+                      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                    </div>
+                  </button>
+                  <button class="pattern-btn" onclick="selectPattern(this)">
+                    <div class="pattern-preview-mini">
+                      <div class="rounded"></div><div class="rounded"></div><div class="rounded"></div>
+                      <div class="rounded"></div><div class="rounded"></div><div class="rounded"></div>
+                      <div class="rounded"></div><div class="rounded"></div><div class="rounded"></div>
+                    </div>
+                  </button>
+                  <button class="pattern-btn" onclick="selectPattern(this)">
+                    <div class="pattern-preview-mini" style="display: flex; gap: 2px;">
+                      <div style="flex: 1; background: var(--fg);"></div>
+                      <div style="flex: 1; background: var(--fg);"></div>
+                      <div style="flex: 1; background: var(--fg);"></div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <div class="color-row">
+                <div class="color-picker">
+                  <div class="color-picker-label">Foreground</div>
+                  <div class="color-picker-input">
+                    <input type="color" value="#1a1a1a">
+                    <input type="text" value="#1A1A1A" maxlength="7">
+                  </div>
+                </div>
+                <div class="color-picker">
+                  <div class="color-picker-label">Background</div>
+                  <div class="color-picker-input">
+                    <input type="color" value="#ffffff">
+                    <input type="text" value="#FFFFFF" maxlength="7">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Validation Panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                Validation Status
+              </h3>
+              <span class="panel-badge warning">3 Issues</span>
+            </div>
+            <div class="panel-content">
+              <div class="validation-list">
+                <div class="validation-item">
+                  <div class="validation-icon success">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                  </div>
+                  <span class="validation-text">1,239 valid entries</span>
+                </div>
+                <div class="validation-item">
+                  <div class="validation-icon warning">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <line x1="12" y1="9" x2="12" y2="13"/>
+                      <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                  </div>
+                  <span class="validation-text">5 duplicate entries</span>
+                  <span class="validation-action">View</span>
+                </div>
+                <div class="validation-item">
+                  <div class="validation-icon error">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </div>
+                  <span class="validation-text">3 invalid URLs</span>
+                  <span class="validation-action">Fix</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview Panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                Sample Preview
+              </h3>
+              <span class="panel-badge">3 of 1,247</span>
+            </div>
+            <div class="panel-content">
+              <div style="display: flex; gap: 12px; justify-content: center;">
+                <div style="text-align: center;">
+                  <div style="width: 80px; height: 80px; background: var(--surface); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border-radius: 8px;">
+                    <svg width="60" height="60" viewBox="0 0 100 100" fill="none">
+                      <rect x="5" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                      <rect x="11" y="11" width="13" height="13" fill="#1a1a1a"/>
+                      <rect x="70" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                      <rect x="76" y="11" width="13" height="13" fill="#1a1a1a"/>
+                      <rect x="5" y="70" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                      <rect x="11" y="76" width="13" height="13" fill="#1a1a1a"/>
+                    </svg>
+                  </div>
+                  <div style="font-size: 0.6875rem; color: var(--muted);">Row 1</div>
+                  <div style="font-size: 0.75rem; font-weight: 600;">Ticket #001</div>
+                </div>
+                <div style="text-align: center;">
+                  <div style="width: 80px; height: 80px; background: var(--surface); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border-radius: 8px;">
+                    <svg width="60" height="60" viewBox="0 0 100 100" fill="none">
+                      <rect x="5" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                      <rect x="11" y="11" width="13" height="13" fill="#1a1a1a"/>
+                      <rect x="70" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                      <rect x="76" y="11" width="13" height="13" fill="#1a1a1a"/>
+                      <rect x="5" y="70" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                      <rect x="11" y="76" width="13" height="13" fill="#1a1a1a"/>
+                    </svg>
+                  </div>
+                  <div style="font-size: 0.6875rem; color: var(--muted);">Row 500</div>
+                  <div style="font-size: 0.75rem; font-weight: 600;">Ticket #500</div>
+                </div>
+                <div style="text-align: center;">
+                  <div style="width: 80px; height: 80px; background: var(--surface); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border-radius: 8px;">
+                    <svg width="60" height="60" viewBox="0 0 100 100" fill="none">
+                      <rect x="5" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                      <rect x="11" y="11" width="13" height="13" fill="#1a1a1a"/>
+                      <rect x="70" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                      <rect x="76" y="11" width="13" height="13" fill="#1a1a1a"/>
+                      <rect x="5" y="70" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                      <rect x="11" y="76" width="13" height="13" fill="#1a1a1a"/>
+                    </svg>
+                  </div>
+                  <div style="font-size: 0.6875rem; color: var(--muted);">Row 1,247</div>
+                  <div style="font-size: 0.75rem; font-weight: 600;">Ticket #1247</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Panel (for generation step) -->
+        <div class="progress-panel" style="display: none;">
+          <div class="progress-header">
+            <h2>Generating QR Codes...</h2>
+            <div class="progress-header-stats">
+              <div class="progress-stat">
+                <div class="progress-stat-value">847</div>
+                <div class="progress-stat-label">Completed</div>
+              </div>
+              <div class="progress-stat">
+                <div class="progress-stat-value">~45s</div>
+                <div class="progress-stat-label">Remaining</div>
+              </div>
+            </div>
+          </div>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: 68%;"></div>
+            </div>
+          </div>
+          <div class="progress-meta">
+            <span>68% complete (847 of 1,244)</span>
+            <span>3 skipped due to errors</span>
+          </div>
+          <div class="progress-actions">
+            <button class="btn" style="background: #333; color: white;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="6" y="4" width="4" height="16"/>
+                <rect x="14" y="4" width="4" height="16"/>
+              </svg>
+              Pause
+            </button>
+            <button class="btn" style="background: transparent; color: var(--error); border: 1px solid var(--error);">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <!-- Download Options -->
+        <div class="download-grid">
+          <div class="download-option selected">
+            <div class="download-option-header">
+              <div class="download-option-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+              </div>
+              <div>
+                <div class="download-option-title">ZIP Archive</div>
+                <div class="download-option-desc">Individual files in a compressed archive</div>
+              </div>
+            </div>
+            <div class="download-option-body">
+              <div class="download-config-row">
+                <div class="download-config-field">
+                  <div class="download-config-label">Format</div>
+                  <select class="download-select">
+                    <option>PNG</option>
+                    <option>SVG</option>
+                    <option>PDF</option>
+                    <option>EPS</option>
+                  </select>
+                </div>
+                <div class="download-config-field">
+                  <div class="download-config-label">Resolution</div>
+                  <select class="download-select">
+                    <option>72 DPI</option>
+                    <option>150 DPI</option>
+                    <option selected>300 DPI</option>
+                    <option>600 DPI</option>
+                  </select>
+                </div>
+              </div>
+              <div class="download-config-row">
+                <div class="download-config-field">
+                  <div class="download-config-label">Filename Pattern</div>
+                  <input type="text" class="download-input" value="ticket-{row_number}">
+                </div>
+              </div>
+              <button class="download-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download ZIP (24.5 MB)
+              </button>
+            </div>
+          </div>
+
+          <div class="download-option">
+            <div class="download-option-header">
+              <div class="download-option-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+              </div>
+              <div>
+                <div class="download-option-title">Multi-page PDF</div>
+                <div class="download-option-desc">Single PDF with grid layout</div>
+              </div>
+            </div>
+            <div class="download-option-body">
+              <div class="download-config-row">
+                <div class="download-config-field">
+                  <div class="download-config-label">Page Size</div>
+                  <select class="download-select">
+                    <option>A4</option>
+                    <option selected>Letter</option>
+                  </select>
+                </div>
+                <div class="download-config-field">
+                  <div class="download-config-label">Grid</div>
+                  <select class="download-select">
+                    <option>2 x 2</option>
+                    <option selected>3 x 3</option>
+                    <option>4 x 4</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+                <input type="checkbox" id="labels" checked>
+                <label for="labels" style="font-size: 0.875rem;">Include labels</label>
+              </div>
+              <button class="download-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                Download PDF (139 pages)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bar -->
+      <div class="footer-bar">
+        <div class="footer-info">
+          <strong>Ready to generate:</strong> 1,244 QR codes &bull; Estimated time: ~2 minutes
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-outline">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+            </svg>
+            Save Template
+          </button>
+          <button class="btn btn-primary btn-large">
+            Generate All QR Codes
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function selectPattern(el) {
+      document.querySelectorAll('.pattern-btn').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    // Download option selection
+    document.querySelectorAll('.download-option').forEach(option => {
+      option.addEventListener('click', (e) => {
+        if (!e.target.closest('.download-option-body')) {
+          document.querySelectorAll('.download-option').forEach(o => o.classList.remove('selected'));
+          option.classList.add('selected');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
