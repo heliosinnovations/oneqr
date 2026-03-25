@@ -29,6 +29,7 @@ type DownloadFormat = "png" | "svg" | "pdf" | "eps";
 type Resolution = 72 | 150 | 300 | 600;
 type GridLayout = "2x2" | "3x3" | "4x4";
 type PageSize = "a4" | "letter" | "custom";
+type GradientType = "linear" | "radial" | "diagonal" | "conic";
 
 interface ParsedRow {
   rowNumber: number;
@@ -54,6 +55,10 @@ interface TemplateSettings {
   bgColor: string;
   errorCorrection: ErrorCorrectionLevel;
   logoDataUrl: string | null;
+  useGradient: boolean;
+  gradientType: GradientType;
+  gradientColor1: string;
+  gradientColor2: string;
 }
 
 interface GenerationProgress {
@@ -117,6 +122,10 @@ const DEFAULT_TEMPLATE: TemplateSettings = {
   bgColor: "#ffffff",
   errorCorrection: "M",
   logoDataUrl: null,
+  useGradient: false,
+  gradientType: "linear",
+  gradientColor1: "#1a1a1a",
+  gradientColor2: "#ff4d00",
 };
 
 const DEFAULT_DOWNLOAD: DownloadSettings = {
@@ -920,8 +929,45 @@ export default function BulkQRCreator() {
         ctx.fill();
       };
 
+      // Create fill style (solid or gradient)
+      let fillStyle: string | CanvasGradient = template.fgColor;
+      if (template.useGradient) {
+        let gradient: CanvasGradient;
+        switch (template.gradientType) {
+          case "linear":
+            gradient = ctx.createLinearGradient(0, 0, canvasSize, 0);
+            break;
+          case "radial":
+            gradient = ctx.createRadialGradient(
+              canvasSize / 2,
+              canvasSize / 2,
+              0,
+              canvasSize / 2,
+              canvasSize / 2,
+              canvasSize / 2
+            );
+            break;
+          case "diagonal":
+            gradient = ctx.createLinearGradient(0, 0, canvasSize, canvasSize);
+            break;
+          case "conic":
+          default:
+            gradient = ctx.createRadialGradient(
+              canvasSize / 2,
+              canvasSize / 2,
+              0,
+              canvasSize / 2,
+              canvasSize / 2,
+              canvasSize / 2
+            );
+        }
+        gradient.addColorStop(0, template.gradientColor1);
+        gradient.addColorStop(1, template.gradientColor2);
+        fillStyle = gradient;
+      }
+
       // Draw body modules
-      ctx.fillStyle = template.fgColor;
+      ctx.fillStyle = fillStyle;
 
       for (let row = 0; row < size; row++) {
         for (let col = 0; col < size; col++) {
@@ -1754,6 +1800,152 @@ export default function BulkQRCreator() {
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Gradient Section */}
+            <div className="border-t border-border p-4">
+              {/* Gradient Toggle */}
+              <label className="flex cursor-pointer items-center gap-3">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    checked={template.useGradient}
+                    onChange={(e) =>
+                      setTemplate((prev) => ({
+                        ...prev,
+                        useGradient: e.target.checked,
+                      }))
+                    }
+                    className="peer sr-only"
+                  />
+                  <div className="h-5 w-9 rounded-full bg-border transition-colors peer-checked:bg-accent"></div>
+                  <div className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-4"></div>
+                </div>
+                <span className="text-sm font-medium">Use Gradient</span>
+              </label>
+
+              {/* Gradient Controls */}
+              {template.useGradient && (
+                <div className="mt-4 rounded-lg border border-border bg-surface p-4">
+                  {/* Gradient Type */}
+                  <div className="mb-4">
+                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-muted">
+                      Gradient Type
+                    </label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {(
+                        [
+                          "linear",
+                          "radial",
+                          "diagonal",
+                          "conic",
+                        ] as GradientType[]
+                      ).map((type) => (
+                        <button
+                          key={type}
+                          onClick={() =>
+                            setTemplate((prev) => ({
+                              ...prev,
+                              gradientType: type,
+                            }))
+                          }
+                          className={`rounded border px-2 py-1.5 text-[10px] font-semibold capitalize transition-all ${
+                            template.gradientType === type
+                              ? "border-accent bg-accent-light text-accent"
+                              : "border-border bg-white hover:border-fg"
+                          }`}
+                        >
+                          {type}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Gradient Colors */}
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-muted">
+                        Start Color
+                      </label>
+                      <div className="flex items-center gap-2 border border-border bg-white p-2">
+                        <input
+                          type="color"
+                          value={template.gradientColor1}
+                          onChange={(e) =>
+                            setTemplate((prev) => ({
+                              ...prev,
+                              gradientColor1: e.target.value,
+                            }))
+                          }
+                          className="h-6 w-6 cursor-pointer border-none"
+                        />
+                        <input
+                          type="text"
+                          value={template.gradientColor1.toUpperCase()}
+                          onChange={(e) =>
+                            setTemplate((prev) => ({
+                              ...prev,
+                              gradientColor1: e.target.value,
+                            }))
+                          }
+                          className="flex-1 border-none font-mono text-xs uppercase outline-none"
+                          maxLength={7}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-muted">
+                        End Color
+                      </label>
+                      <div className="flex items-center gap-2 border border-border bg-white p-2">
+                        <input
+                          type="color"
+                          value={template.gradientColor2}
+                          onChange={(e) =>
+                            setTemplate((prev) => ({
+                              ...prev,
+                              gradientColor2: e.target.value,
+                            }))
+                          }
+                          className="h-6 w-6 cursor-pointer border-none"
+                        />
+                        <input
+                          type="text"
+                          value={template.gradientColor2.toUpperCase()}
+                          onChange={(e) =>
+                            setTemplate((prev) => ({
+                              ...prev,
+                              gradientColor2: e.target.value,
+                            }))
+                          }
+                          className="flex-1 border-none font-mono text-xs uppercase outline-none"
+                          maxLength={7}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Gradient Preview */}
+                  <div className="mt-4">
+                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-muted">
+                      Preview
+                    </label>
+                    <div
+                      className="h-6 w-full rounded border border-border"
+                      style={{
+                        background:
+                          template.gradientType === "linear"
+                            ? `linear-gradient(90deg, ${template.gradientColor1}, ${template.gradientColor2})`
+                            : template.gradientType === "radial"
+                              ? `radial-gradient(circle, ${template.gradientColor1}, ${template.gradientColor2})`
+                              : template.gradientType === "diagonal"
+                                ? `linear-gradient(135deg, ${template.gradientColor1}, ${template.gradientColor2})`
+                                : `conic-gradient(from 0deg, ${template.gradientColor1}, ${template.gradientColor2})`,
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
