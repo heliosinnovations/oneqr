@@ -1,4 +1,5 @@
 import SimpleQRGenerator from "@/components/SimpleQRGenerator";
+import ComparisonSection from "@/components/ComparisonSection";
 import Link from "next/link";
 
 export default function Home() {
@@ -248,6 +249,9 @@ export default function Home() {
             </aside>
           </div>
         </section>
+
+        {/* Comparison Section */}
+        <ComparisonSection />
       </main>
 
       {/* Footer */}
