@@ -20,14 +20,6 @@ export const metadata: Metadata = {
 export default function BulkPage() {
   return (
     <>
-      {/* Skip to main content link for accessibility */}
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-accent focus:px-4 focus:py-2 focus:text-white"
-      >
-        Skip to main content
-      </a>
-
       {/* Navigation */}
       <header>
         <nav
@@ -55,7 +47,8 @@ export default function BulkPage() {
               </Link>
               <Link
                 href="/bulk"
-                className="bg-accent px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-fg"
+                className="text-sm font-semibold text-accent"
+                aria-current="page"
               >
                 Bulk Creation
               </Link>
