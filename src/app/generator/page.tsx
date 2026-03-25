@@ -1436,6 +1436,19 @@ showpage
           <line x1="9" y1="9" x2="15" y2="15" />
         </svg>
       ),
+      layers: (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
+          <polygon points="12 2 2 7 12 12 22 7 12 2" />
+          <polyline points="2 17 12 22 22 17" />
+          <polyline points="2 12 12 17 22 12" />
+        </svg>
+      ),
     };
     return icons[name] || null;
   };
@@ -1460,6 +1473,13 @@ showpage
             </nav>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
+            <Link
+              href="/bulk"
+              className="hidden items-center gap-2 rounded-md border border-[var(--pro-border)] bg-[var(--pro-surface)] px-3 py-1.5 text-sm font-medium transition-colors hover:bg-[var(--pro-surface-hover)] sm:flex sm:px-4 sm:py-2"
+            >
+              <Icon name="layers" />
+              <span className="hidden sm:inline">Bulk Creation</span>
+            </Link>
             <button className="hidden items-center gap-2 rounded-md border border-[var(--pro-border)] bg-[var(--pro-surface)] px-3 py-1.5 text-sm font-medium transition-colors hover:bg-[var(--pro-surface-hover)] sm:flex sm:px-4 sm:py-2">
               <Icon name="more-horizontal" />
               <span className="hidden sm:inline">History</span>
