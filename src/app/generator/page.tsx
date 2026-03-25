@@ -1050,13 +1050,13 @@ showpage
   return (
     <div className="min-h-screen bg-[var(--pro-bg)]">
       {/* Header */}
-      <header className="border-b border-[var(--pro-border)] bg-[var(--pro-surface)]">
-        <div className="flex h-16 items-center justify-between px-6">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="font-serif text-2xl text-[var(--pro-fg)]">
+      <header className="sticky top-0 z-40 border-b border-[var(--pro-border)] bg-[var(--pro-surface)]">
+        <div className="flex h-14 items-center justify-between px-4 md:h-16 md:px-6">
+          <div className="flex items-center gap-2 md:gap-4">
+            <Link href="/" className="font-serif text-xl text-[var(--pro-fg)] md:text-2xl">
               QR<span className="text-[var(--pro-accent)]">Spot</span>
             </Link>
-            <nav className="flex items-center gap-2 text-sm text-[var(--pro-muted)]">
+            <nav className="hidden items-center gap-2 text-sm text-[var(--pro-muted)] sm:flex">
               <Icon name="chevron-right" className="h-3.5 w-3.5" />
               <span className="font-medium text-[var(--pro-fg)]">
                 QR Generator
@@ -1064,34 +1064,34 @@ showpage
             </nav>
           </div>
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 rounded-md border border-[var(--pro-border)] bg-[var(--pro-surface)] px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--pro-surface-hover)]">
+            <button className="hidden items-center gap-2 rounded-md border border-[var(--pro-border)] bg-[var(--pro-surface)] px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--pro-surface-hover)] md:flex">
               <Icon name="more-horizontal" />
               History
             </button>
-            <button className="flex items-center gap-2 rounded-md bg-[var(--pro-accent)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--pro-accent-hover)]">
+            <button className="flex items-center gap-1.5 rounded-md bg-[var(--pro-accent)] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--pro-accent-hover)] md:gap-2 md:px-4">
               <Icon name="upload" />
-              Export
+              <span className="hidden sm:inline">Export</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className="mx-auto max-w-[1400px] p-6">
-        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_420px]">
+      {/* Main Container - Single scroll container */}
+      <main className="mx-auto max-w-[1400px] px-4 py-4 md:p-6">
+        <div className="flex flex-col gap-4 md:gap-6 lg:grid lg:grid-cols-[1fr_380px] lg:items-start xl:grid-cols-[1fr_420px]">
           {/* Configuration Panel */}
           <div className="flex flex-col gap-4">
             {/* Customization Panel with Tabs */}
-            <div className="overflow-hidden rounded-lg border border-[var(--pro-border)] bg-[var(--pro-surface)]">
-              {/* Tabs */}
-              <div className="border-b border-[var(--pro-border)] px-5">
-                <div className="flex">
+            <div className="rounded-lg border border-[var(--pro-border)] bg-[var(--pro-surface)]">
+              {/* Tabs - scrollable on mobile */}
+              <div className="border-b border-[var(--pro-border)] px-3 sm:px-5">
+                <div className="-mb-px flex overflow-x-auto">
                   {(["content", "colors", "style", "export"] as TabType[]).map(
                     (tab) => (
                       <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`border-b-2 px-4 py-3.5 text-sm font-medium transition-all ${
+                        className={`shrink-0 border-b-2 px-3 py-3 text-sm font-medium transition-all sm:px-4 sm:py-3.5 ${
                           activeTab === tab
                             ? "border-[var(--pro-accent)] text-[var(--pro-accent)]"
                             : "border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]"
@@ -1106,7 +1106,7 @@ showpage
 
               {/* Content Tab */}
               {activeTab === "content" && (
-                <div className="p-5">
+                <div className="p-4 sm:p-5">
                   <div className="mb-5">
                     <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-[var(--pro-fg)]">
                       URL or Text{" "}
@@ -1174,7 +1174,7 @@ showpage
 
               {/* Colors Tab */}
               {activeTab === "colors" && (
-                <div className="p-5">
+                <div className="p-4 sm:p-5">
                   <div className="grid grid-cols-2 gap-4">
                     {/* Foreground Color */}
                     <div>
@@ -1360,7 +1360,7 @@ showpage
 
               {/* Style Tab */}
               {activeTab === "style" && (
-                <div className="p-5">
+                <div className="p-4 sm:p-5">
                   {/* Data Pattern */}
                   <div className="mb-5">
                     <label className="mb-2 block text-xs font-semibold">
@@ -1583,7 +1583,7 @@ showpage
 
               {/* Export Tab */}
               {activeTab === "export" && (
-                <div className="p-5">
+                <div className="p-4 sm:p-5">
                   {/* Export Format - Card Grid with Icons */}
                   <div className="mb-6">
                     <label className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
@@ -2314,8 +2314,8 @@ showpage
             </div>
           </div>
 
-          {/* Preview Panel */}
-          <aside className="sticky top-6 overflow-hidden rounded-lg border border-[var(--pro-border)] bg-[var(--pro-surface)] max-lg:order-first lg:order-none">
+          {/* Preview Panel - Mobile: appears first, Desktop: sticky sidebar */}
+          <aside className="order-first rounded-lg border border-[var(--pro-border)] bg-[var(--pro-surface)] lg:sticky lg:top-[calc(4rem+1.5rem)] lg:order-none">
             <div className="flex items-center justify-between border-b border-[var(--pro-border)] px-5 py-4">
               <h2 className="flex items-center gap-2 text-sm font-semibold">
                 <Icon
@@ -2331,30 +2331,30 @@ showpage
 
             {/* QR Preview Area */}
             <div
-              className="flex min-h-[300px] items-center justify-center p-8"
+              className="flex min-h-[200px] items-center justify-center p-4 sm:min-h-[280px] sm:p-6 md:p-8"
               style={{
                 background:
                   "repeating-conic-gradient(#f0f0f0 0% 25%, #fff 0% 50%) 50% / 16px 16px",
               }}
             >
-              <div className="rounded-lg bg-white p-5 shadow-md">
+              <div className="rounded-lg bg-white p-3 shadow-md sm:p-4 md:p-5">
                 {qrDataUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     id="qrPreview"
                     src={qrDataUrl}
                     alt={`QR code linking to ${generatedUrl}`}
-                    className="h-[200px] w-[200px] transition-transform"
+                    className="h-[140px] w-[140px] transition-transform sm:h-[180px] sm:w-[180px] md:h-[200px] md:w-[200px]"
                     style={{ transform: `scale(${zoomLevel / 100})` }}
                   />
                 ) : (
                   <div
                     id="qrPreview"
-                    className="flex h-[200px] w-[200px] items-center justify-center"
+                    className="flex h-[140px] w-[140px] items-center justify-center sm:h-[180px] sm:w-[180px] md:h-[200px] md:w-[200px]"
                   >
                     <Icon
                       name="qr"
-                      className="h-16 w-16 text-[var(--pro-border)]"
+                      className="h-12 w-12 text-[var(--pro-border)] sm:h-14 sm:w-14 md:h-16 md:w-16"
                     />
                   </div>
                 )}
@@ -2362,30 +2362,30 @@ showpage
             </div>
 
             {/* Zoom Controls */}
-            <div className="flex items-center justify-center gap-2 border-t border-[var(--pro-border)] px-5 py-4">
+            <div className="flex items-center justify-center gap-1.5 border-t border-[var(--pro-border)] px-3 py-3 sm:gap-2 sm:px-5 sm:py-4">
               <button
                 onClick={zoomOut}
-                className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--pro-border)] text-[var(--pro-muted)] transition-colors hover:bg-[var(--pro-surface-hover)] hover:text-[var(--pro-fg)]"
+                className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--pro-border)] text-[var(--pro-muted)] transition-colors hover:bg-[var(--pro-surface-hover)] hover:text-[var(--pro-fg)] sm:h-9 sm:w-9"
                 title="Zoom out"
               >
                 <Icon name="zoom-out" />
               </button>
               <span
                 id="zoomValue"
-                className="min-w-[50px] text-center text-sm font-semibold"
+                className="min-w-[40px] text-center text-sm font-semibold sm:min-w-[50px]"
               >
                 {zoomLevel}%
               </span>
               <button
                 onClick={zoomIn}
-                className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--pro-border)] text-[var(--pro-muted)] transition-colors hover:bg-[var(--pro-surface-hover)] hover:text-[var(--pro-fg)]"
+                className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--pro-border)] text-[var(--pro-muted)] transition-colors hover:bg-[var(--pro-surface-hover)] hover:text-[var(--pro-fg)] sm:h-9 sm:w-9"
                 title="Zoom in"
               >
                 <Icon name="zoom-in" />
               </button>
               <button
                 onClick={resetZoom}
-                className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--pro-border)] text-[var(--pro-muted)] transition-colors hover:bg-[var(--pro-surface-hover)] hover:text-[var(--pro-fg)]"
+                className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--pro-border)] text-[var(--pro-muted)] transition-colors hover:bg-[var(--pro-surface-hover)] hover:text-[var(--pro-fg)] sm:h-9 sm:w-9"
                 title="Reset zoom"
               >
                 <Icon name="refresh-cw" />
@@ -2393,10 +2393,10 @@ showpage
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-2 border-t border-[var(--pro-border)] px-5 py-4">
+            <div className="flex gap-2 border-t border-[var(--pro-border)] px-3 py-3 sm:px-5 sm:py-4">
               <button
                 onClick={copyToClipboard}
-                className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--pro-border)] py-2.5 text-sm font-medium transition-colors hover:bg-[var(--pro-surface-hover)]"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-[var(--pro-border)] py-2 text-sm font-medium transition-colors hover:bg-[var(--pro-surface-hover)] sm:gap-2 sm:py-2.5"
               >
                 <Icon name="copy" />
                 Copy
@@ -2413,7 +2413,7 @@ showpage
                     copyToClipboard();
                   }
                 }}
-                className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--pro-border)] py-2.5 text-sm font-medium transition-colors hover:bg-[var(--pro-surface-hover)]"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-[var(--pro-border)] py-2 text-sm font-medium transition-colors hover:bg-[var(--pro-surface-hover)] sm:gap-2 sm:py-2.5"
               >
                 <Icon name="share" />
                 Share
@@ -2421,16 +2421,16 @@ showpage
             </div>
 
             {/* Download Section */}
-            <div className="border-t border-[var(--pro-border)] bg-[var(--pro-surface-hover)] p-5">
+            <div className="border-t border-[var(--pro-border)] bg-[var(--pro-surface-hover)] p-3 sm:p-5">
               <button
                 onClick={downloadQR}
                 disabled={isGenerating || !qrDataUrl}
-                className="flex w-full items-center justify-center gap-2 rounded-md bg-[var(--pro-accent)] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--pro-accent-hover)] disabled:cursor-not-allowed disabled:bg-[var(--pro-muted-light)]"
+                className="flex w-full items-center justify-center gap-2 rounded-md bg-[var(--pro-accent)] py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--pro-accent-hover)] disabled:cursor-not-allowed disabled:bg-[var(--pro-muted-light)] sm:py-3.5"
               >
                 <Icon name="download" className="h-[18px] w-[18px]" />
                 Download QR Code
               </button>
-              <p className="mt-3 text-center text-xs text-[var(--pro-muted)]">
+              <p className="mt-2 hidden text-center text-xs text-[var(--pro-muted)] sm:mt-3 sm:block">
                 Keyboard shortcut:{" "}
                 <kbd className="rounded border border-[var(--pro-border)] bg-white px-1.5 py-0.5 text-[11px]">
                   ⌘
