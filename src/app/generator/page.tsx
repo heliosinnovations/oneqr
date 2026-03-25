@@ -14,6 +14,7 @@ type CornerType = "square" | "rounded" | "extra" | "dot";
 type FormatType = "png" | "svg" | "pdf" | "eps";
 type SizeType = 256 | 512 | 1024 | 2048;
 type DpiType = 72 | 150 | 300 | 600;
+type GradientType = "linear" | "radial" | "diagonal" | "conic";
 
 // Format info for cards
 const FORMAT_INFO = {
@@ -194,10 +195,9 @@ const renderModule = (
   y: number,
   moduleSize: number,
   pattern: PatternType,
-  fgColor: string
+  fillStyle: string | CanvasGradient
 ): void => {
-  ctx.fillStyle = fgColor;
-  const padding = moduleSize * 0.1; // Small gap between modules for some patterns
+  ctx.fillStyle = fillStyle;
 
   switch (pattern) {
     case "square":
@@ -313,6 +313,55 @@ const renderFinderPattern = (
   }
 };
 
+// Helper to create gradient for QR code
+const createQRGradient = (
+  ctx: CanvasRenderingContext2D,
+  gradientType: GradientType,
+  color1: string,
+  color2: string,
+  width: number,
+  height: number
+): CanvasGradient => {
+  let gradient: CanvasGradient;
+
+  switch (gradientType) {
+    case "linear":
+      gradient = ctx.createLinearGradient(0, 0, width, 0);
+      break;
+    case "radial":
+      gradient = ctx.createRadialGradient(
+        width / 2,
+        height / 2,
+        0,
+        width / 2,
+        height / 2,
+        Math.max(width, height) / 2
+      );
+      break;
+    case "diagonal":
+      gradient = ctx.createLinearGradient(0, 0, width, height);
+      break;
+    case "conic":
+      // Conic gradient approximation using radial
+      gradient = ctx.createRadialGradient(
+        width / 2,
+        height / 2,
+        0,
+        width / 2,
+        height / 2,
+        Math.max(width, height) / 2
+      );
+      break;
+    default:
+      gradient = ctx.createLinearGradient(0, 0, width, 0);
+  }
+
+  gradient.addColorStop(0, color1);
+  gradient.addColorStop(1, color2);
+
+  return gradient;
+};
+
 // Custom QR code rendering with pattern and corner support
 const renderCustomQR = async (
   text: string,
@@ -322,7 +371,11 @@ const renderCustomQR = async (
   bgColor: string,
   errorLevel: ErrorLevelType,
   pattern: PatternType,
-  cornerStyle: CornerType
+  cornerStyle: CornerType,
+  useGradient: boolean = false,
+  gradientType: GradientType = "linear",
+  gradientColor1: string = "#1a1a1a",
+  gradientColor2: string = "#ff4d00"
 ): Promise<string> => {
   // Create QR code data
   const qr = QRCode.create(text, {
@@ -346,6 +399,18 @@ const renderCustomQR = async (
   ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, actualWidth, actualWidth);
 
+  // Determine fill style (solid or gradient)
+  const fillStyle = useGradient
+    ? createQRGradient(
+        ctx,
+        gradientType,
+        gradientColor1,
+        gradientColor2,
+        actualWidth,
+        actualWidth
+      )
+    : fgColor;
+
   // Draw data modules (excluding finder patterns)
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
@@ -356,10 +421,15 @@ const renderCustomQR = async (
       if (isDark) {
         const x = margin + col * moduleSize;
         const y = margin + row * moduleSize;
-        renderModule(ctx, x, y, moduleSize, pattern, fgColor);
+        ctx.fillStyle = fillStyle;
+        renderModule(ctx, x, y, moduleSize, pattern, fillStyle as string);
       }
     }
   }
+
+  // Use gradient for finder patterns as well
+  const finderFillStyle =
+    useGradient && typeof fillStyle !== "string" ? gradientColor1 : fgColor;
 
   // Draw finder patterns with custom corner style
   // Top-left
@@ -369,7 +439,7 @@ const renderCustomQR = async (
     margin,
     moduleSize,
     cornerStyle,
-    fgColor,
+    finderFillStyle,
     bgColor
   );
   // Top-right
@@ -379,7 +449,7 @@ const renderCustomQR = async (
     margin,
     moduleSize,
     cornerStyle,
-    fgColor,
+    finderFillStyle,
     bgColor
   );
   // Bottom-left
@@ -389,7 +459,7 @@ const renderCustomQR = async (
     margin + (size - 7) * moduleSize,
     moduleSize,
     cornerStyle,
-    fgColor,
+    finderFillStyle,
     bgColor
   );
 
@@ -537,6 +607,10 @@ function GeneratorContent() {
   // Customization options
   const [fgColor, setFgColor] = useState("#1a1a1a");
   const [bgColor, setBgColor] = useState("#ffffff");
+  const [useGradient, setUseGradient] = useState(false);
+  const [gradientType, setGradientType] = useState<GradientType>("linear");
+  const [gradientColor1, setGradientColor1] = useState("#1a1a1a");
+  const [gradientColor2, setGradientColor2] = useState("#ff4d00");
   const [pattern, setPattern] = useState<PatternType>("square");
   const [cornerStyle, setCornerStyle] = useState<CornerType>("square");
   const [errorLevel, setErrorLevel] = useState<ErrorLevelType>("M");
@@ -631,7 +705,11 @@ function GeneratorContent() {
         bgColor,
         errorLevel,
         pattern,
-        cornerStyle
+        cornerStyle,
+        useGradient,
+        gradientType,
+        gradientColor1,
+        gradientColor2
       );
       setQrDataUrl(dataUrl);
       setGeneratedUrl(processedUrl);
@@ -649,6 +727,10 @@ function GeneratorContent() {
     pattern,
     cornerStyle,
     showToast,
+    useGradient,
+    gradientType,
+    gradientColor1,
+    gradientColor2,
   ]);
 
   // Handle template selection
@@ -963,7 +1045,11 @@ showpage
             bgColor,
             errorLevel,
             pattern,
-            cornerStyle
+            cornerStyle,
+            useGradient,
+            gradientType,
+            gradientColor1,
+            gradientColor2
           );
 
           const link = document.createElement("a");
@@ -1006,7 +1092,11 @@ showpage
             bgColor,
             errorLevel,
             pattern,
-            cornerStyle
+            cornerStyle,
+            useGradient,
+            gradientType,
+            gradientColor1,
+            gradientColor2
           );
 
           // Create A4 PDF with centered QR code
@@ -1067,6 +1157,10 @@ showpage
     showToast,
     generateSvgString,
     generateEpsString,
+    useGradient,
+    gradientType,
+    gradientColor1,
+    gradientColor2,
   ]);
 
   // Calculate contrast ratio
@@ -1110,7 +1204,11 @@ showpage
           bgColor,
           errorLevel,
           pattern,
-          cornerStyle
+          cornerStyle,
+          useGradient,
+          gradientType,
+          gradientColor1,
+          gradientColor2
         );
         setQrDataUrl(dataUrl);
       } catch {
@@ -1122,7 +1220,18 @@ showpage
 
     regenerate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fgColor, bgColor, exportResolution, errorLevel, pattern, cornerStyle]);
+  }, [
+    fgColor,
+    bgColor,
+    exportResolution,
+    errorLevel,
+    pattern,
+    cornerStyle,
+    useGradient,
+    gradientType,
+    gradientColor1,
+    gradientColor2,
+  ]);
 
   // Initial QR generation
   useEffect(() => {
@@ -1742,6 +1851,165 @@ showpage
                       </div>
                     </div>
                   </div>
+
+                  {/* Gradient Section */}
+                  <div className="mt-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-[var(--pro-muted)] sm:mt-6">
+                    <div className="h-px flex-1 bg-[var(--pro-border)]" />
+                    Gradient
+                    <div className="h-px flex-1 bg-[var(--pro-border)]" />
+                  </div>
+
+                  {/* Gradient Toggle */}
+                  <div className="mt-3">
+                    <label className="flex cursor-pointer items-center gap-3">
+                      <div className="relative">
+                        <input
+                          type="checkbox"
+                          checked={useGradient}
+                          onChange={(e) => setUseGradient(e.target.checked)}
+                          className="peer sr-only"
+                        />
+                        <div className="h-6 w-11 rounded-full bg-[var(--pro-border)] transition-colors peer-checked:bg-[var(--pro-accent)]"></div>
+                        <div className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white transition-transform peer-checked:translate-x-5"></div>
+                      </div>
+                      <span className="text-sm font-medium text-[var(--pro-fg)]">
+                        Use Gradient
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Gradient Controls - Only shown when gradient is enabled */}
+                  {useGradient && (
+                    <div className="mt-4 rounded-lg border border-[var(--pro-border)] bg-[var(--pro-surface)] p-4">
+                      {/* Gradient Type Selector */}
+                      <div className="mb-4">
+                        <label className="mb-2 block text-xs font-semibold">
+                          Gradient Type
+                        </label>
+                        <div className="grid grid-cols-4 gap-2">
+                          {(
+                            [
+                              "linear",
+                              "radial",
+                              "diagonal",
+                              "conic",
+                            ] as GradientType[]
+                          ).map((type) => (
+                            <button
+                              key={type}
+                              onClick={() => setGradientType(type)}
+                              className={`rounded-md border px-2 py-2 text-xs font-medium capitalize transition-all ${
+                                gradientType === type
+                                  ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)] text-[var(--pro-accent)]"
+                                  : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
+                              }`}
+                            >
+                              {type}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Gradient Color Pickers */}
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Start Color */}
+                        <div>
+                          <label className="mb-2 block text-xs font-semibold">
+                            Start Color
+                          </label>
+                          <div className="flex gap-2">
+                            <div
+                              className="relative h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-md border border-[var(--pro-border)]"
+                              style={{ backgroundColor: gradientColor1 }}
+                            >
+                              <input
+                                type="color"
+                                value={gradientColor1}
+                                onChange={(e) =>
+                                  setGradientColor1(e.target.value)
+                                }
+                                className="absolute -left-1/2 -top-1/2 h-[200%] w-[200%] cursor-pointer"
+                              />
+                            </div>
+                            <input
+                              type="text"
+                              value={gradientColor1.toUpperCase()}
+                              onChange={(e) =>
+                                handleHexInput(
+                                  e.target.value,
+                                  setGradientColor1
+                                )
+                              }
+                              onBlur={(e) => {
+                                if (!isValidHex(e.target.value)) {
+                                  setGradientColor1("#1a1a1a");
+                                }
+                              }}
+                              className="flex-1 rounded-md border border-[var(--pro-border)] px-2 py-2 font-mono text-xs uppercase focus:border-[var(--pro-accent)] focus:outline-none"
+                            />
+                          </div>
+                        </div>
+
+                        {/* End Color */}
+                        <div>
+                          <label className="mb-2 block text-xs font-semibold">
+                            End Color
+                          </label>
+                          <div className="flex gap-2">
+                            <div
+                              className="relative h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-md border border-[var(--pro-border)]"
+                              style={{ backgroundColor: gradientColor2 }}
+                            >
+                              <input
+                                type="color"
+                                value={gradientColor2}
+                                onChange={(e) =>
+                                  setGradientColor2(e.target.value)
+                                }
+                                className="absolute -left-1/2 -top-1/2 h-[200%] w-[200%] cursor-pointer"
+                              />
+                            </div>
+                            <input
+                              type="text"
+                              value={gradientColor2.toUpperCase()}
+                              onChange={(e) =>
+                                handleHexInput(
+                                  e.target.value,
+                                  setGradientColor2
+                                )
+                              }
+                              onBlur={(e) => {
+                                if (!isValidHex(e.target.value)) {
+                                  setGradientColor2("#ff4d00");
+                                }
+                              }}
+                              className="flex-1 rounded-md border border-[var(--pro-border)] px-2 py-2 font-mono text-xs uppercase focus:border-[var(--pro-accent)] focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Gradient Preview */}
+                      <div className="mt-4">
+                        <label className="mb-2 block text-xs font-semibold">
+                          Preview
+                        </label>
+                        <div
+                          className="h-8 w-full rounded-md border border-[var(--pro-border)]"
+                          style={{
+                            background:
+                              gradientType === "linear"
+                                ? `linear-gradient(90deg, ${gradientColor1}, ${gradientColor2})`
+                                : gradientType === "radial"
+                                  ? `radial-gradient(circle, ${gradientColor1}, ${gradientColor2})`
+                                  : gradientType === "diagonal"
+                                    ? `linear-gradient(135deg, ${gradientColor1}, ${gradientColor2})`
+                                    : `conic-gradient(from 0deg, ${gradientColor1}, ${gradientColor2})`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   {/* Presets */}
                   <div className="mt-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-[var(--pro-muted)] sm:mt-6">
