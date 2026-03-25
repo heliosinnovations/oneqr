@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import QRCode from "qrcode";
@@ -130,6 +131,8 @@ const DEFAULT_DOWNLOAD: DownloadSettings = {
 };
 
 export default function BulkQRCreator() {
+  const router = useRouter();
+
   // Wizard state
   const [currentStep, setCurrentStep] = useState<WizardStep>(1);
   const [completedSteps, setCompletedSteps] = useState<Set<WizardStep>>(
@@ -1220,7 +1223,9 @@ export default function BulkQRCreator() {
   };
 
   const handlePrevious = () => {
-    if (currentStep > 1) {
+    if (currentStep === 1) {
+      router.push("/");
+    } else {
       setCurrentStep((currentStep - 1) as WizardStep);
     }
   };
@@ -2581,8 +2586,7 @@ export default function BulkQRCreator() {
             <div className="mt-10 flex items-center justify-between border-t border-border pt-6">
               <button
                 onClick={currentStep === 5 ? resetWizard : handlePrevious}
-                disabled={currentStep === 1 && !file}
-                className="flex items-center gap-2 border border-border bg-white px-5 py-3 font-medium transition-colors hover:border-fg disabled:opacity-50"
+                className="flex items-center gap-2 border border-border bg-white px-5 py-3 font-medium transition-colors hover:border-fg"
               >
                 {currentStep === 5 ? (
                   <>
