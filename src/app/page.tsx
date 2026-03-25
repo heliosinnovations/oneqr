@@ -23,16 +23,16 @@ export default function Home() {
             </Link>
 
             {/* Navigation Links */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <Link
                 href="/generator"
-                className="hidden text-sm font-medium text-muted transition-colors hover:text-fg sm:block"
+                className="text-sm font-medium text-muted transition-colors hover:text-fg"
               >
                 Advanced Generator
               </Link>
               <Link
                 href="/bulk"
-                className="bg-accent px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-fg"
+                className="text-sm font-medium text-muted transition-colors hover:text-fg"
               >
                 Bulk Creation
               </Link>
