@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk QR Creation | Variation 3: Professional Tabs</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --bg-white: #ffffff;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-hover: #e64500;
+      --accent-light: #fff5f0;
+      --muted: #6c757d;
+      --muted-light: #adb5bd;
+      --border: #dee2e6;
+      --border-dark: #ced4da;
+      --surface: #ffffff;
+      --success: #198754;
+      --success-light: #d1e7dd;
+      --error: #dc3545;
+      --error-light: #f8d7da;
+      --warning: #ffc107;
+      --warning-light: #fff3cd;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.06);
+      --shadow-lg: 0 8px 16px rgba(0,0,0,0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+      font-family: 'DM Serif Display', serif;
+    }
+
+    /* Header */
+    .header {
+      background: var(--bg-white);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--fg);
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--fg);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      padding: 5px;
+      border-radius: 6px;
+    }
+
+    .logo-icon span {
+      background: var(--bg-white);
+      border-radius: 1px;
+    }
+
+    .logo-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.375rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .user-menu:hover {
+      background: var(--bg);
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .user-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    /* Tabs Navigation */
+    .header-tabs {
+      display: flex;
+      padding: 0 32px;
+    }
+
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 24px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      color: var(--fg);
+      background: var(--bg);
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .tab-badge {
+      padding: 2px 8px;
+      background: var(--accent);
+      color: white;
+      font-size: 0.625rem;
+      font-weight: 700;
+      border-radius: 10px;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    /* Page Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      color: var(--muted);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--bg-white);
+      color: var(--fg);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: var(--bg);
+      border-color: var(--border-dark);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn-large {
+      padding: 14px 32px;
+      font-size: 1rem;
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 0.8125rem;
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Step Indicator (Horizontal) */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 40px;
+      padding: 24px;
+      background: var(--bg-white);
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+    }
+
+    .step-circle {
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--muted);
+      background: var(--bg-white);
+      position: relative;
+    }
+
+    .step.completed .step-circle {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .step.active .step-circle {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .step-label {
+      margin-left: 12px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .step.completed .step-label,
+    .step.active .step-label {
+      color: var(--fg);
+    }
+
+    .step-connector {
+      width: 80px;
+      height: 2px;
+      background: var(--border);
+      margin: 0 16px;
+    }
+
+    .step.completed + .step-connector,
+    .step-connector.completed {
+      background: var(--success);
+    }
+
+    /* Content Grid */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 32px;
+    }
+
+    /* Card */
+    .card {
+      background: var(--bg-white);
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title svg {
+      width: 20px;
+      height: 20px;
+      color: var(--muted);
+    }
+
+    .card-badge {
+      padding: 4px 12px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      border-radius: 20px;
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .card-badge.warning {
+      background: var(--warning-light);
+      color: #856404;
+    }
+
+    .card-badge.error {
+      background: var(--error-light);
+      color: var(--error);
+    }
+
+    .card-body {
+      padding: 24px;
+    }
+
+    .card-footer {
+      padding: 16px 24px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* Upload Zone */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 48px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--bg);
+    }
+
+    .upload-zone:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .upload-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      background: var(--bg-white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .upload-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .upload-zone h4 {
+      font-size: 1.125rem;
+      margin-bottom: 8px;
+    }
+
+    .upload-zone p {
+      color: var(--muted);
+      font-size: 0.875rem;
+      margin-bottom: 16px;
+    }
+
+    .file-types {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .file-type {
+      padding: 6px 14px;
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* File Loaded */
+    .file-info-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--success-light);
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    .file-info-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--success);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .file-info-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .file-info-details {
+      flex: 1;
+    }
+
+    .file-info-name {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .file-info-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .file-info-action {
+      padding: 8px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      border-radius: 6px;
+    }
+
+    .file-info-action:hover {
+      background: rgba(0,0,0,0.05);
+      color: var(--error);
+    }
+
+    /* Table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table td {
+      padding: 12px 16px;
+      font-size: 0.875rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table .row-num {
+      color: var(--muted);
+      font-family: monospace;
+      font-size: 0.75rem;
+    }
+
+    .data-table .cell-url {
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Column Mapping */
+    .mapping-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mapping-row {
+      display: grid;
+      grid-template-columns: 1fr 40px 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .mapping-source {
+      padding: 12px 16px;
+      background: var(--bg);
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.875rem;
+      border: 1px solid var(--border);
+    }
+
+    .mapping-arrow {
+      display: flex;
+      justify-content: center;
+      color: var(--muted);
+    }
+
+    .mapping-target {
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      background: var(--bg-white);
+      cursor: pointer;
+    }
+
+    /* Design Section */
+    .design-section {
+      margin-bottom: 24px;
+    }
+
+    .design-section-header {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    /* Pattern Grid */
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+
+    .pattern-item {
+      aspect-ratio: 1;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-white);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      transition: all 0.2s;
+    }
+
+    .pattern-item:hover {
+      border-color: var(--fg);
+    }
+
+    .pattern-item.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .pattern-preview {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      width: 100%;
+      aspect-ratio: 1;
+      margin-bottom: 6px;
+    }
+
+    .pattern-preview .dot { background: var(--fg); border-radius: 50%; }
+    .pattern-preview .square { background: var(--fg); }
+    .pattern-preview .rounded { background: var(--fg); border-radius: 20%; }
+
+    .pattern-label {
+      font-size: 0.5625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .pattern-item.selected .pattern-label {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Eye Styles Grid */
+    .eye-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .eye-item {
+      aspect-ratio: 1;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-white);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      transition: all 0.2s;
+    }
+
+    .eye-item:hover {
+      border-color: var(--fg);
+    }
+
+    .eye-item.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .eye-preview {
+      width: 24px;
+      height: 24px;
+      position: relative;
+    }
+
+    .eye-frame {
+      width: 100%;
+      height: 100%;
+      border: 3px solid var(--fg);
+      position: absolute;
+    }
+
+    .eye-frame.square { border-radius: 0; }
+    .eye-frame.rounded { border-radius: 4px; }
+    .eye-frame.circle { border-radius: 50%; }
+    .eye-frame.leaf-l { border-radius: 0 50% 0 50%; }
+    .eye-frame.leaf-r { border-radius: 50% 0 50% 0; }
+
+    /* Color Picker */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .color-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .color-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .color-input {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .color-input input[type="color"] {
+      width: 32px;
+      height: 32px;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .color-input input[type="text"] {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: monospace;
+      font-size: 0.8125rem;
+      text-transform: uppercase;
+    }
+
+    /* Sidebar Preview */
+    .preview-sticky {
+      position: sticky;
+      top: 120px;
+    }
+
+    .preview-qr {
+      padding: 32px;
+      display: flex;
+      justify-content: center;
+      background: var(--bg);
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    .qr-mock {
+      width: 200px;
+      height: 200px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-mock svg {
+      width: 160px;
+      height: 160px;
+    }
+
+    .preview-info {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .preview-info-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+    }
+
+    .preview-info-label {
+      color: var(--muted);
+    }
+
+    .preview-info-value {
+      font-weight: 600;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--bg-white);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: 'DM Serif Display', serif;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-card.success .stat-value { color: var(--success); }
+    .stat-card.warning .stat-value { color: #b08800; }
+    .stat-card.error .stat-value { color: var(--error); }
+
+    /* Validation List */
+    .validation-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .validation-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--bg);
+      border-radius: 10px;
+      border-left: 3px solid transparent;
+    }
+
+    .validation-row.success { border-left-color: var(--success); }
+    .validation-row.warning { border-left-color: var(--warning); }
+    .validation-row.error { border-left-color: var(--error); }
+
+    .validation-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .validation-icon.success { background: var(--success); color: white; }
+    .validation-icon.warning { background: var(--warning); color: #856404; }
+    .validation-icon.error { background: var(--error); color: white; }
+
+    .validation-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .validation-text {
+      flex: 1;
+      font-size: 0.875rem;
+    }
+
+    .validation-action {
+      font-size: 0.8125rem;
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .validation-action:hover {
+      text-decoration: underline;
+    }
+
+    /* Sample Grid */
+    .sample-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .sample-card {
+      background: var(--bg-white);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sample-qr {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--bg);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .sample-qr svg {
+      width: 70%;
+      height: 70%;
+    }
+
+    .sample-label {
+      font-size: 0.6875rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .sample-content {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    /* Progress Bar */
+    .progress-card {
+      background: var(--fg);
+      color: white;
+      padding: 32px;
+      border-radius: 16px;
+      margin-bottom: 32px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .progress-title {
+      font-size: 1.5rem;
+    }
+
+    .progress-stats {
+      display: flex;
+      gap: 24px;
+    }
+
+    .progress-stat {
+      text-align: right;
+    }
+
+    .progress-stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .progress-stat-label {
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .progress-bar {
+      height: 12px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #ff8c42);
+      border-radius: 6px;
+      transition: width 0.3s ease;
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .progress-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    /* Download Section */
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .download-card {
+      background: var(--bg-white);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .download-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-md);
+    }
+
+    .download-card.selected {
+      border-color: var(--accent);
+    }
+
+    .download-card-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 24px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .download-card.selected .download-card-header {
+      background: var(--accent-light);
+    }
+
+    .download-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--fg);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .download-card.selected .download-icon {
+      background: var(--accent);
+    }
+
+    .download-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .download-title {
+      font-size: 1.25rem;
+      font-family: 'DM Serif Display', serif;
+      margin-bottom: 4px;
+    }
+
+    .download-desc {
+      font-size: 0.8125rem;
+      color: var(--muted);
+    }
+
+    .download-card-body {
+      padding: 24px;
+    }
+
+    .download-config-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .download-config-field label {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .download-config-field select,
+    .download-config-field input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      background: var(--bg-white);
+    }
+
+    .download-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+
+    .download-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .download-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Footer Actions */
+    .footer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-sticky {
+        position: static;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .sample-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 16px;
+      }
+
+      .header-tabs {
+        padding: 0 16px;
+        overflow-x: auto;
+      }
+
+      .tab {
+        padding: 12px 16px;
+        white-space: nowrap;
+      }
+
+      .step-indicator {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 8px;
+      }
+
+      .step-connector {
+        display: none;
+      }
+
+      .stats-grid,
+      .sample-grid,
+      .download-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pattern-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .download-config-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-top">
+      <a href="#" class="logo">
+        <div class="logo-icon">
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+        </div>
+        <span class="logo-text">OneQR</span>
+      </a>
+      <div class="header-actions">
+        <button class="btn btn-sm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          Help
+        </button>
+        <div class="user-menu">
+          <div class="user-avatar">JD</div>
+          <span class="user-name">John Doe</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <nav class="header-tabs">
+      <a href="#" class="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Dashboard
+      </a>
+      <a href="#" class="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Create QR
+      </a>
+      <a href="#" class="tab active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/>
+          <rect x="14" y="3" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/>
+        </svg>
+        Bulk Create
+        <span class="tab-badge">PRO</span>
+      </a>
+      <a href="#" class="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+        </svg>
+        Templates
+      </a>
+      <a href="#" class="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        Analytics
+      </a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Bulk QR Creation</h1>
+        <p class="page-subtitle">Generate thousands of unique QR codes from your data</p>
+      </div>
+      <div style="display: flex; gap: 12px;">
+        <button class="btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+          Save Draft
+        </button>
+        <button class="btn btn-primary btn-large">
+          Generate QR Codes
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step completed">
+        <div class="step-circle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+        </div>
+        <span class="step-label">Upload Data</span>
+      </div>
+      <div class="step-connector completed"></div>
+      <div class="step completed">
+        <div class="step-circle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+        </div>
+        <span class="step-label">Design Template</span>
+      </div>
+      <div class="step-connector completed"></div>
+      <div class="step active">
+        <div class="step-circle">3</div>
+        <span class="step-label">Preview & Validate</span>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step">
+        <div class="step-circle">4</div>
+        <span class="step-label">Generate</span>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step">
+        <div class="step-circle">5</div>
+        <span class="step-label">Download</span>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">1,247</div>
+        <div class="stat-label">Total Rows</div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-value">1,239</div>
+        <div class="stat-label">Valid Entries</div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-value">5</div>
+        <div class="stat-label">Duplicates</div>
+      </div>
+      <div class="stat-card error">
+        <div class="stat-value">3</div>
+        <div class="stat-label">Errors</div>
+      </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="content-grid">
+      <!-- Main Content -->
+      <div>
+        <!-- Validation Card -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              Validation Results
+            </h3>
+            <span class="card-badge warning">3 Issues</span>
+          </div>
+          <div class="card-body">
+            <div class="validation-list">
+              <div class="validation-row success">
+                <div class="validation-icon success">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+                </div>
+                <span class="validation-text">1,239 valid entries ready to generate</span>
+              </div>
+              <div class="validation-row warning">
+                <div class="validation-icon warning">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                </div>
+                <span class="validation-text">5 duplicate entries detected (rows 45, 89, 234, 567, 1001)</span>
+                <span class="validation-action">View All</span>
+              </div>
+              <div class="validation-row error">
+                <div class="validation-icon error">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </div>
+                <span class="validation-text">Row 156: Invalid URL format "htp://example"</span>
+                <span class="validation-action">Fix</span>
+              </div>
+              <div class="validation-row error">
+                <div class="validation-icon error">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </div>
+                <span class="validation-text">Row 892: Missing content field</span>
+                <span class="validation-action">Fix</span>
+              </div>
+              <div class="validation-row error">
+                <div class="validation-icon error">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </div>
+                <span class="validation-text">Row 1,103: Content exceeds 2,000 character limit</span>
+                <span class="validation-action">Fix</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-sm">Exclude All Errors</button>
+            <button class="btn btn-sm btn-primary">
+              Proceed with 1,244 codes
+            </button>
+          </div>
+        </div>
+
+        <!-- Sample Preview -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Sample Preview
+            </h3>
+            <span class="card-badge">4 of 1,247</span>
+          </div>
+          <div class="card-body">
+            <div class="sample-grid">
+              <div class="sample-card">
+                <div class="sample-qr">
+                  <svg viewBox="0 0 100 100" fill="none">
+                    <rect x="5" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="11" y="11" width="13" height="13" fill="#1a1a1a"/>
+                    <rect x="70" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="76" y="11" width="13" height="13" fill="#1a1a1a"/>
+                    <rect x="5" y="70" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="11" y="76" width="13" height="13" fill="#1a1a1a"/>
+                    <circle cx="50" cy="50" r="3" fill="#1a1a1a"/>
+                  </svg>
+                </div>
+                <div class="sample-label">Row 1</div>
+                <div class="sample-content">Ticket #001</div>
+              </div>
+              <div class="sample-card">
+                <div class="sample-qr">
+                  <svg viewBox="0 0 100 100" fill="none">
+                    <rect x="5" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="11" y="11" width="13" height="13" fill="#1a1a1a"/>
+                    <rect x="70" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="76" y="11" width="13" height="13" fill="#1a1a1a"/>
+                    <rect x="5" y="70" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="11" y="76" width="13" height="13" fill="#1a1a1a"/>
+                    <circle cx="50" cy="50" r="3" fill="#1a1a1a"/>
+                  </svg>
+                </div>
+                <div class="sample-label">Row 250</div>
+                <div class="sample-content">Ticket #250</div>
+              </div>
+              <div class="sample-card">
+                <div class="sample-qr">
+                  <svg viewBox="0 0 100 100" fill="none">
+                    <rect x="5" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="11" y="11" width="13" height="13" fill="#1a1a1a"/>
+                    <rect x="70" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="76" y="11" width="13" height="13" fill="#1a1a1a"/>
+                    <rect x="5" y="70" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="11" y="76" width="13" height="13" fill="#1a1a1a"/>
+                    <circle cx="50" cy="50" r="3" fill="#1a1a1a"/>
+                  </svg>
+                </div>
+                <div class="sample-label">Row 750</div>
+                <div class="sample-content">Ticket #750</div>
+              </div>
+              <div class="sample-card">
+                <div class="sample-qr">
+                  <svg viewBox="0 0 100 100" fill="none">
+                    <rect x="5" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="11" y="11" width="13" height="13" fill="#1a1a1a"/>
+                    <rect x="70" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="76" y="11" width="13" height="13" fill="#1a1a1a"/>
+                    <rect x="5" y="70" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="11" y="76" width="13" height="13" fill="#1a1a1a"/>
+                    <circle cx="50" cy="50" r="3" fill="#1a1a1a"/>
+                  </svg>
+                </div>
+                <div class="sample-label">Row 1,247</div>
+                <div class="sample-content">Ticket #1247</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Download Options (Step 5) -->
+        <div style="margin-top: 32px;">
+          <h2 style="font-size: 1.5rem; margin-bottom: 24px;">Download Options</h2>
+          <div class="download-grid">
+            <div class="download-card selected">
+              <div class="download-card-header">
+                <div class="download-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="download-title">ZIP Archive</div>
+                  <div class="download-desc">Individual files compressed</div>
+                </div>
+              </div>
+              <div class="download-card-body">
+                <div class="download-config-grid">
+                  <div class="download-config-field">
+                    <label>Format</label>
+                    <select>
+                      <option>PNG</option>
+                      <option>SVG</option>
+                      <option>PDF</option>
+                      <option>EPS</option>
+                    </select>
+                  </div>
+                  <div class="download-config-field">
+                    <label>Resolution</label>
+                    <select>
+                      <option>72 DPI (Screen)</option>
+                      <option>150 DPI</option>
+                      <option selected>300 DPI (Print)</option>
+                      <option>600 DPI (High Quality)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="download-config-field" style="margin-bottom: 16px;">
+                  <label>Filename Pattern</label>
+                  <input type="text" value="ticket-{row_number}" placeholder="e.g., ticket-{row_number}">
+                </div>
+                <button class="download-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  Download ZIP (24.5 MB)
+                </button>
+              </div>
+            </div>
+
+            <div class="download-card">
+              <div class="download-card-header">
+                <div class="download-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="download-title">Multi-page PDF</div>
+                  <div class="download-desc">Single file with grid layout</div>
+                </div>
+              </div>
+              <div class="download-card-body">
+                <div class="download-config-grid">
+                  <div class="download-config-field">
+                    <label>Page Size</label>
+                    <select>
+                      <option>A4</option>
+                      <option selected>Letter</option>
+                      <option>Custom</option>
+                    </select>
+                  </div>
+                  <div class="download-config-field">
+                    <label>Grid Layout</label>
+                    <select>
+                      <option>2 x 2</option>
+                      <option selected>3 x 3</option>
+                      <option>4 x 4</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                  <input type="checkbox" id="includeLabels" checked>
+                  <label for="includeLabels" style="font-size: 0.875rem;">Include labels below QR codes</label>
+                </div>
+                <button class="download-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                  Download PDF (139 pages)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="preview-sticky">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              </svg>
+              Template Preview
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="preview-qr">
+              <div class="qr-mock">
+                <svg viewBox="0 0 100 100" fill="none">
+                  <rect x="5" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                  <rect x="11" y="11" width="13" height="13" fill="#1a1a1a"/>
+                  <rect x="70" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                  <rect x="76" y="11" width="13" height="13" fill="#1a1a1a"/>
+                  <rect x="5" y="70" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                  <rect x="11" y="76" width="13" height="13" fill="#1a1a1a"/>
+                  <circle cx="40" cy="12" r="3" fill="#1a1a1a"/>
+                  <circle cx="50" cy="12" r="3" fill="#1a1a1a"/>
+                  <circle cx="60" cy="12" r="3" fill="#1a1a1a"/>
+                  <circle cx="40" cy="22" r="3" fill="#1a1a1a"/>
+                  <circle cx="55" cy="22" r="3" fill="#1a1a1a"/>
+                  <circle cx="12" cy="40" r="3" fill="#1a1a1a"/>
+                  <circle cx="22" cy="40" r="3" fill="#1a1a1a"/>
+                  <circle cx="12" cy="50" r="3" fill="#1a1a1a"/>
+                  <circle cx="22" cy="55" r="3" fill="#1a1a1a"/>
+                  <circle cx="12" cy="60" r="3" fill="#1a1a1a"/>
+                  <circle cx="40" cy="40" r="3" fill="#1a1a1a"/>
+                  <circle cx="50" cy="45" r="3" fill="#1a1a1a"/>
+                  <circle cx="60" cy="40" r="3" fill="#1a1a1a"/>
+                  <circle cx="45" cy="55" r="3" fill="#1a1a1a"/>
+                  <circle cx="55" cy="55" r="3" fill="#1a1a1a"/>
+                  <circle cx="78" cy="40" r="3" fill="#1a1a1a"/>
+                  <circle cx="88" cy="45" r="3" fill="#1a1a1a"/>
+                  <circle cx="78" cy="55" r="3" fill="#1a1a1a"/>
+                  <circle cx="88" cy="55" r="3" fill="#1a1a1a"/>
+                  <circle cx="40" cy="78" r="3" fill="#1a1a1a"/>
+                  <circle cx="50" cy="78" r="3" fill="#1a1a1a"/>
+                  <circle cx="60" cy="82" r="3" fill="#1a1a1a"/>
+                  <circle cx="78" cy="78" r="3" fill="#1a1a1a"/>
+                  <circle cx="88" cy="78" r="3" fill="#1a1a1a"/>
+                </svg>
+              </div>
+            </div>
+            <div class="preview-info">
+              <div class="preview-info-item">
+                <span class="preview-info-label">Pattern</span>
+                <span class="preview-info-value">Dots</span>
+              </div>
+              <div class="preview-info-item">
+                <span class="preview-info-label">Foreground</span>
+                <span class="preview-info-value">#1A1A1A</span>
+              </div>
+              <div class="preview-info-item">
+                <span class="preview-info-label">Background</span>
+                <span class="preview-info-value">#FFFFFF</span>
+              </div>
+              <div class="preview-info-item">
+                <span class="preview-info-label">Error Correction</span>
+                <span class="preview-info-value">Medium (15%)</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer" style="justify-content: center;">
+            <button class="btn btn-sm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              Edit Template
+            </button>
+          </div>
+        </div>
+
+        <!-- Data Summary -->
+        <div class="card" style="margin-top: 16px;">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              Data Summary
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="preview-info">
+              <div class="preview-info-item">
+                <span class="preview-info-label">File</span>
+                <span class="preview-info-value">event_tickets.csv</span>
+              </div>
+              <div class="preview-info-item">
+                <span class="preview-info-label">Total Rows</span>
+                <span class="preview-info-value">1,247</span>
+              </div>
+              <div class="preview-info-item">
+                <span class="preview-info-label">To Generate</span>
+                <span class="preview-info-value" style="color: var(--success);">1,244</span>
+              </div>
+              <div class="preview-info-item">
+                <span class="preview-info-label">Est. Time</span>
+                <span class="preview-info-value">~2 minutes</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="footer-actions">
+      <button class="btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back to Design
+      </button>
+      <div style="display: flex; gap: 12px;">
+        <button class="btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+          </svg>
+          Save as Template
+        </button>
+        <button class="btn btn-primary btn-large">
+          Generate 1,244 QR Codes
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Download card selection
+    document.querySelectorAll('.download-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (!e.target.closest('.download-card-body')) {
+          document.querySelectorAll('.download-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
