@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk QR Creation | Variation 1: Stepper Wizard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-hover: #e64500;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --error: #ef4444;
+      --error-light: #fee2e2;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+      font-family: 'DM Serif Display', serif;
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: white;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      color: var(--fg);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--fg);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      padding: 4px;
+    }
+
+    .logo-icon span {
+      background: var(--bg);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border: 2px solid var(--border);
+      background: white;
+      color: var(--fg);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      border-color: var(--fg);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Main Layout */
+    .main {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: calc(100vh - 65px);
+    }
+
+    /* Sidebar Stepper */
+    .sidebar {
+      background: white;
+      border-right: 1px solid var(--border);
+      padding: 32px 24px;
+    }
+
+    .sidebar-title {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .stepper {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step {
+      display: flex;
+      gap: 16px;
+      position: relative;
+    }
+
+    .step-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .step-number {
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--border);
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--muted);
+      position: relative;
+      z-index: 1;
+    }
+
+    .step.active .step-number {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: white;
+    }
+
+    .step.completed .step-number {
+      border-color: var(--success);
+      background: var(--success);
+      color: white;
+    }
+
+    .step-line {
+      width: 2px;
+      flex: 1;
+      min-height: 40px;
+      background: var(--border);
+    }
+
+    .step:last-child .step-line {
+      display: none;
+    }
+
+    .step.completed .step-line {
+      background: var(--success);
+    }
+
+    .step-content {
+      flex: 1;
+      padding-bottom: 32px;
+    }
+
+    .step-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--muted);
+    }
+
+    .step.active .step-title,
+    .step.completed .step-title {
+      color: var(--fg);
+    }
+
+    .step-description {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* Content Area */
+    .content {
+      padding: 40px;
+      max-width: 960px;
+    }
+
+    .content-header {
+      margin-bottom: 32px;
+    }
+
+    .content-header h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .content-header p {
+      color: var(--muted);
+    }
+
+    /* Step 1: Upload */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      background: var(--surface);
+      padding: 48px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .upload-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      color: var(--muted);
+    }
+
+    .upload-zone h3 {
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+    }
+
+    .upload-zone p {
+      color: var(--muted);
+      font-size: 0.875rem;
+      margin-bottom: 16px;
+    }
+
+    .upload-formats {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .format-badge {
+      padding: 4px 12px;
+      background: white;
+      border: 1px solid var(--border);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* File Preview */
+    .file-preview {
+      display: none;
+      border: 1px solid var(--border);
+      background: white;
+      margin-top: 24px;
+    }
+
+    .file-preview.visible {
+      display: block;
+    }
+
+    .file-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .file-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--success-light);
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .file-name {
+      font-weight: 600;
+    }
+
+    .file-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .remove-file {
+      padding: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .remove-file:hover {
+      color: var(--error);
+    }
+
+    /* Column Mapping */
+    .column-mapping {
+      padding: 24px;
+    }
+
+    .mapping-title {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    .mapping-grid {
+      display: grid;
+      grid-template-columns: 1fr 40px 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .mapping-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      padding: 8px 0;
+    }
+
+    .mapping-arrow {
+      display: flex;
+      justify-content: center;
+      color: var(--muted);
+    }
+
+    .mapping-row {
+      display: contents;
+    }
+
+    .mapping-source {
+      padding: 12px 16px;
+      background: var(--surface);
+      font-size: 0.875rem;
+      font-family: monospace;
+      border: 1px solid var(--border);
+    }
+
+    .mapping-target {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      font-size: 0.875rem;
+      background: white;
+      cursor: pointer;
+    }
+
+    .mapping-target:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+
+    /* Data Preview Table */
+    .data-preview {
+      margin-top: 24px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .data-preview-header {
+      padding: 12px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .data-preview-header h4 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .preview-badge {
+      padding: 4px 8px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 0.6875rem;
+      font-weight: 700;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table td {
+      padding: 12px 16px;
+      font-size: 0.875rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table .row-number {
+      color: var(--muted);
+      font-family: monospace;
+      font-size: 0.75rem;
+    }
+
+    /* Step 2: Template Designer */
+    .template-section {
+      display: none;
+    }
+
+    .template-section.visible {
+      display: block;
+    }
+
+    .template-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 32px;
+    }
+
+    .design-options {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .option-card {
+      border: 1px solid var(--border);
+      background: white;
+    }
+
+    .option-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      cursor: pointer;
+      border-bottom: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .option-header:hover {
+      background: var(--surface);
+    }
+
+    .option-header.active {
+      border-bottom-color: var(--border);
+      background: var(--accent-light);
+    }
+
+    .option-header h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .option-header h4 svg {
+      width: 18px;
+      height: 18px;
+      color: var(--muted);
+    }
+
+    .option-header.active h4 svg {
+      color: var(--accent);
+    }
+
+    .option-chevron {
+      width: 16px;
+      height: 16px;
+      color: var(--muted);
+      transition: transform 0.2s;
+    }
+
+    .option-header.active .option-chevron {
+      transform: rotate(180deg);
+    }
+
+    .option-content {
+      display: none;
+      padding: 16px;
+    }
+
+    .option-content.active {
+      display: block;
+    }
+
+    /* Pattern Grid */
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+
+    .pattern-item {
+      aspect-ratio: 1;
+      border: 2px solid var(--border);
+      background: white;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      transition: all 0.2s;
+    }
+
+    .pattern-item:hover {
+      border-color: var(--fg);
+    }
+
+    .pattern-item.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .pattern-preview {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      width: 100%;
+      aspect-ratio: 1;
+      margin-bottom: 4px;
+    }
+
+    .pattern-preview .dot {
+      background: var(--fg);
+      border-radius: 50%;
+    }
+
+    .pattern-preview .square {
+      background: var(--fg);
+    }
+
+    .pattern-preview .rounded {
+      background: var(--fg);
+      border-radius: 20%;
+    }
+
+    .pattern-label {
+      font-size: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .pattern-item.selected .pattern-label {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Color Pickers */
+    .color-row {
+      display: flex;
+      gap: 16px;
+    }
+
+    .color-group {
+      flex: 1;
+    }
+
+    .color-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .color-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      padding: 8px;
+      background: white;
+    }
+
+    .color-input-wrapper input[type="color"] {
+      width: 28px;
+      height: 28px;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .color-input-wrapper input[type="text"] {
+      flex: 1;
+      border: none;
+      font-family: monospace;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      outline: none;
+      min-width: 0;
+    }
+
+    /* QR Preview Sidebar */
+    .preview-sidebar {
+      position: sticky;
+      top: 24px;
+    }
+
+    .preview-card {
+      border: 1px solid var(--border);
+      background: white;
+    }
+
+    .preview-card-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .preview-card-header h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .preview-qr {
+      padding: 32px;
+      display: flex;
+      justify-content: center;
+      background: var(--surface);
+    }
+
+    .qr-mock {
+      width: 180px;
+      height: 180px;
+      background: white;
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .qr-mock svg {
+      width: 140px;
+      height: 140px;
+    }
+
+    .preview-info {
+      padding: 16px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Step 3: Validation */
+    .validation-section {
+      display: none;
+    }
+
+    .validation-section.visible {
+      display: block;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      padding: 20px;
+      border: 1px solid var(--border);
+      background: white;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: 'DM Serif Display', serif;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-card.success .stat-value {
+      color: var(--success);
+    }
+
+    .stat-card.warning .stat-value {
+      color: var(--warning);
+    }
+
+    .stat-card.error .stat-value {
+      color: var(--error);
+    }
+
+    /* Sample QR Preview Grid */
+    .sample-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .sample-card {
+      border: 1px solid var(--border);
+      background: white;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .sample-qr {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 12px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sample-qr svg {
+      width: 100px;
+      height: 100px;
+    }
+
+    .sample-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .sample-content {
+      font-size: 0.875rem;
+      font-weight: 500;
+      word-break: break-all;
+    }
+
+    /* Error List */
+    .error-list {
+      border: 1px solid var(--error);
+      background: var(--error-light);
+      margin-bottom: 24px;
+    }
+
+    .error-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid var(--error);
+    }
+
+    .error-header svg {
+      width: 20px;
+      height: 20px;
+      color: var(--error);
+    }
+
+    .error-header h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--error);
+    }
+
+    .error-items {
+      padding: 16px;
+    }
+
+    .error-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .error-item:last-child {
+      border-bottom: none;
+    }
+
+    .error-item-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .error-row-num {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--error);
+      font-weight: 600;
+    }
+
+    .error-message {
+      font-size: 0.875rem;
+    }
+
+    .error-action {
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      border: 1px solid var(--error);
+      background: white;
+      color: var(--error);
+      cursor: pointer;
+    }
+
+    .error-action:hover {
+      background: var(--error);
+      color: white;
+    }
+
+    /* Step 4: Generate */
+    .generate-section {
+      display: none;
+    }
+
+    .generate-section.visible {
+      display: block;
+    }
+
+    .progress-container {
+      border: 1px solid var(--border);
+      background: white;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .progress-title {
+      font-size: 1.25rem;
+    }
+
+    .progress-stats {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--surface);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    .progress-details {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .progress-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn-icon {
+      padding: 10px;
+    }
+
+    /* Live Generation Log */
+    .generation-log {
+      border: 1px solid var(--border);
+      background: var(--fg);
+      color: var(--bg);
+      font-family: monospace;
+      font-size: 0.75rem;
+      padding: 16px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      padding: 4px 0;
+      display: flex;
+      gap: 12px;
+    }
+
+    .log-time {
+      color: var(--muted);
+    }
+
+    .log-success {
+      color: var(--success);
+    }
+
+    .log-error {
+      color: var(--error);
+    }
+
+    /* Step 5: Download */
+    .download-section {
+      display: none;
+    }
+
+    .download-section.visible {
+      display: block;
+    }
+
+    .success-banner {
+      border: 1px solid var(--success);
+      background: var(--success-light);
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .success-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--success);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .success-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .success-text h3 {
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+    }
+
+    .success-text p {
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+
+    .download-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .download-card {
+      border: 2px solid var(--border);
+      background: white;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .download-card:hover {
+      border-color: var(--accent);
+    }
+
+    .download-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .download-card-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .download-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+    }
+
+    .download-card.selected .download-icon {
+      background: var(--accent);
+      color: white;
+    }
+
+    .download-card h4 {
+      font-size: 1.125rem;
+      font-family: 'DM Serif Display', serif;
+    }
+
+    .download-card p {
+      color: var(--muted);
+      font-size: 0.875rem;
+      margin-bottom: 16px;
+    }
+
+    .download-config {
+      display: none;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .download-card.selected .download-config {
+      display: block;
+    }
+
+    .config-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .config-group {
+      flex: 1;
+    }
+
+    .config-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .config-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+
+    .config-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 0.875rem;
+    }
+
+    /* Footer Actions */
+    .footer-actions {
+      display: flex;
+      justify-content: space-between;
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 32px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .main {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .template-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .sample-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .download-options {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .content {
+        padding: 24px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sample-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pattern-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <a href="#" class="logo">
+      <div class="logo-icon">
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+      </div>
+      OneQR
+    </a>
+    <div class="header-actions">
+      <button class="btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        New QR
+      </button>
+      <button class="btn">Dashboard</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Sidebar Stepper -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Bulk Creation</div>
+      <div class="stepper">
+        <div class="step completed" data-step="1">
+          <div class="step-indicator">
+            <div class="step-number">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Upload Data</div>
+            <div class="step-description">CSV or Excel file</div>
+          </div>
+        </div>
+
+        <div class="step active" data-step="2">
+          <div class="step-indicator">
+            <div class="step-number">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Design Template</div>
+            <div class="step-description">Customize QR style</div>
+          </div>
+        </div>
+
+        <div class="step" data-step="3">
+          <div class="step-indicator">
+            <div class="step-number">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Validate & Preview</div>
+            <div class="step-description">Check for errors</div>
+          </div>
+        </div>
+
+        <div class="step" data-step="4">
+          <div class="step-indicator">
+            <div class="step-number">4</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Generate Batch</div>
+            <div class="step-description">Process all codes</div>
+          </div>
+        </div>
+
+        <div class="step" data-step="5">
+          <div class="step-indicator">
+            <div class="step-number">5</div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Download</div>
+            <div class="step-description">ZIP or PDF</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Content Area -->
+    <div class="content">
+      <!-- Step 1: Upload (Initially Hidden) -->
+      <section class="upload-section" style="display: none;">
+        <div class="content-header">
+          <h1>Upload Your Data</h1>
+          <p>Upload a CSV or Excel file containing your QR code data</p>
+        </div>
+
+        <div class="upload-zone">
+          <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1"/>
+            <polyline points="9 15 12 12 15 15"/>
+            <line x1="12" y1="12" x2="12" y2="21"/>
+          </svg>
+          <h3>Drop your file here</h3>
+          <p>or click to browse your computer</p>
+          <div class="upload-formats">
+            <span class="format-badge">CSV</span>
+            <span class="format-badge">XLSX</span>
+            <span class="format-badge">XLS</span>
+          </div>
+        </div>
+
+        <div class="file-preview visible">
+          <div class="file-header">
+            <div class="file-info">
+              <div class="file-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+              </div>
+              <div>
+                <div class="file-name">event_tickets.csv</div>
+                <div class="file-meta">1,247 rows &bull; 45 KB</div>
+              </div>
+            </div>
+            <button class="remove-file">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="column-mapping">
+            <div class="mapping-title">Column Mapping</div>
+            <div class="mapping-grid">
+              <div class="mapping-label">CSV Column</div>
+              <div></div>
+              <div class="mapping-label">QR Field</div>
+
+              <div class="mapping-row">
+                <div class="mapping-source">type</div>
+                <div class="mapping-arrow">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </div>
+                <select class="mapping-target">
+                  <option selected>QR Type</option>
+                  <option>Content</option>
+                  <option>Label</option>
+                  <option>Skip</option>
+                </select>
+              </div>
+
+              <div class="mapping-row">
+                <div class="mapping-source">content</div>
+                <div class="mapping-arrow">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </div>
+                <select class="mapping-target">
+                  <option>QR Type</option>
+                  <option selected>Content</option>
+                  <option>Label</option>
+                  <option>Skip</option>
+                </select>
+              </div>
+
+              <div class="mapping-row">
+                <div class="mapping-source">label</div>
+                <div class="mapping-arrow">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </div>
+                <select class="mapping-target">
+                  <option>QR Type</option>
+                  <option>Content</option>
+                  <option selected>Label</option>
+                  <option>Skip</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="data-preview">
+            <div class="data-preview-header">
+              <h4>Data Preview</h4>
+              <span class="preview-badge">First 5 rows</span>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Type</th>
+                  <th>Content</th>
+                  <th>Label</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="row-number">1</td>
+                  <td>url</td>
+                  <td>https://event.com/ticket/001</td>
+                  <td>Ticket #001</td>
+                </tr>
+                <tr>
+                  <td class="row-number">2</td>
+                  <td>url</td>
+                  <td>https://event.com/ticket/002</td>
+                  <td>Ticket #002</td>
+                </tr>
+                <tr>
+                  <td class="row-number">3</td>
+                  <td>url</td>
+                  <td>https://event.com/ticket/003</td>
+                  <td>Ticket #003</td>
+                </tr>
+                <tr>
+                  <td class="row-number">4</td>
+                  <td>vcard</td>
+                  <td>BEGIN:VCARD...</td>
+                  <td>John Doe</td>
+                </tr>
+                <tr>
+                  <td class="row-number">5</td>
+                  <td>text</td>
+                  <td>Serial: XYZ-123</td>
+                  <td>Product XYZ</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 2: Template Designer (Visible for Demo) -->
+      <section class="template-section visible">
+        <div class="content-header">
+          <h1>Design Your Template</h1>
+          <p>Customize the appearance of all 1,247 QR codes</p>
+        </div>
+
+        <div class="template-grid">
+          <div class="design-options">
+            <!-- Body Pattern -->
+            <div class="option-card">
+              <div class="option-header active" onclick="toggleOption(this)">
+                <h4>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                  </svg>
+                  Body Pattern
+                </h4>
+                <svg class="option-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </div>
+              <div class="option-content active">
+                <div class="pattern-grid">
+                  <div class="pattern-item" onclick="selectPattern(this)">
+                    <div class="pattern-preview">
+                      <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
+                      <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
+                      <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
+                      <div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div>
+                    </div>
+                    <span class="pattern-label">Square</span>
+                  </div>
+                  <div class="pattern-item selected" onclick="selectPattern(this)">
+                    <div class="pattern-preview">
+                      <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                      <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                      <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                      <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                    </div>
+                    <span class="pattern-label">Dots</span>
+                  </div>
+                  <div class="pattern-item" onclick="selectPattern(this)">
+                    <div class="pattern-preview">
+                      <div class="rounded"></div><div class="rounded"></div><div class="rounded"></div><div class="rounded"></div>
+                      <div class="rounded"></div><div class="rounded"></div><div class="rounded"></div><div class="rounded"></div>
+                      <div class="rounded"></div><div class="rounded"></div><div class="rounded"></div><div class="rounded"></div>
+                      <div class="rounded"></div><div class="rounded"></div><div class="rounded"></div><div class="rounded"></div>
+                    </div>
+                    <span class="pattern-label">Rounded</span>
+                  </div>
+                  <div class="pattern-item" onclick="selectPattern(this)">
+                    <div class="pattern-preview" style="display: flex; gap: 3px;">
+                      <div style="flex: 1; background: var(--fg);"></div>
+                      <div style="flex: 1; background: var(--fg);"></div>
+                      <div style="flex: 1; background: var(--fg);"></div>
+                      <div style="flex: 1; background: var(--fg);"></div>
+                    </div>
+                    <span class="pattern-label">Vertical</span>
+                  </div>
+                  <div class="pattern-item" onclick="selectPattern(this)">
+                    <div class="pattern-preview" style="display: flex; flex-direction: column; gap: 3px;">
+                      <div style="flex: 1; background: var(--fg);"></div>
+                      <div style="flex: 1; background: var(--fg);"></div>
+                      <div style="flex: 1; background: var(--fg);"></div>
+                      <div style="flex: 1; background: var(--fg);"></div>
+                    </div>
+                    <span class="pattern-label">Horizontal</span>
+                  </div>
+                  <div class="pattern-item" onclick="selectPattern(this)">
+                    <div class="pattern-preview">
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                      <div class="rounded" style="transform: rotate(45deg) scale(0.7);"></div>
+                    </div>
+                    <span class="pattern-label">Diamond</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Colors -->
+            <div class="option-card">
+              <div class="option-header" onclick="toggleOption(this)">
+                <h4>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="13.5" cy="6.5" r="4"/>
+                    <circle cx="17.5" cy="13.5" r="4"/>
+                    <circle cx="8.5" cy="13.5" r="4"/>
+                  </svg>
+                  Colors
+                </h4>
+                <svg class="option-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </div>
+              <div class="option-content">
+                <div class="color-row">
+                  <div class="color-group">
+                    <div class="color-label">Foreground</div>
+                    <div class="color-input-wrapper">
+                      <input type="color" value="#1a1a1a">
+                      <input type="text" value="#1A1A1A" maxlength="7">
+                    </div>
+                  </div>
+                  <div class="color-group">
+                    <div class="color-label">Background</div>
+                    <div class="color-input-wrapper">
+                      <input type="color" value="#ffffff">
+                      <input type="text" value="#FFFFFF" maxlength="7">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Logo -->
+            <div class="option-card">
+              <div class="option-header" onclick="toggleOption(this)">
+                <h4>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                  Center Logo
+                </h4>
+                <svg class="option-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </div>
+              <div class="option-content">
+                <div class="upload-zone" style="padding: 24px;">
+                  <svg style="width: 32px; height: 32px; color: var(--muted); margin-bottom: 8px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                  <p style="font-size: 0.875rem; margin: 0;">Upload logo (PNG, SVG)</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Error Correction -->
+            <div class="option-card">
+              <div class="option-header" onclick="toggleOption(this)">
+                <h4>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                  Error Correction
+                </h4>
+                <svg class="option-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </div>
+              <div class="option-content">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                  <button class="btn" style="flex-direction: column; padding: 12px;">
+                    <span style="font-size: 1rem; font-weight: 700;">L</span>
+                    <span style="font-size: 0.625rem; color: var(--muted);">7%</span>
+                  </button>
+                  <button class="btn" style="flex-direction: column; padding: 12px; border-color: var(--accent); background: var(--accent-light);">
+                    <span style="font-size: 1rem; font-weight: 700; color: var(--accent);">M</span>
+                    <span style="font-size: 0.625rem; color: var(--accent);">15%</span>
+                  </button>
+                  <button class="btn" style="flex-direction: column; padding: 12px;">
+                    <span style="font-size: 1rem; font-weight: 700;">Q</span>
+                    <span style="font-size: 0.625rem; color: var(--muted);">25%</span>
+                  </button>
+                  <button class="btn" style="flex-direction: column; padding: 12px;">
+                    <span style="font-size: 1rem; font-weight: 700;">H</span>
+                    <span style="font-size: 0.625rem; color: var(--muted);">30%</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview Sidebar -->
+          <div class="preview-sidebar">
+            <div class="preview-card">
+              <div class="preview-card-header">
+                <h3>Live Preview</h3>
+              </div>
+              <div class="preview-qr">
+                <div class="qr-mock">
+                  <svg viewBox="0 0 100 100" fill="none">
+                    <!-- QR Code Mock -->
+                    <rect x="5" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="11" y="11" width="13" height="13" fill="#1a1a1a"/>
+                    <rect x="70" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="76" y="11" width="13" height="13" fill="#1a1a1a"/>
+                    <rect x="5" y="70" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                    <rect x="11" y="76" width="13" height="13" fill="#1a1a1a"/>
+                    <!-- Data modules as dots -->
+                    <circle cx="40" cy="12" r="3" fill="#1a1a1a"/>
+                    <circle cx="50" cy="12" r="3" fill="#1a1a1a"/>
+                    <circle cx="60" cy="12" r="3" fill="#1a1a1a"/>
+                    <circle cx="40" cy="22" r="3" fill="#1a1a1a"/>
+                    <circle cx="55" cy="22" r="3" fill="#1a1a1a"/>
+                    <circle cx="12" cy="40" r="3" fill="#1a1a1a"/>
+                    <circle cx="22" cy="40" r="3" fill="#1a1a1a"/>
+                    <circle cx="12" cy="50" r="3" fill="#1a1a1a"/>
+                    <circle cx="22" cy="55" r="3" fill="#1a1a1a"/>
+                    <circle cx="12" cy="60" r="3" fill="#1a1a1a"/>
+                    <circle cx="40" cy="40" r="3" fill="#1a1a1a"/>
+                    <circle cx="50" cy="45" r="3" fill="#1a1a1a"/>
+                    <circle cx="60" cy="40" r="3" fill="#1a1a1a"/>
+                    <circle cx="45" cy="55" r="3" fill="#1a1a1a"/>
+                    <circle cx="55" cy="55" r="3" fill="#1a1a1a"/>
+                    <circle cx="40" cy="60" r="3" fill="#1a1a1a"/>
+                    <circle cx="50" cy="65" r="3" fill="#1a1a1a"/>
+                    <circle cx="60" cy="60" r="3" fill="#1a1a1a"/>
+                    <circle cx="78" cy="40" r="3" fill="#1a1a1a"/>
+                    <circle cx="88" cy="45" r="3" fill="#1a1a1a"/>
+                    <circle cx="78" cy="55" r="3" fill="#1a1a1a"/>
+                    <circle cx="88" cy="55" r="3" fill="#1a1a1a"/>
+                    <circle cx="78" cy="60" r="3" fill="#1a1a1a"/>
+                    <circle cx="40" cy="78" r="3" fill="#1a1a1a"/>
+                    <circle cx="50" cy="78" r="3" fill="#1a1a1a"/>
+                    <circle cx="60" cy="82" r="3" fill="#1a1a1a"/>
+                    <circle cx="78" cy="78" r="3" fill="#1a1a1a"/>
+                    <circle cx="88" cy="78" r="3" fill="#1a1a1a"/>
+                    <circle cx="78" cy="88" r="3" fill="#1a1a1a"/>
+                    <circle cx="88" cy="88" r="3" fill="#1a1a1a"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="preview-info">
+                Sample data: Ticket #001
+              </div>
+            </div>
+
+            <div style="margin-top: 16px; padding: 16px; border: 1px solid var(--border); background: var(--surface); font-size: 0.75rem; color: var(--muted);">
+              <strong style="color: var(--fg);">Applying to:</strong><br>
+              1,247 QR codes
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-actions">
+          <button class="btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back
+          </button>
+          <button class="btn btn-primary">
+            Continue to Preview
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Step 3: Validation -->
+      <section class="validation-section">
+        <div class="content-header">
+          <h1>Validate & Preview</h1>
+          <p>Review your data before generating QR codes</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value">1,247</div>
+            <div class="stat-label">Total Rows</div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-value">1,239</div>
+            <div class="stat-label">Valid Entries</div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-value">5</div>
+            <div class="stat-label">Duplicates</div>
+          </div>
+          <div class="stat-card error">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Errors</div>
+          </div>
+        </div>
+
+        <div class="error-list">
+          <div class="error-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <h4>3 rows have errors</h4>
+          </div>
+          <div class="error-items">
+            <div class="error-item">
+              <div class="error-item-info">
+                <span class="error-row-num">Row 156</span>
+                <span class="error-message">Invalid URL format: "htp://example"</span>
+              </div>
+              <button class="error-action">Exclude</button>
+            </div>
+            <div class="error-item">
+              <div class="error-item-info">
+                <span class="error-row-num">Row 892</span>
+                <span class="error-message">Missing content field</span>
+              </div>
+              <button class="error-action">Exclude</button>
+            </div>
+            <div class="error-item">
+              <div class="error-item-info">
+                <span class="error-row-num">Row 1,103</span>
+                <span class="error-message">Content exceeds maximum length</span>
+              </div>
+              <button class="error-action">Exclude</button>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="font-family: 'Inter', sans-serif; font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;">Sample Preview</h3>
+        <div class="sample-grid">
+          <div class="sample-card">
+            <div class="sample-qr">
+              <svg viewBox="0 0 100 100" fill="none">
+                <rect x="5" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                <rect x="11" y="11" width="13" height="13" fill="#1a1a1a"/>
+                <rect x="70" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                <rect x="76" y="11" width="13" height="13" fill="#1a1a1a"/>
+                <rect x="5" y="70" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                <rect x="11" y="76" width="13" height="13" fill="#1a1a1a"/>
+                <circle cx="50" cy="50" r="3" fill="#1a1a1a"/>
+              </svg>
+            </div>
+            <div class="sample-label">Row 1</div>
+            <div class="sample-content">Ticket #001</div>
+          </div>
+          <div class="sample-card">
+            <div class="sample-qr">
+              <svg viewBox="0 0 100 100" fill="none">
+                <rect x="5" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                <rect x="11" y="11" width="13" height="13" fill="#1a1a1a"/>
+                <rect x="70" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                <rect x="76" y="11" width="13" height="13" fill="#1a1a1a"/>
+                <rect x="5" y="70" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                <rect x="11" y="76" width="13" height="13" fill="#1a1a1a"/>
+                <circle cx="50" cy="50" r="3" fill="#1a1a1a"/>
+              </svg>
+            </div>
+            <div class="sample-label">Row 500</div>
+            <div class="sample-content">Ticket #500</div>
+          </div>
+          <div class="sample-card">
+            <div class="sample-qr">
+              <svg viewBox="0 0 100 100" fill="none">
+                <rect x="5" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                <rect x="11" y="11" width="13" height="13" fill="#1a1a1a"/>
+                <rect x="70" y="5" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                <rect x="76" y="11" width="13" height="13" fill="#1a1a1a"/>
+                <rect x="5" y="70" width="25" height="25" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                <rect x="11" y="76" width="13" height="13" fill="#1a1a1a"/>
+                <circle cx="50" cy="50" r="3" fill="#1a1a1a"/>
+              </svg>
+            </div>
+            <div class="sample-label">Row 1,247</div>
+            <div class="sample-content">Ticket #1247</div>
+          </div>
+        </div>
+
+        <div style="padding: 16px; background: var(--surface); border: 1px solid var(--border); font-size: 0.875rem; color: var(--muted);">
+          <strong style="color: var(--fg);">Estimated generation time:</strong> ~2 minutes for 1,244 codes
+        </div>
+
+        <div class="footer-actions">
+          <button class="btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Design
+          </button>
+          <button class="btn btn-primary">
+            Generate 1,244 QR Codes
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Step 4: Generation Progress -->
+      <section class="generate-section">
+        <div class="content-header">
+          <h1>Generating QR Codes</h1>
+          <p>Please wait while we create your QR codes</p>
+        </div>
+
+        <div class="progress-container">
+          <div class="progress-header">
+            <h3 class="progress-title">Processing batch...</h3>
+            <span class="progress-stats">847 of 1,244</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 68%;"></div>
+          </div>
+          <div class="progress-details">
+            <span>68% complete</span>
+            <span>~45 seconds remaining</span>
+          </div>
+          <div class="progress-actions">
+            <button class="btn btn-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="6" y="4" width="4" height="16"/>
+                <rect x="14" y="4" width="4" height="16"/>
+              </svg>
+              Pause
+            </button>
+            <button class="btn" style="color: var(--error);">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <div class="generation-log">
+          <div class="log-entry">
+            <span class="log-time">12:34:56</span>
+            <span class="log-success">Generated: ticket-001.png</span>
+          </div>
+          <div class="log-entry">
+            <span class="log-time">12:34:56</span>
+            <span class="log-success">Generated: ticket-002.png</span>
+          </div>
+          <div class="log-entry">
+            <span class="log-time">12:34:57</span>
+            <span class="log-success">Generated: ticket-003.png</span>
+          </div>
+          <div class="log-entry">
+            <span class="log-time">12:34:57</span>
+            <span class="log-error">Skipped: Row 156 (invalid URL)</span>
+          </div>
+          <div class="log-entry">
+            <span class="log-time">12:34:58</span>
+            <span class="log-success">Generated: ticket-004.png</span>
+          </div>
+          <div class="log-entry">
+            <span class="log-time">12:34:58</span>
+            <span class="log-success">Generated: ticket-005.png</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 5: Download -->
+      <section class="download-section">
+        <div class="content-header">
+          <h1>Download Your QR Codes</h1>
+          <p>Choose your preferred format</p>
+        </div>
+
+        <div class="success-banner">
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+          </div>
+          <div class="success-text">
+            <h3>Successfully generated 1,244 QR codes</h3>
+            <p>3 rows were skipped due to errors</p>
+          </div>
+        </div>
+
+        <div class="download-options">
+          <div class="download-card selected">
+            <div class="download-card-header">
+              <div class="download-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+              </div>
+              <h4>ZIP Archive</h4>
+            </div>
+            <p>Download all QR codes as individual files in a ZIP archive</p>
+            <div class="download-config">
+              <div class="config-row">
+                <div class="config-group">
+                  <div class="config-label">Format</div>
+                  <select class="config-select">
+                    <option>PNG</option>
+                    <option>SVG</option>
+                    <option>PDF</option>
+                    <option>EPS</option>
+                  </select>
+                </div>
+                <div class="config-group">
+                  <div class="config-label">Resolution</div>
+                  <select class="config-select">
+                    <option>72 DPI (Screen)</option>
+                    <option>150 DPI</option>
+                    <option selected>300 DPI (Print)</option>
+                    <option>600 DPI (High Quality)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="config-row">
+                <div class="config-group">
+                  <div class="config-label">Filename Pattern</div>
+                  <input type="text" class="config-input" value="ticket-{row_number}" placeholder="e.g., ticket-{row_number}">
+                </div>
+              </div>
+              <button class="btn btn-primary" style="width: 100%; margin-top: 16px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download ZIP (24.5 MB)
+              </button>
+            </div>
+          </div>
+
+          <div class="download-card">
+            <div class="download-card-header">
+              <div class="download-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+              </div>
+              <h4>Multi-page PDF</h4>
+            </div>
+            <p>Generate a single PDF with multiple QR codes per page</p>
+            <div class="download-config">
+              <div class="config-row">
+                <div class="config-group">
+                  <div class="config-label">Page Size</div>
+                  <select class="config-select">
+                    <option>A4</option>
+                    <option selected>Letter</option>
+                    <option>Custom</option>
+                  </select>
+                </div>
+                <div class="config-group">
+                  <div class="config-label">Grid Layout</div>
+                  <select class="config-select">
+                    <option>2 x 2</option>
+                    <option selected>3 x 3</option>
+                    <option>4 x 4</option>
+                  </select>
+                </div>
+              </div>
+              <div class="config-row">
+                <div class="config-group" style="display: flex; align-items: center; gap: 8px;">
+                  <input type="checkbox" id="includeLabels" checked>
+                  <label for="includeLabels" style="font-size: 0.875rem;">Include labels below QR codes</label>
+                </div>
+              </div>
+              <button class="btn btn-primary" style="width: 100%; margin-top: 16px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download PDF (139 pages)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-actions">
+          <button class="btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+            </svg>
+            Save Template
+          </button>
+          <button class="btn btn-primary">
+            Create Another Batch
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    function toggleOption(header) {
+      const content = header.nextElementSibling;
+      const isActive = header.classList.contains('active');
+
+      // Toggle current
+      header.classList.toggle('active');
+      content.classList.toggle('active');
+    }
+
+    function selectPattern(el) {
+      document.querySelectorAll('.pattern-item').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    // Download card selection
+    document.querySelectorAll('.download-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (!e.target.closest('.download-config')) {
+          document.querySelectorAll('.download-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
