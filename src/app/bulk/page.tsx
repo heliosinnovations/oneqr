@@ -47,7 +47,7 @@ export default function BulkPage() {
               </Link>
               <Link
                 href="/bulk"
-                className="text-sm font-medium text-fg transition-colors hover:text-accent"
+                className="text-sm font-medium text-fg underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent"
               >
                 Bulk Creation
               </Link>
