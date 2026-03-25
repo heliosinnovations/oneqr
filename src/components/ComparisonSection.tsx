@@ -27,33 +27,23 @@ const competitors: CompetitorData[] = [
     isHighlighted: true,
   },
   {
-    name: "QR Code Generator Pro",
+    name: "Others",
     pricing: "$5-15/month",
     expiration: "Expires with plan",
-    maxResolution: "1024px",
+    maxResolution: "1024px - 2000px",
     exportFormats: "PNG, SVG",
     scanLimits: "10,000/month",
     designOptions: "Limited",
     designIcon: "partial",
   },
   {
-    name: "QRCode Monkey",
-    pricing: "$8.99/month",
+    name: "Others",
+    pricing: "$20-40/month",
     expiration: "Expires with plan",
-    maxResolution: "2000px",
+    maxResolution: "300 - 600 DPI",
     exportFormats: "PNG, SVG, PDF",
-    scanLimits: "Unlimited",
-    designOptions: "Available",
-    designIcon: "check",
-  },
-  {
-    name: "Beaconstac",
-    pricing: "$37.50/month",
-    expiration: "Expires with plan",
-    maxResolution: "300 DPI",
-    exportFormats: "PNG, SVG, PDF",
-    scanLimits: "10,000/month",
-    designOptions: "Available",
+    scanLimits: "Limited",
+    designOptions: "Basic",
     designIcon: "check",
   },
 ];
@@ -393,7 +383,7 @@ export default function ComparisonSection() {
 
         {/* Footer Note */}
         <p className="mt-6 text-center text-[13px] text-muted">
-          * Competitor pricing and features as of March 2026. Subject to change.
+          * Comparison based on typical QR code generator pricing and features as of March 2026.
         </p>
 
         {/* CTA */}

@@ -5,14 +5,6 @@ import Link from "next/link";
 export default function Home() {
   return (
     <>
-      {/* Skip to main content link for accessibility */}
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-accent focus:px-4 focus:py-2 focus:text-white"
-      >
-        Skip to main content
-      </a>
-
       {/* Navigation */}
       <header>
         <nav
