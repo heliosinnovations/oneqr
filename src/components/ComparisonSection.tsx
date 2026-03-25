@@ -124,7 +124,7 @@ export default function ComparisonSection() {
                     key={competitor.name}
                     className={`border-b border-border px-5 py-4 text-left font-serif text-lg font-normal ${
                       competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-t-[3px] border-accent bg-accent text-white"
+                        ? "border-l-2 border-r-2 border-t-2 border-emerald-500 bg-emerald-500 text-white"
                         : "bg-surface"
                     } ${index === 0 ? "" : ""}`}
                   >
@@ -151,7 +151,7 @@ export default function ComparisonSection() {
                     key={`pricing-${competitor.name}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-accent bg-accent-light"
+                        ? "border-l-2 border-r-2 border-emerald-500 bg-emerald-50"
                         : ""
                     }`}
                   >
@@ -176,7 +176,7 @@ export default function ComparisonSection() {
                     key={`expiration-${competitor.name}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-accent bg-accent-light"
+                        ? "border-l-2 border-r-2 border-emerald-500 bg-emerald-50"
                         : ""
                     }`}
                   >
@@ -199,7 +199,7 @@ export default function ComparisonSection() {
                     key={`resolution-${competitor.name}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-accent bg-accent-light"
+                        ? "border-l-2 border-r-2 border-emerald-500 bg-emerald-50"
                         : ""
                     }`}
                   >
@@ -222,7 +222,7 @@ export default function ComparisonSection() {
                     key={`formats-${competitor.name}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-accent bg-accent-light"
+                        ? "border-l-2 border-r-2 border-emerald-500 bg-emerald-50"
                         : ""
                     }`}
                   >
@@ -245,7 +245,7 @@ export default function ComparisonSection() {
                     key={`scans-${competitor.name}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-accent bg-accent-light"
+                        ? "border-l-2 border-r-2 border-emerald-500 bg-emerald-50"
                         : ""
                     }`}
                   >
@@ -268,7 +268,7 @@ export default function ComparisonSection() {
                     key={`design-${competitor.name}`}
                     className={`px-5 py-4 ${
                       competitor.isHighlighted
-                        ? "border-b-[3px] border-l-[3px] border-r-[3px] border-accent bg-accent-light"
+                        ? "border-b-2 border-l-2 border-r-2 border-emerald-500 bg-emerald-50"
                         : ""
                     }`}
                   >
@@ -295,17 +295,17 @@ export default function ComparisonSection() {
               key={`card-${competitor.name}`}
               className={`rounded-lg border-2 p-6 ${
                 competitor.isHighlighted
-                  ? "border-accent bg-accent-light"
+                  ? "border-emerald-500 bg-emerald-50"
                   : "border-border bg-bg"
               }`}
             >
               <h3
                 className={`mb-4 flex items-center gap-2 font-serif text-xl ${
-                  competitor.isHighlighted ? "text-accent" : "text-fg"
+                  competitor.isHighlighted ? "text-emerald-600" : "text-fg"
                 }`}
               >
                 {competitor.isHighlighted && (
-                  <span className="inline-block h-2 w-2 rounded-full bg-accent" />
+                  <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
                 )}
                 {competitor.name}
               </h3>
