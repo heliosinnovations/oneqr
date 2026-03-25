@@ -664,7 +664,7 @@ function GeneratorContent() {
     if (template) {
       setUrl(template.template);
       validateURL(template.template);
-      showToast(`Template loaded: ${template.label}`, "success");
+      // Removed toast notification for content type changes - user requested silent switching
     }
   };
 
