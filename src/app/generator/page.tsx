@@ -176,6 +176,363 @@ const ERROR_LEVELS: {
   { value: "H", label: "H", percentage: "30%" },
 ];
 
+// Helper to check if a position is part of a finder pattern (corner squares)
+const isFinderPattern = (
+  row: number,
+  col: number,
+  size: number
+): boolean => {
+  // Top-left finder pattern (7x7 modules at position 0,0)
+  if (row < 7 && col < 7) return true;
+  // Top-right finder pattern (7x7 modules at position 0, size-7)
+  if (row < 7 && col >= size - 7) return true;
+  // Bottom-left finder pattern (7x7 modules at position size-7, 0)
+  if (row >= size - 7 && col < 7) return true;
+  return false;
+};
+
+// Render a single module based on pattern type
+const renderModule = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  moduleSize: number,
+  pattern: PatternType,
+  fgColor: string
+): void => {
+  ctx.fillStyle = fgColor;
+  const padding = moduleSize * 0.1; // Small gap between modules for some patterns
+
+  switch (pattern) {
+    case "square":
+      ctx.fillRect(x, y, moduleSize, moduleSize);
+      break;
+    case "rounded":
+      const radius = moduleSize * 0.3;
+      ctx.beginPath();
+      ctx.roundRect(x, y, moduleSize, moduleSize, radius);
+      ctx.fill();
+      break;
+    case "dots":
+      const dotRadius = moduleSize * 0.45;
+      ctx.beginPath();
+      ctx.arc(
+        x + moduleSize / 2,
+        y + moduleSize / 2,
+        dotRadius,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+      break;
+    case "classy":
+      // Diamond-like shape
+      const inset = moduleSize * 0.15;
+      ctx.beginPath();
+      ctx.moveTo(x + moduleSize / 2, y + inset);
+      ctx.lineTo(x + moduleSize - inset, y + moduleSize / 2);
+      ctx.lineTo(x + moduleSize / 2, y + moduleSize - inset);
+      ctx.lineTo(x + inset, y + moduleSize / 2);
+      ctx.closePath();
+      ctx.fill();
+      break;
+  }
+};
+
+// Render finder pattern (the large corner squares) with custom corner style
+const renderFinderPattern = (
+  ctx: CanvasRenderingContext2D,
+  startX: number,
+  startY: number,
+  moduleSize: number,
+  cornerStyle: CornerType,
+  fgColor: string,
+  bgColor: string
+): void => {
+  const size7 = moduleSize * 7;
+  const size5 = moduleSize * 5;
+  const size3 = moduleSize * 3;
+
+  const getRadius = (size: number): number => {
+    switch (cornerStyle) {
+      case "square":
+        return 0;
+      case "rounded":
+        return size * 0.15;
+      case "extra":
+        return size * 0.35;
+      case "dot":
+        return size / 2;
+    }
+  };
+
+  // Outer ring (7x7) - foreground
+  ctx.fillStyle = fgColor;
+  if (cornerStyle === "dot") {
+    ctx.beginPath();
+    ctx.arc(startX + size7 / 2, startY + size7 / 2, size7 / 2, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    ctx.beginPath();
+    ctx.roundRect(startX, startY, size7, size7, getRadius(size7));
+    ctx.fill();
+  }
+
+  // Middle ring (5x5) - background (creates the gap)
+  ctx.fillStyle = bgColor;
+  const offset1 = moduleSize;
+  if (cornerStyle === "dot") {
+    ctx.beginPath();
+    ctx.arc(
+      startX + size7 / 2,
+      startY + size7 / 2,
+      size5 / 2,
+      0,
+      Math.PI * 2
+    );
+    ctx.fill();
+  } else {
+    ctx.beginPath();
+    ctx.roundRect(
+      startX + offset1,
+      startY + offset1,
+      size5,
+      size5,
+      getRadius(size5)
+    );
+    ctx.fill();
+  }
+
+  // Inner square (3x3) - foreground
+  ctx.fillStyle = fgColor;
+  const offset2 = moduleSize * 2;
+  if (cornerStyle === "dot") {
+    ctx.beginPath();
+    ctx.arc(
+      startX + size7 / 2,
+      startY + size7 / 2,
+      size3 / 2,
+      0,
+      Math.PI * 2
+    );
+    ctx.fill();
+  } else {
+    ctx.beginPath();
+    ctx.roundRect(
+      startX + offset2,
+      startY + offset2,
+      size3,
+      size3,
+      getRadius(size3)
+    );
+    ctx.fill();
+  }
+};
+
+// Custom QR code rendering with pattern and corner support
+const renderCustomQR = async (
+  text: string,
+  width: number,
+  margin: number,
+  fgColor: string,
+  bgColor: string,
+  errorLevel: ErrorLevelType,
+  pattern: PatternType,
+  cornerStyle: CornerType
+): Promise<string> => {
+  // Create QR code data
+  const qr = QRCode.create(text, {
+    errorCorrectionLevel: errorLevel,
+  });
+
+  const modules = qr.modules;
+  const size = modules.size;
+  const moduleSize = Math.floor((width - margin * 2) / size);
+  const actualWidth = moduleSize * size + margin * 2;
+
+  // Create canvas
+  const canvas = document.createElement("canvas");
+  canvas.width = actualWidth;
+  canvas.height = actualWidth;
+  const ctx = canvas.getContext("2d");
+
+  if (!ctx) throw new Error("Failed to get canvas context");
+
+  // Fill background
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, actualWidth, actualWidth);
+
+  // Draw data modules (excluding finder patterns)
+  for (let row = 0; row < size; row++) {
+    for (let col = 0; col < size; col++) {
+      // Skip finder pattern areas - they will be drawn separately
+      if (isFinderPattern(row, col, size)) continue;
+
+      const isDark = modules.get(row, col);
+      if (isDark) {
+        const x = margin + col * moduleSize;
+        const y = margin + row * moduleSize;
+        renderModule(ctx, x, y, moduleSize, pattern, fgColor);
+      }
+    }
+  }
+
+  // Draw finder patterns with custom corner style
+  // Top-left
+  renderFinderPattern(
+    ctx,
+    margin,
+    margin,
+    moduleSize,
+    cornerStyle,
+    fgColor,
+    bgColor
+  );
+  // Top-right
+  renderFinderPattern(
+    ctx,
+    margin + (size - 7) * moduleSize,
+    margin,
+    moduleSize,
+    cornerStyle,
+    fgColor,
+    bgColor
+  );
+  // Bottom-left
+  renderFinderPattern(
+    ctx,
+    margin,
+    margin + (size - 7) * moduleSize,
+    moduleSize,
+    cornerStyle,
+    fgColor,
+    bgColor
+  );
+
+  return canvas.toDataURL("image/png");
+};
+
+// Generate custom SVG with pattern and corner support
+const renderCustomSVG = (
+  text: string,
+  fgColor: string,
+  bgColor: string,
+  errorLevel: ErrorLevelType,
+  pattern: PatternType,
+  cornerStyle: CornerType
+): string => {
+  const qr = QRCode.create(text, {
+    errorCorrectionLevel: errorLevel,
+  });
+
+  const modules = qr.modules;
+  const size = modules.size;
+  const margin = 2;
+  const moduleSize = 10; // SVG units per module
+  const totalSize = size * moduleSize + margin * 2 * moduleSize;
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalSize} ${totalSize}" width="${totalSize}" height="${totalSize}">`;
+
+  // Background
+  svg += `<rect width="${totalSize}" height="${totalSize}" fill="${bgColor}"/>`;
+
+  // Helper function to generate module path
+  const getModulePath = (
+    x: number,
+    y: number,
+    s: number,
+    pat: PatternType
+  ): string => {
+    switch (pat) {
+      case "square":
+        return `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${fgColor}"/>`;
+      case "rounded":
+        const r = s * 0.3;
+        return `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${r}" fill="${fgColor}"/>`;
+      case "dots":
+        const cx = x + s / 2;
+        const cy = y + s / 2;
+        const dr = s * 0.45;
+        return `<circle cx="${cx}" cy="${cy}" r="${dr}" fill="${fgColor}"/>`;
+      case "classy":
+        const inset = s * 0.15;
+        const points = [
+          `${x + s / 2},${y + inset}`,
+          `${x + s - inset},${y + s / 2}`,
+          `${x + s / 2},${y + s - inset}`,
+          `${x + inset},${y + s / 2}`,
+        ].join(" ");
+        return `<polygon points="${points}" fill="${fgColor}"/>`;
+    }
+  };
+
+  // Helper for finder pattern radius
+  const getFinderRadius = (s: number, style: CornerType): number => {
+    switch (style) {
+      case "square":
+        return 0;
+      case "rounded":
+        return s * 0.15;
+      case "extra":
+        return s * 0.35;
+      case "dot":
+        return s / 2;
+    }
+  };
+
+  // Draw finder pattern in SVG
+  const drawFinderSVG = (startX: number, startY: number): string => {
+    const s7 = moduleSize * 7;
+    const s5 = moduleSize * 5;
+    const s3 = moduleSize * 3;
+    let result = "";
+
+    if (cornerStyle === "dot") {
+      const cx = startX + s7 / 2;
+      const cy = startY + s7 / 2;
+      result += `<circle cx="${cx}" cy="${cy}" r="${s7 / 2}" fill="${fgColor}"/>`;
+      result += `<circle cx="${cx}" cy="${cy}" r="${s5 / 2}" fill="${bgColor}"/>`;
+      result += `<circle cx="${cx}" cy="${cy}" r="${s3 / 2}" fill="${fgColor}"/>`;
+    } else {
+      const r7 = getFinderRadius(s7, cornerStyle);
+      const r5 = getFinderRadius(s5, cornerStyle);
+      const r3 = getFinderRadius(s3, cornerStyle);
+      result += `<rect x="${startX}" y="${startY}" width="${s7}" height="${s7}" rx="${r7}" fill="${fgColor}"/>`;
+      result += `<rect x="${startX + moduleSize}" y="${startY + moduleSize}" width="${s5}" height="${s5}" rx="${r5}" fill="${bgColor}"/>`;
+      result += `<rect x="${startX + moduleSize * 2}" y="${startY + moduleSize * 2}" width="${s3}" height="${s3}" rx="${r3}" fill="${fgColor}"/>`;
+    }
+    return result;
+  };
+
+  // Draw data modules (excluding finder patterns)
+  for (let row = 0; row < size; row++) {
+    for (let col = 0; col < size; col++) {
+      if (isFinderPattern(row, col, size)) continue;
+
+      const isDark = modules.get(row, col);
+      if (isDark) {
+        const x = margin * moduleSize + col * moduleSize;
+        const y = margin * moduleSize + row * moduleSize;
+        svg += getModulePath(x, y, moduleSize, pattern);
+      }
+    }
+  }
+
+  // Draw finder patterns
+  svg += drawFinderSVG(margin * moduleSize, margin * moduleSize);
+  svg += drawFinderSVG(
+    margin * moduleSize + (size - 7) * moduleSize,
+    margin * moduleSize
+  );
+  svg += drawFinderSVG(
+    margin * moduleSize,
+    margin * moduleSize + (size - 7) * moduleSize
+  );
+
+  svg += "</svg>";
+  return svg;
+};
+
 function GeneratorContent() {
   // Get URL from query params
   const searchParams = useSearchParams();
@@ -281,15 +638,17 @@ function GeneratorContent() {
     setIsGenerating(true);
 
     try {
-      const dataUrl = await QRCode.toDataURL(processedUrl, {
-        width: exportResolution,
-        margin: 2,
-        color: {
-          dark: fgColor,
-          light: bgColor,
-        },
-        errorCorrectionLevel: errorLevel,
-      });
+      // Use custom rendering with pattern and corner support
+      const dataUrl = await renderCustomQR(
+        processedUrl,
+        exportResolution,
+        Math.round(exportResolution * 0.02), // 2% margin
+        fgColor,
+        bgColor,
+        errorLevel,
+        pattern,
+        cornerStyle
+      );
       setQrDataUrl(dataUrl);
       setGeneratedUrl(processedUrl);
     } catch {
@@ -297,7 +656,7 @@ function GeneratorContent() {
     } finally {
       setIsGenerating(false);
     }
-  }, [url, exportResolution, fgColor, bgColor, errorLevel, showToast]);
+  }, [url, exportResolution, fgColor, bgColor, errorLevel, pattern, cornerStyle, showToast]);
 
   // Handle template selection
   const setTemplate = (templateId: string) => {
@@ -385,23 +744,22 @@ function GeneratorContent() {
     }
   };
 
-  // Generate SVG string for QR code
-  const generateSvgString = useCallback(async (): Promise<string> => {
-    const svgString = await QRCode.toString(generatedUrl, {
-      type: "svg",
-      margin: 2,
-      color: {
-        dark: fgColor,
-        light: bgColor,
-      },
-      errorCorrectionLevel: errorLevel,
-    });
-    return svgString;
-  }, [generatedUrl, fgColor, bgColor, errorLevel]);
+  // Generate SVG string for QR code with custom pattern and corner support
+  const generateSvgString = useCallback((): string => {
+    // Use custom SVG rendering with pattern and corner support
+    return renderCustomSVG(
+      generatedUrl,
+      fgColor,
+      bgColor,
+      errorLevel,
+      pattern,
+      cornerStyle
+    );
+  }, [generatedUrl, fgColor, bgColor, errorLevel, pattern, cornerStyle]);
 
-  // Generate EPS from SVG
-  const generateEpsString = useCallback(async (): Promise<string> => {
-    const svgString = await generateSvgString();
+  // Generate EPS from SVG - handles custom patterns (rect, circle, polygon)
+  const generateEpsString = useCallback((): string => {
+    const svgString = generateSvgString();
 
     // Parse the SVG to get width/height
     const parser = new DOMParser();
@@ -431,13 +789,16 @@ function GeneratorContent() {
 /rgb { setrgbcolor } bd
 /rect { /h exch def /w exch def /y exch def /x exch def
   newpath x y m x w add y l x w add y h add l x y h add l closepath } bd
+/circle { /r exch def /cy exch def /cx exch def
+  newpath cx r add cy m cx r add cy r 90 mul 57.2958 div add cx cy r add 90 arcto 4 { pop } repeat
+  cx r sub cy r 90 mul 57.2958 div add cx r sub cy 90 arcto 4 { pop } repeat
+  cx r sub cy r 90 mul 57.2958 div sub cx cy r sub 90 arcto 4 { pop } repeat
+  cx r add cy r 90 mul 57.2958 div sub cx r add cy 90 arcto 4 { pop } repeat closepath } bd
 %%EndProlog
 %%Page: 1 1
 gsave
 `;
 
-    // Parse SVG paths and convert to PostScript
-    // First, fill with background color
     const bgRgb = hexToRgbNormalized(bgColor);
     const fgRgb = hexToRgbNormalized(fgColor);
 
@@ -446,19 +807,54 @@ ${bgRgb.r} ${bgRgb.g} ${bgRgb.b} rgb
 0 0 ${width} ${height} rect f
 `;
 
-    // Find all path elements and convert them
-    const paths = svgDoc.querySelectorAll("path");
-    paths.forEach((path) => {
-      const fill = path.getAttribute("fill");
-      if (fill && fill !== "none" && fill !== bgColor) {
-        const d = path.getAttribute("d");
-        if (d) {
-          epsBody += `% QR Module\n`;
-          epsBody += `${fgRgb.r} ${fgRgb.g} ${fgRgb.b} rgb\n`;
-          epsBody += `newpath\n`;
-          epsBody += convertSvgPathToPs(d, height);
-          epsBody += `f\n`;
+    // Process all rects (main pattern for square, rounded)
+    const rects = svgDoc.querySelectorAll("rect");
+    rects.forEach((rect, index) => {
+      if (index === 0) return; // Skip background rect
+      const fill = rect.getAttribute("fill");
+      const rgb = fill === bgColor ? bgRgb : fgRgb;
+      const x = parseFloat(rect.getAttribute("x") || "0");
+      const y = parseFloat(rect.getAttribute("y") || "0");
+      const w = parseFloat(rect.getAttribute("width") || "0");
+      const h = parseFloat(rect.getAttribute("height") || "0");
+      // Convert Y coordinate (SVG is top-down, PostScript is bottom-up)
+      const psY = height - y - h;
+      epsBody += `${rgb.r} ${rgb.g} ${rgb.b} rgb\n`;
+      epsBody += `${x} ${psY} ${w} ${h} rect f\n`;
+    });
+
+    // Process all circles (for dots pattern)
+    const circles = svgDoc.querySelectorAll("circle");
+    circles.forEach((circle) => {
+      const fill = circle.getAttribute("fill");
+      const rgb = fill === bgColor ? bgRgb : fgRgb;
+      const cx = parseFloat(circle.getAttribute("cx") || "0");
+      const cy = parseFloat(circle.getAttribute("cy") || "0");
+      const r = parseFloat(circle.getAttribute("r") || "0");
+      // Convert Y coordinate
+      const psCy = height - cy;
+      epsBody += `${rgb.r} ${rgb.g} ${rgb.b} rgb\n`;
+      epsBody += `newpath ${cx} ${psCy} ${r} 0 360 arc closepath f\n`;
+    });
+
+    // Process all polygons (for classy pattern)
+    const polygons = svgDoc.querySelectorAll("polygon");
+    polygons.forEach((polygon) => {
+      const fill = polygon.getAttribute("fill");
+      const rgb = fill === bgColor ? bgRgb : fgRgb;
+      const points = polygon.getAttribute("points") || "";
+      const coords = points.split(" ").map((p) => {
+        const [x, y] = p.split(",").map(parseFloat);
+        return { x, y: height - y }; // Convert Y
+      });
+      if (coords.length > 0) {
+        epsBody += `${rgb.r} ${rgb.g} ${rgb.b} rgb\n`;
+        epsBody += `newpath\n`;
+        epsBody += `${coords[0].x} ${coords[0].y} m\n`;
+        for (let i = 1; i < coords.length; i++) {
+          epsBody += `${coords[i].x} ${coords[i].y} l\n`;
         }
+        epsBody += `closepath f\n`;
       }
     });
 
@@ -566,16 +962,17 @@ showpage
 
       switch (exportFormat) {
         case "png": {
-          // Generate PNG at export resolution
-          const dataUrl = await QRCode.toDataURL(generatedUrl, {
-            width: exportResolution,
-            margin: 2,
-            color: {
-              dark: fgColor,
-              light: bgColor,
-            },
-            errorCorrectionLevel: errorLevel,
-          });
+          // Generate PNG at export resolution with custom pattern and corner styles
+          const dataUrl = await renderCustomQR(
+            generatedUrl,
+            exportResolution,
+            Math.round(exportResolution * 0.02),
+            fgColor,
+            bgColor,
+            errorLevel,
+            pattern,
+            cornerStyle
+          );
 
           const link = document.createElement("a");
           link.href = dataUrl;
@@ -591,8 +988,8 @@ showpage
         }
 
         case "svg": {
-          // Generate true vector SVG
-          const svgString = await generateSvgString();
+          // Generate true vector SVG with custom pattern and corner styles
+          const svgString = generateSvgString();
 
           const blob = new Blob([svgString], { type: "image/svg+xml" });
           const url = URL.createObjectURL(blob);
@@ -608,16 +1005,17 @@ showpage
         }
 
         case "pdf": {
-          // Generate PDF with embedded QR code as image for best compatibility
-          const pngDataUrl = await QRCode.toDataURL(generatedUrl, {
-            width: 1000, // High resolution for PDF
-            margin: 2,
-            color: {
-              dark: fgColor,
-              light: bgColor,
-            },
-            errorCorrectionLevel: errorLevel,
-          });
+          // Generate PDF with embedded QR code with custom pattern and corner styles
+          const pngDataUrl = await renderCustomQR(
+            generatedUrl,
+            1000, // High resolution for PDF
+            20, // 2% margin
+            fgColor,
+            bgColor,
+            errorLevel,
+            pattern,
+            cornerStyle
+          );
 
           // Create A4 PDF with centered QR code
           const pdf = new jsPDF({
@@ -642,7 +1040,7 @@ showpage
 
         case "eps": {
           // Generate EPS (Encapsulated PostScript) for Adobe compatibility
-          const epsString = await generateEpsString();
+          const epsString = generateEpsString();
 
           const blob = new Blob([epsString], {
             type: "application/postscript",
@@ -672,6 +1070,8 @@ showpage
     bgColor,
     errorLevel,
     exportFormat,
+    pattern,
+    cornerStyle,
     showToast,
     generateSvgString,
     generateEpsString,
@@ -706,19 +1106,20 @@ showpage
     // Only regenerate if we already have a QR code
     if (!generatedUrl || !qrDataUrl) return;
 
-    // Regenerate QR with current colors/options
+    // Regenerate QR with current colors/options and pattern/corner styles
     const regenerate = async () => {
       setIsGenerating(true);
       try {
-        const dataUrl = await QRCode.toDataURL(generatedUrl, {
-          width: exportResolution,
-          margin: 2,
-          color: {
-            dark: fgColor,
-            light: bgColor,
-          },
-          errorCorrectionLevel: errorLevel,
-        });
+        const dataUrl = await renderCustomQR(
+          generatedUrl,
+          exportResolution,
+          Math.round(exportResolution * 0.02),
+          fgColor,
+          bgColor,
+          errorLevel,
+          pattern,
+          cornerStyle
+        );
         setQrDataUrl(dataUrl);
       } catch {
         showToast("Failed to regenerate QR code", "error");
@@ -729,7 +1130,7 @@ showpage
 
     regenerate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fgColor, bgColor, exportResolution, errorLevel]);
+  }, [fgColor, bgColor, exportResolution, errorLevel, pattern, cornerStyle]);
 
   // Initial QR generation
   useEffect(() => {
