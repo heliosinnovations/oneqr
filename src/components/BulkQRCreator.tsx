@@ -148,6 +148,10 @@ export default function BulkQRCreator() {
   const [parsedRows, setParsedRows] = useState<ParsedRow[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [pastedData, setPastedData] = useState<string>("");
+  const [dataSource, setDataSource] = useState<"none" | "file" | "paste">(
+    "none"
+  );
 
   // Step 2: Template state
   const [template, setTemplate] = useState<TemplateSettings>(DEFAULT_TEMPLATE);
@@ -177,6 +181,7 @@ export default function BulkQRCreator() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
   const logContainerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // SessionStorage persistence
   useEffect(() => {
@@ -279,6 +284,9 @@ export default function BulkQRCreator() {
     }
 
     setFile(file);
+    setDataSource("file");
+    // Clear any pasted data when file is uploaded
+    setPastedData("");
 
     // Parse file
     if (file.name.endsWith(".csv")) {
@@ -354,6 +362,102 @@ export default function BulkQRCreator() {
     };
     reader.readAsArrayBuffer(file);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const parsePastedCSV = useCallback((text: string) => {
+    setUploadError(null);
+
+    // Quick validation: check if text looks like CSV
+    const lines = text.trim().split("\n");
+    if (lines.length < 2) {
+      setUploadError(
+        "Pasted data must contain at least a header row and one data row."
+      );
+      return;
+    }
+
+    // Check if data looks like CSV (has commas or tabs)
+    const firstLine = lines[0];
+    const hasCommas = firstLine.includes(",");
+    const hasTabs = firstLine.includes("\t");
+
+    if (!hasCommas && !hasTabs && lines[0].split(/\s+/).length < 2) {
+      setUploadError(
+        "Invalid format. Please paste CSV data (comma or tab separated)."
+      );
+      return;
+    }
+
+    Papa.parse(text, {
+      complete: (results) => {
+        const data = results.data as string[][];
+        // Filter out empty rows
+        const filteredData = data.filter((row) =>
+          row.some((cell) => cell && cell.trim())
+        );
+
+        if (filteredData.length < 2) {
+          setUploadError(
+            "Pasted data must contain at least a header row and one data row."
+          );
+          return;
+        }
+
+        if (filteredData.length > 10001) {
+          setUploadError("Data exceeds maximum of 10,000 rows.");
+          return;
+        }
+
+        const headers = filteredData[0];
+        setHeaders(headers);
+        setRawData(filteredData.slice(1));
+        setDataSource("paste");
+        // Clear any file when data is pasted
+        setFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        autoDetectMapping(headers);
+      },
+      error: (error: Error) => {
+        setUploadError(`Failed to parse pasted data: ${error.message}`);
+      },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handlePasteChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const value = e.target.value;
+      setPastedData(value);
+
+      // Only parse if there's substantial content
+      if (value.trim().length > 10) {
+        parsePastedCSV(value);
+      } else if (value.trim().length === 0) {
+        // Clear data when textarea is emptied
+        setRawData([]);
+        setHeaders([]);
+        setParsedRows([]);
+        setDataSource("none");
+        setUploadError(null);
+      }
+    },
+    [parsePastedCSV]
+  );
+
+  const clearAllData = useCallback(() => {
+    setFile(null);
+    setPastedData("");
+    setRawData([]);
+    setHeaders([]);
+    setColumnMapping({ type: null, content: null, label: null });
+    setParsedRows([]);
+    setDataSource("none");
+    setUploadError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   }, []);
 
   const autoDetectMapping = useCallback((headers: string[]) => {
@@ -511,10 +615,13 @@ export default function BulkQRCreator() {
 
   const removeFile = useCallback(() => {
     setFile(null);
+    setPastedData("");
     setRawData([]);
     setHeaders([]);
     setColumnMapping({ type: null, content: null, label: null });
     setParsedRows([]);
+    setDataSource("none");
+    setUploadError(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -1160,48 +1267,76 @@ export default function BulkQRCreator() {
           Upload Your Data
         </h1>
         <p className="mt-2 text-muted">
-          Upload a CSV or Excel file containing your QR code data
+          Upload a CSV or Excel file, or paste CSV data directly
         </p>
       </div>
 
-      {/* Upload Zone */}
-      {!file && (
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          onDrop={handleFileDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          className={`cursor-pointer border-2 border-dashed bg-surface p-12 text-center transition-all ${
-            isDragOver
-              ? "border-accent bg-accent-light"
-              : "border-border hover:border-accent hover:bg-accent-light"
-          }`}
-        >
-          <svg
-            className="mx-auto mb-4 h-16 w-16 text-muted"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
+      {/* Upload Zone - show when no data loaded */}
+      {dataSource === "none" && (
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* File Upload Option */}
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            onDrop={handleFileDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            className={`cursor-pointer border-2 border-dashed bg-surface p-8 text-center transition-all ${
+              isDragOver
+                ? "border-accent bg-accent-light"
+                : "border-border hover:border-accent hover:bg-accent-light"
+            }`}
           >
-            <path d="M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1" />
-            <polyline points="9 15 12 12 15 15" />
-            <line x1="12" y1="12" x2="12" y2="21" />
-          </svg>
-          <h3 className="mb-2 font-serif text-xl">Drop your file here</h3>
-          <p className="mb-4 text-sm text-muted">
-            or click to browse your computer
-          </p>
-          <div className="flex justify-center gap-2">
-            <span className="border border-border bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider">
-              CSV
-            </span>
-            <span className="border border-border bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider">
-              XLSX
-            </span>
-            <span className="border border-border bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider">
-              XLS
-            </span>
+            <svg
+              className="mx-auto mb-4 h-12 w-12 text-muted"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
+              <path d="M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1" />
+              <polyline points="9 15 12 12 15 15" />
+              <line x1="12" y1="12" x2="12" y2="21" />
+            </svg>
+            <h3 className="mb-2 font-serif text-lg">Drop your file here</h3>
+            <p className="mb-4 text-sm text-muted">
+              or click to browse your computer
+            </p>
+            <div className="flex justify-center gap-2">
+              <span className="border border-border bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider">
+                CSV
+              </span>
+              <span className="border border-border bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider">
+                XLSX
+              </span>
+              <span className="border border-border bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider">
+                XLS
+              </span>
+            </div>
+          </div>
+
+          {/* Paste Data Option */}
+          <div className="border-2 border-dashed border-border bg-surface p-4 transition-all">
+            <div className="mb-3 flex items-center gap-2">
+              <svg
+                className="h-5 w-5 text-muted"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+                <rect x="9" y="3" width="6" height="4" rx="1" />
+              </svg>
+              <h3 className="font-serif text-lg">Paste CSV Data</h3>
+            </div>
+            <textarea
+              ref={textareaRef}
+              value={pastedData}
+              onChange={handlePasteChange}
+              placeholder="Paste your CSV data here...&#10;&#10;Example:&#10;label,content&#10;Website,https://example.com&#10;Contact,+1 555 123 4567"
+              className="min-h-[180px] w-full resize-y border border-border bg-white p-3 font-mono text-sm placeholder:text-muted focus:border-accent focus:outline-none"
+              rows={10}
+            />
           </div>
         </div>
       )}
@@ -1221,8 +1356,8 @@ export default function BulkQRCreator() {
         </div>
       )}
 
-      {/* File Preview */}
-      {file && !uploadError && (
+      {/* Data Source Header - File */}
+      {dataSource === "file" && file && !uploadError && (
         <div className="mt-6 border border-border bg-white">
           {/* File Header */}
           <div className="flex items-center justify-between border-b border-border bg-surface p-4">
@@ -1250,6 +1385,162 @@ export default function BulkQRCreator() {
             <button
               onClick={removeFile}
               className="p-2 text-muted transition-colors hover:text-red-500"
+            >
+              <svg
+                className="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Column Mapping */}
+          <div className="p-6">
+            <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted">
+              Column Mapping
+            </h4>
+            <div className="grid gap-4 md:grid-cols-3">
+              {headers.map((header) => (
+                <div
+                  key={header}
+                  className="flex items-center gap-3 border border-border bg-surface p-3"
+                >
+                  <div className="flex-1 truncate font-mono text-sm">
+                    {header}
+                  </div>
+                  <svg
+                    className="h-4 w-4 flex-shrink-0 text-muted"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                  <select
+                    value={
+                      columnMapping.type === header
+                        ? "type"
+                        : columnMapping.content === header
+                          ? "content"
+                          : columnMapping.label === header
+                            ? "label"
+                            : "skip"
+                    }
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setColumnMapping((prev) => {
+                        const next = { ...prev };
+                        // Clear previous mapping for this role
+                        if (next.type === header) next.type = null;
+                        if (next.content === header) next.content = null;
+                        if (next.label === header) next.label = null;
+                        // Set new mapping
+                        if (value === "type") next.type = header;
+                        if (value === "content") next.content = header;
+                        if (value === "label") next.label = header;
+                        return next;
+                      });
+                    }}
+                    className="border border-border bg-white px-3 py-2 text-sm"
+                  >
+                    <option value="skip">Skip</option>
+                    <option value="type">QR Type</option>
+                    <option value="content">Content</option>
+                    <option value="label">Label</option>
+                  </select>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Data Preview */}
+          {parsedRows.length > 0 && (
+            <div className="border-t border-border">
+              <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted">
+                  Data Preview
+                </h4>
+                <span className="bg-accent-light px-2 py-1 text-[10px] font-bold text-accent">
+                  First 5 rows
+                </span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border bg-surface">
+                      <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-muted">
+                        #
+                      </th>
+                      <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-muted">
+                        Type
+                      </th>
+                      <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-muted">
+                        Content
+                      </th>
+                      <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-muted">
+                        Label
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {parsedRows.slice(0, 5).map((row) => (
+                      <tr
+                        key={row.rowNumber}
+                        className="border-b border-border"
+                      >
+                        <td className="px-4 py-3 font-mono text-xs text-muted">
+                          {row.rowNumber}
+                        </td>
+                        <td className="px-4 py-3 text-sm">{row.type}</td>
+                        <td className="max-w-xs truncate px-4 py-3 text-sm">
+                          {row.content}
+                        </td>
+                        <td className="px-4 py-3 text-sm">{row.label}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Data Source Header - Pasted Data */}
+      {dataSource === "paste" && rawData.length > 0 && !uploadError && (
+        <div className="mt-6 border border-border bg-white">
+          {/* Pasted Data Header */}
+          <div className="flex items-center justify-between border-b border-border bg-surface p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center bg-blue-100 text-blue-600">
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+                  <rect x="9" y="3" width="6" height="4" rx="1" />
+                </svg>
+              </div>
+              <div>
+                <div className="font-semibold">Pasted CSV Data</div>
+                <div className="text-xs text-muted">
+                  {rawData.length.toLocaleString()} rows pasted
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={clearAllData}
+              className="p-2 text-muted transition-colors hover:text-red-500"
+              title="Clear pasted data"
             >
               <svg
                 className="h-5 w-5"
