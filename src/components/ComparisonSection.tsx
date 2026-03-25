@@ -27,34 +27,24 @@ const competitors: CompetitorData[] = [
     isHighlighted: true,
   },
   {
-    name: "QR Code Generator Pro",
+    name: "Others",
     pricing: "$5-15/month",
     expiration: "Expires with plan",
-    maxResolution: "1024px",
+    maxResolution: "1024px - 2000px",
     exportFormats: "PNG, SVG",
-    scanLimits: "10,000/month",
+    scanLimits: "Limited",
     designOptions: "Limited",
     designIcon: "partial",
   },
   {
-    name: "QRCode Monkey",
-    pricing: "$8.99/month",
+    name: "Others",
+    pricing: "$8-20/month",
     expiration: "Expires with plan",
-    maxResolution: "2000px",
-    exportFormats: "PNG, SVG, PDF",
-    scanLimits: "Unlimited",
-    designOptions: "Available",
-    designIcon: "check",
-  },
-  {
-    name: "Beaconstac",
-    pricing: "$37.50/month",
-    expiration: "Expires with plan",
-    maxResolution: "300 DPI",
+    maxResolution: "1024px - 2000px",
     exportFormats: "PNG, SVG, PDF",
     scanLimits: "10,000/month",
-    designOptions: "Available",
-    designIcon: "check",
+    designOptions: "Basic",
+    designIcon: "partial",
   },
 ];
 
@@ -141,7 +131,7 @@ export default function ComparisonSection() {
                 </th>
                 {competitors.map((competitor, index) => (
                   <th
-                    key={competitor.name}
+                    key={`header-${index}`}
                     className={`border-b border-border px-5 py-4 text-left font-serif text-lg font-normal ${
                       competitor.isHighlighted
                         ? "border-l-[3px] border-r-[3px] border-t-[3px] border-accent bg-accent text-white"
@@ -166,9 +156,9 @@ export default function ComparisonSection() {
                 <td className="border-b border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
                   Pricing
                 </td>
-                {competitors.map((competitor) => (
+                {competitors.map((competitor, index) => (
                   <td
-                    key={`pricing-${competitor.name}`}
+                    key={`pricing-${index}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
                         ? "border-l-[3px] border-r-[3px] border-accent bg-accent-light"
@@ -191,9 +181,9 @@ export default function ComparisonSection() {
                 <td className="border-b border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
                   QR Code Expiration
                 </td>
-                {competitors.map((competitor) => (
+                {competitors.map((competitor, index) => (
                   <td
-                    key={`expiration-${competitor.name}`}
+                    key={`expiration-${index}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
                         ? "border-l-[3px] border-r-[3px] border-accent bg-accent-light"
@@ -214,9 +204,9 @@ export default function ComparisonSection() {
                 <td className="border-b border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
                   Max Resolution
                 </td>
-                {competitors.map((competitor) => (
+                {competitors.map((competitor, index) => (
                   <td
-                    key={`resolution-${competitor.name}`}
+                    key={`resolution-${index}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
                         ? "border-l-[3px] border-r-[3px] border-accent bg-accent-light"
@@ -237,9 +227,9 @@ export default function ComparisonSection() {
                 <td className="border-b border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
                   Export Formats
                 </td>
-                {competitors.map((competitor) => (
+                {competitors.map((competitor, index) => (
                   <td
-                    key={`formats-${competitor.name}`}
+                    key={`formats-${index}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
                         ? "border-l-[3px] border-r-[3px] border-accent bg-accent-light"
@@ -260,9 +250,9 @@ export default function ComparisonSection() {
                 <td className="border-b border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
                   Scan Limits
                 </td>
-                {competitors.map((competitor) => (
+                {competitors.map((competitor, index) => (
                   <td
-                    key={`scans-${competitor.name}`}
+                    key={`scans-${index}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
                         ? "border-l-[3px] border-r-[3px] border-accent bg-accent-light"
@@ -283,9 +273,9 @@ export default function ComparisonSection() {
                 <td className="border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
                   Advanced Design Options
                 </td>
-                {competitors.map((competitor) => (
+                {competitors.map((competitor, index) => (
                   <td
-                    key={`design-${competitor.name}`}
+                    key={`design-${index}`}
                     className={`px-5 py-4 ${
                       competitor.isHighlighted
                         ? "border-b-[3px] border-l-[3px] border-r-[3px] border-accent bg-accent-light"
@@ -310,9 +300,9 @@ export default function ComparisonSection() {
 
         {/* Mobile Cards */}
         <div className="space-y-4 md:hidden">
-          {competitors.map((competitor) => (
+          {competitors.map((competitor, index) => (
             <div
-              key={`card-${competitor.name}`}
+              key={`card-${index}`}
               className={`rounded-lg border-2 p-6 ${
                 competitor.isHighlighted
                   ? "border-accent bg-accent-light"
@@ -393,7 +383,8 @@ export default function ComparisonSection() {
 
         {/* Footer Note */}
         <p className="mt-6 text-center text-[13px] text-muted">
-          * Competitor pricing and features as of March 2026. Subject to change.
+          * Comparison based on typical QR code generator pricing and features
+          as of March 2026.
         </p>
 
         {/* CTA */}
