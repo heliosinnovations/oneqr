@@ -177,11 +177,7 @@ const ERROR_LEVELS: {
 ];
 
 // Helper to check if a position is part of a finder pattern (corner squares)
-const isFinderPattern = (
-  row: number,
-  col: number,
-  size: number
-): boolean => {
+const isFinderPattern = (row: number, col: number, size: number): boolean => {
   // Top-left finder pattern (7x7 modules at position 0,0)
   if (row < 7 && col < 7) return true;
   // Top-right finder pattern (7x7 modules at position 0, size-7)
@@ -283,13 +279,7 @@ const renderFinderPattern = (
   const offset1 = moduleSize;
   if (cornerStyle === "dot") {
     ctx.beginPath();
-    ctx.arc(
-      startX + size7 / 2,
-      startY + size7 / 2,
-      size5 / 2,
-      0,
-      Math.PI * 2
-    );
+    ctx.arc(startX + size7 / 2, startY + size7 / 2, size5 / 2, 0, Math.PI * 2);
     ctx.fill();
   } else {
     ctx.beginPath();
@@ -308,13 +298,7 @@ const renderFinderPattern = (
   const offset2 = moduleSize * 2;
   if (cornerStyle === "dot") {
     ctx.beginPath();
-    ctx.arc(
-      startX + size7 / 2,
-      startY + size7 / 2,
-      size3 / 2,
-      0,
-      Math.PI * 2
-    );
+    ctx.arc(startX + size7 / 2, startY + size7 / 2, size3 / 2, 0, Math.PI * 2);
     ctx.fill();
   } else {
     ctx.beginPath();
@@ -656,7 +640,16 @@ function GeneratorContent() {
     } finally {
       setIsGenerating(false);
     }
-  }, [url, exportResolution, fgColor, bgColor, errorLevel, pattern, cornerStyle, showToast]);
+  }, [
+    url,
+    exportResolution,
+    fgColor,
+    bgColor,
+    errorLevel,
+    pattern,
+    cornerStyle,
+    showToast,
+  ]);
 
   // Handle template selection
   const setTemplate = (templateId: string) => {
@@ -1443,6 +1436,19 @@ showpage
           <line x1="9" y1="9" x2="15" y2="15" />
         </svg>
       ),
+      layers: (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
+          <polygon points="12 2 2 7 12 12 22 7 12 2" />
+          <polyline points="2 17 12 22 22 17" />
+          <polyline points="2 12 12 17 22 12" />
+        </svg>
+      ),
     };
     return icons[name] || null;
   };
@@ -1453,7 +1459,10 @@ showpage
       <header className="border-b border-[var(--pro-border)] bg-[var(--pro-surface)]">
         <div className="flex h-14 items-center justify-between px-4 sm:h-16 sm:px-6">
           <div className="flex items-center gap-2 sm:gap-4">
-            <Link href="/" className="font-serif text-xl text-[var(--pro-fg)] sm:text-2xl">
+            <Link
+              href="/"
+              className="font-serif text-xl text-[var(--pro-fg)] sm:text-2xl"
+            >
               QR<span className="text-[var(--pro-accent)]">Spot</span>
             </Link>
             <nav className="hidden items-center gap-2 text-sm text-[var(--pro-muted)] sm:flex">
@@ -1464,13 +1473,20 @@ showpage
             </nav>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
+            <Link
+              href="/bulk"
+              className="hidden items-center gap-2 rounded-md border border-[var(--pro-border)] bg-[var(--pro-surface)] px-3 py-1.5 text-sm font-medium transition-colors hover:bg-[var(--pro-surface-hover)] sm:flex sm:px-4 sm:py-2"
+            >
+              <Icon name="layers" />
+              <span className="hidden sm:inline">Bulk Creation</span>
+            </Link>
             <button className="hidden items-center gap-2 rounded-md border border-[var(--pro-border)] bg-[var(--pro-surface)] px-3 py-1.5 text-sm font-medium transition-colors hover:bg-[var(--pro-surface-hover)] sm:flex sm:px-4 sm:py-2">
               <Icon name="more-horizontal" />
               <span className="hidden sm:inline">History</span>
             </button>
             <button className="flex items-center gap-1.5 rounded-md bg-[var(--pro-accent)] px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-[var(--pro-accent-hover)] sm:gap-2 sm:px-4 sm:py-2">
               <Icon name="upload" />
-              <span className="hidden xs:inline">Export</span>
+              <span className="xs:inline hidden">Export</span>
             </button>
           </div>
         </div>
@@ -1485,7 +1501,7 @@ showpage
             <div className="rounded-lg border border-[var(--pro-border)] bg-[var(--pro-surface)]">
               {/* Tabs */}
               <div className="border-b border-[var(--pro-border)] px-3 sm:px-5">
-                <div className="-mb-px flex overflow-x-auto scrollbar-hide">
+                <div className="scrollbar-hide -mb-px flex overflow-x-auto">
                   {(["content", "colors", "style", "export"] as TabType[]).map(
                     (tab) => (
                       <button
@@ -1514,7 +1530,10 @@ showpage
                     </label>
                     <div className="relative">
                       <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pro-muted)]">
-                        <Icon name="globe" className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+                        <Icon
+                          name="globe"
+                          className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                        />
                       </div>
                       <input
                         type="url"
@@ -1546,7 +1565,9 @@ showpage
                               name={urlValid ? "check" : "x"}
                               className="h-3 w-3 sm:h-3.5 sm:w-3.5"
                             />
-                            <span className="hidden xs:inline">{urlValid ? "Valid" : "Invalid"}</span>
+                            <span className="xs:inline hidden">
+                              {urlValid ? "Valid" : "Invalid"}
+                            </span>
                           </span>
                         )}
                       </div>
@@ -1575,7 +1596,7 @@ showpage
               {/* Colors Tab */}
               {activeTab === "colors" && (
                 <div className="p-4 sm:p-5">
-                  <div className="grid grid-cols-1 gap-4 xs:grid-cols-2">
+                  <div className="xs:grid-cols-2 grid grid-cols-1 gap-4">
                     {/* Foreground Color */}
                     <div>
                       <label className="mb-2 block text-xs font-semibold">
@@ -2827,7 +2848,10 @@ showpage
                 disabled={isGenerating || !qrDataUrl}
                 className="flex w-full items-center justify-center gap-1.5 rounded-md bg-[var(--pro-accent)] py-3 text-xs font-semibold text-white transition-colors hover:bg-[var(--pro-accent-hover)] disabled:cursor-not-allowed disabled:bg-[var(--pro-muted-light)] sm:gap-2 sm:py-3.5 sm:text-sm"
               >
-                <Icon name="download" className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+                <Icon
+                  name="download"
+                  className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                />
                 Download QR Code
               </button>
               <p className="mt-2 hidden text-center text-xs text-[var(--pro-muted)] sm:mt-3 sm:block">
