@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Variation 2: Bold Showdown - Competitive Comparison</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--fg);
+      color: var(--bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .section {
+      padding: 80px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 1024px) {
+      .section {
+        padding: 120px 48px;
+      }
+    }
+
+    /* Header */
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(36px, 6vw, 64px);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--bg);
+    }
+
+    .section-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    /* VS Layout */
+    .showdown-container {
+      display: grid;
+      gap: 24px;
+    }
+
+    @media (min-width: 768px) {
+      .showdown-container {
+        grid-template-columns: 1fr auto 1fr;
+        gap: 32px;
+        align-items: stretch;
+      }
+    }
+
+    /* Hero Card */
+    .hero-card {
+      background: var(--accent);
+      border: 4px solid var(--accent);
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
+      .hero-card {
+        padding: 40px;
+      }
+    }
+
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card-header {
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .card-badge {
+      display: inline-block;
+      background: var(--fg);
+      color: var(--accent);
+      padding: 6px 16px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .hero-card .card-badge {
+      background: var(--bg);
+    }
+
+    .card-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      line-height: 1.2;
+      color: var(--bg);
+    }
+
+    @media (min-width: 768px) {
+      .card-title {
+        font-size: 32px;
+      }
+    }
+
+    .card-price {
+      margin-top: 12px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .price-value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 48px;
+      font-weight: normal;
+    }
+
+    .price-label {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    /* Feature List */
+    .feature-list {
+      list-style: none;
+      position: relative;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      font-size: 14px;
+    }
+
+    .feature-item:last-child {
+      border-bottom: none;
+    }
+
+    .feature-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .icon-check {
+      background: var(--bg);
+      color: var(--accent);
+    }
+
+    .icon-cross {
+      background: rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.6);
+    }
+
+    .feature-text {
+      flex: 1;
+    }
+
+    .feature-value {
+      font-weight: 700;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* VS Divider */
+    .vs-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 0;
+    }
+
+    @media (min-width: 768px) {
+      .vs-divider {
+        padding: 0;
+      }
+    }
+
+    .vs-badge {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'DM Serif Display', serif;
+      font-size: 24px;
+      font-style: italic;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid var(--accent);
+    }
+
+    /* Competitor Card */
+    .competitor-card {
+      background: rgba(255,255,255,0.05);
+      border: 2px solid rgba(255,255,255,0.1);
+      padding: 32px;
+      position: relative;
+    }
+
+    @media (min-width: 768px) {
+      .competitor-card {
+        padding: 40px;
+      }
+    }
+
+    .competitor-card .card-title {
+      color: rgba(255,255,255,0.7);
+    }
+
+    .competitor-card .card-badge {
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.6);
+    }
+
+    .competitor-card .price-value {
+      color: rgba(255,255,255,0.5);
+      text-decoration: line-through;
+      text-decoration-color: var(--danger);
+      text-decoration-thickness: 3px;
+    }
+
+    .competitor-card .price-range {
+      color: var(--danger);
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .competitor-card .feature-item {
+      border-color: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.6);
+    }
+
+    .competitor-card .feature-value {
+      color: rgba(255,255,255,0.4);
+      font-weight: 500;
+    }
+
+    /* Bottom Stats */
+    .comparison-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 48px;
+      padding-top: 48px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 36px;
+      color: var(--accent);
+    }
+
+    @media (min-width: 768px) {
+      .stat-value {
+        font-size: 48px;
+      }
+    }
+
+    .stat-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.5);
+      margin-top: 4px;
+    }
+
+    /* CTA */
+    .cta-container {
+      margin-top: 48px;
+      text-align: center;
+    }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg);
+      color: var(--fg);
+      padding: 18px 40px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cta-button:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .cta-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 767px) {
+      .showdown-container {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .hero-card {
+        order: 1;
+      }
+
+      .vs-divider {
+        order: 2;
+      }
+
+      .competitor-card {
+        order: 3;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="section">
+    <!-- Header -->
+    <header class="section-header">
+      <p class="section-label">The Showdown</p>
+      <h2 class="section-title">Why choose <em>The QR Spot</em>?</h2>
+    </header>
+
+    <!-- Showdown Layout -->
+    <div class="showdown-container">
+      <!-- Hero Card: The QR Spot -->
+      <div class="hero-card">
+        <div class="card-header">
+          <span class="card-badge">Our Pick</span>
+          <h3 class="card-title">The QR Spot</h3>
+          <div class="card-price">
+            <span class="price-value">$0</span>
+            <span class="price-label">forever</span>
+          </div>
+        </div>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <span class="feature-icon icon-check">&#10003;</span>
+            <span class="feature-text">
+              QR Code Expiration
+              <span class="feature-value">Never expires</span>
+            </span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon icon-check">&#10003;</span>
+            <span class="feature-text">
+              Max Resolution
+              <span class="feature-value">4K / 600 DPI</span>
+            </span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon icon-check">&#10003;</span>
+            <span class="feature-text">
+              Export Formats
+              <span class="feature-value">PNG, SVG, PDF, EPS</span>
+            </span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon icon-check">&#10003;</span>
+            <span class="feature-text">
+              Scan Limits
+              <span class="feature-value">Unlimited</span>
+            </span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon icon-check">&#10003;</span>
+            <span class="feature-text">
+              Design Options
+              <span class="feature-value">6 patterns, 9 styles, gradients</span>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- VS Divider -->
+      <div class="vs-divider">
+        <div class="vs-badge">vs</div>
+      </div>
+
+      <!-- Competitor Card -->
+      <div class="competitor-card">
+        <div class="card-header">
+          <span class="card-badge">Typical Competitor</span>
+          <h3 class="card-title">Premium QR Tools</h3>
+          <div class="card-price">
+            <span class="price-value">$450</span>
+            <span class="price-label">/year</span>
+          </div>
+          <p class="price-range">$5 - $37.50/month typical</p>
+        </div>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <span class="feature-icon icon-cross">&times;</span>
+            <span class="feature-text">
+              QR Code Expiration
+              <span class="feature-value">Expires with subscription</span>
+            </span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon icon-cross">&times;</span>
+            <span class="feature-text">
+              Max Resolution
+              <span class="feature-value">Often limited to 300 DPI</span>
+            </span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon icon-cross">&times;</span>
+            <span class="feature-text">
+              Export Formats
+              <span class="feature-value">PNG, SVG only (EPS extra)</span>
+            </span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon icon-cross">&times;</span>
+            <span class="feature-text">
+              Scan Limits
+              <span class="feature-value">10,000/month cap</span>
+            </span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon icon-cross">&times;</span>
+            <span class="feature-text">
+              Design Options
+              <span class="feature-value">Basic customization</span>
+            </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="comparison-stats">
+      <div class="stat-item">
+        <div class="stat-value">$0</div>
+        <div class="stat-label">Your Cost</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">&infin;</div>
+        <div class="stat-label">No Expiration</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">4K</div>
+        <div class="stat-label">Max Quality</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-container">
+      <a href="/generator" class="cta-button">
+        Start Creating Free
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+</body>
+</html>
