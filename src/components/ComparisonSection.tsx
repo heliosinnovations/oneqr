@@ -28,23 +28,13 @@ const competitors: CompetitorData[] = [
   },
   {
     name: "Others",
-    pricing: "$5-15/month",
+    pricing: "$5-40/month",
     expiration: "Expires with plan",
-    maxResolution: "1024px - 2000px",
-    exportFormats: "PNG, SVG",
+    maxResolution: "300-2000px",
+    exportFormats: "PNG, SVG, PDF",
     scanLimits: "10,000/month",
     designOptions: "Limited",
     designIcon: "partial",
-  },
-  {
-    name: "Others",
-    pricing: "$20-40/month",
-    expiration: "Expires with plan",
-    maxResolution: "300 - 600 DPI",
-    exportFormats: "PNG, SVG, PDF",
-    scanLimits: "Limited",
-    designOptions: "Basic",
-    designIcon: "check",
   },
 ];
 

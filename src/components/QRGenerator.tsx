@@ -5,6 +5,7 @@ import QRCode from "qrcode";
 
 type TabType = "colors" | "logo" | "settings";
 type ErrorLevelType = "L" | "M" | "Q" | "H";
+type GradientType = "solid" | "linear" | "radial";
 
 // Preset colors
 const FG_PRESETS = [
@@ -21,6 +22,12 @@ const BG_PRESETS = [
   { color: "#FEF3C7", name: "Cream" },
   { color: "#DDD6FE", name: "Lavender" },
   { color: "#A7F3D0", name: "Mint" },
+];
+
+const GRADIENT_TYPES: { value: GradientType; label: string }[] = [
+  { value: "solid", label: "Solid" },
+  { value: "linear", label: "Linear" },
+  { value: "radial", label: "Radial" },
 ];
 
 const SIZE_OPTIONS = [
@@ -56,6 +63,10 @@ export default function QRGenerator() {
   const [bgColor, setBgColor] = useState("#FFFFFF");
   const [size, setSize] = useState(512);
   const [errorLevel, setErrorLevel] = useState<ErrorLevelType>("M");
+
+  // Gradient state
+  const [gradientType, setGradientType] = useState<GradientType>("solid");
+  const [fgColorEnd, setFgColorEnd] = useState("#7C3AED");
 
   // Logo state
   const [logoDataUrl, setLogoDataUrl] = useState<string | null>(null);
