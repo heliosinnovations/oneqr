@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Variation 3: Feature Grid - Competitive Comparison</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .section {
+      padding: 80px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 1024px) {
+      .section {
+        padding: 120px 48px;
+      }
+    }
+
+    /* Header */
+    .section-header {
+      margin-bottom: 64px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(32px, 5vw, 56px);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--fg);
+      max-width: 600px;
+    }
+
+    .section-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .section-subtitle {
+      margin-top: 20px;
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 500px;
+      line-height: 1.7;
+    }
+
+    /* Feature Grid */
+    .feature-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    @media (min-width: 640px) {
+      .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .feature-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+    }
+
+    /* Feature Card */
+    .feature-card {
+      background: var(--bg);
+      border: 2px solid var(--fg);
+      padding: 28px;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 8px 8px 0 var(--fg);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--accent-light);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .card-icon svg {
+      width: 24px;
+      height: 24px;
+      color: var(--accent);
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 24px;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    /* Comparison Row */
+    .comparison-row {
+      display: flex;
+      gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .comparison-item {
+      flex: 1;
+    }
+
+    .comparison-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .comparison-value {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .value-ours {
+      color: var(--accent);
+    }
+
+    .value-theirs {
+      color: var(--muted);
+      text-decoration: line-through;
+      text-decoration-color: var(--danger);
+    }
+
+    /* Savings Badge */
+    .savings-badge {
+      position: absolute;
+      top: -12px;
+      right: 16px;
+      background: var(--success);
+      color: white;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* Bottom Banner */
+    .bottom-banner {
+      margin-top: 48px;
+      background: var(--fg);
+      color: var(--bg);
+      padding: 40px;
+      display: grid;
+      gap: 32px;
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .bottom-banner {
+        grid-template-columns: 1fr auto;
+        padding: 48px 56px;
+      }
+    }
+
+    .banner-content h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .banner-content h3 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .banner-content p {
+      font-size: 15px;
+      opacity: 0.7;
+    }
+
+    .banner-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--accent);
+      color: white;
+      padding: 16px 32px;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .banner-cta:hover {
+      background: var(--bg);
+      color: var(--fg);
+    }
+
+    .banner-cta svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Trust Badges */
+    .trust-row {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .trust-item svg {
+      width: 16px;
+      height: 16px;
+      color: var(--success);
+    }
+  </style>
+</head>
+<body>
+  <section class="section">
+    <!-- Header -->
+    <header class="section-header">
+      <p class="section-label">Why We're Different</p>
+      <h2 class="section-title">Why choose <em>The QR Spot</em>?</h2>
+      <p class="section-subtitle">
+        Premium QR tools charge $5-37/month for features we give away free. Forever.
+      </p>
+    </header>
+
+    <!-- Feature Grid -->
+    <div class="feature-grid">
+      <!-- Pricing Card -->
+      <div class="feature-card">
+        <span class="savings-badge">Save $450/yr</span>
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+          </svg>
+        </div>
+        <div class="card-label">Pricing</div>
+        <h3 class="card-title">Free Forever</h3>
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <div class="comparison-label">Ours</div>
+            <div class="comparison-value value-ours">$0/forever</div>
+          </div>
+          <div class="comparison-item">
+            <div class="comparison-label">Theirs</div>
+            <div class="comparison-value value-theirs">$5-37.50/mo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expiration Card -->
+      <div class="feature-card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <div class="card-label">Expiration</div>
+        <h3 class="card-title">Never Expires</h3>
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <div class="comparison-label">Ours</div>
+            <div class="comparison-value value-ours">Permanent</div>
+          </div>
+          <div class="comparison-item">
+            <div class="comparison-label">Theirs</div>
+            <div class="comparison-value value-theirs">Expires</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resolution Card -->
+      <div class="feature-card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"/>
+          </svg>
+        </div>
+        <div class="card-label">Max Resolution</div>
+        <h3 class="card-title">4K / 600 DPI</h3>
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <div class="comparison-label">Ours</div>
+            <div class="comparison-value value-ours">4096px</div>
+          </div>
+          <div class="comparison-item">
+            <div class="comparison-label">Theirs</div>
+            <div class="comparison-value value-theirs">300 DPI</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export Formats Card -->
+      <div class="feature-card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+          </svg>
+        </div>
+        <div class="card-label">Export Formats</div>
+        <h3 class="card-title">All Formats</h3>
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <div class="comparison-label">Ours</div>
+            <div class="comparison-value value-ours">PNG SVG PDF EPS</div>
+          </div>
+          <div class="comparison-item">
+            <div class="comparison-label">Theirs</div>
+            <div class="comparison-value value-theirs">PNG SVG</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scan Limits Card -->
+      <div class="feature-card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/>
+            <path d="M13.5 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5z"/>
+          </svg>
+        </div>
+        <div class="card-label">Scan Limits</div>
+        <h3 class="card-title">Unlimited</h3>
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <div class="comparison-label">Ours</div>
+            <div class="comparison-value value-ours">No limits</div>
+          </div>
+          <div class="comparison-item">
+            <div class="comparison-label">Theirs</div>
+            <div class="comparison-value value-theirs">10k/month</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Design Options Card -->
+      <div class="feature-card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/>
+          </svg>
+        </div>
+        <div class="card-label">Design Options</div>
+        <h3 class="card-title">Advanced</h3>
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <div class="comparison-label">Ours</div>
+            <div class="comparison-value value-ours">6 patterns, 9 styles</div>
+          </div>
+          <div class="comparison-item">
+            <div class="comparison-label">Theirs</div>
+            <div class="comparison-value value-theirs">Basic</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Banner -->
+    <div class="bottom-banner">
+      <div class="banner-content">
+        <h3>Stop paying for QR codes. <em>Start creating.</em></h3>
+        <p>No account. No credit card. No catches.</p>
+      </div>
+      <a href="/generator" class="banner-cta">
+        Create Free QR Code
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Trust Badges -->
+    <div class="trust-row">
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+        </svg>
+        No account required
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+        </svg>
+        No credit card
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+        </svg>
+        No hidden fees
+      </div>
+    </div>
+  </section>
+</body>
+</html>
