@@ -1,5 +1,6 @@
 import SimpleQRGenerator from "@/components/SimpleQRGenerator";
 import ComparisonSection from "@/components/ComparisonSection";
+import UserMenu from "@/components/UserMenu";
 import Link from "next/link";
 
 export default function Home() {
@@ -26,7 +27,7 @@ export default function Home() {
             <div className="flex items-center gap-6">
               <Link
                 href="/generator"
-                className="text-sm font-medium text-muted transition-colors hover:text-fg"
+                className="hidden text-sm font-medium text-muted transition-colors hover:text-fg sm:block"
               >
                 Advanced Generator
               </Link>
@@ -36,6 +37,7 @@ export default function Home() {
               >
                 Bulk Creation
               </Link>
+              <UserMenu />
             </div>
           </div>
         </nav>

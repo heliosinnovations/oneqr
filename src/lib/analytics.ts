@@ -75,18 +75,13 @@ export const trackEvent = {
   error: (errorType: string, errorMessage: string) => {
     posthog.capture('error', { errorType, errorMessage });
   },
-};
 
-/**
- * Identify a user (for signed-in users in the future)
- */
-export const identifyUser = (userId: string, traits?: Record<string, any>) => {
-  posthog.identify(userId, traits);
-};
+  // User Events
+  identifyUser: (userId: string, traits?: Record<string, any>) => {
+    posthog.identify(userId, traits);
+  },
 
-/**
- * Reset user identity (on logout)
- */
-export const resetUser = () => {
-  posthog.reset();
+  resetUser: () => {
+    posthog.reset();
+  },
 };
