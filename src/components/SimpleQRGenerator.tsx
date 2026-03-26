@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import QRCode from "qrcode";
 import Link from "next/link";
+import { trackEvent } from "@/lib/analytics";
 
 export default function SimpleQRGenerator() {
   const [url, setUrl] = useState("");
@@ -38,6 +39,7 @@ export default function SimpleQRGenerator() {
         errorCorrectionLevel: "M",
       });
       setQrDataUrl(dataUrl);
+      trackEvent.qrGenerated('simple');
     } catch {
       // Silent fail for invalid URLs
       setQrDataUrl(null);
@@ -69,6 +71,8 @@ export default function SimpleQRGenerator() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    trackEvent.qrDownloaded('png', 'simple');
   }, [qrDataUrl]);
 
   const moreOptionsUrl = url.trim()
@@ -101,6 +105,7 @@ export default function SimpleQRGenerator() {
           </div>
           <Link
             href={moreOptionsUrl}
+            onClick={() => trackEvent.moreButtonClicked('simple-generator')}
             className="flex items-center gap-1 whitespace-nowrap text-[13px] text-muted transition-colors hover:text-accent"
           >
             More options
@@ -196,6 +201,7 @@ export default function SimpleQRGenerator() {
           </button>
           <Link
             href={moreOptionsUrl}
+            onClick={() => trackEvent.moreButtonClicked('simple-generator')}
             className="flex items-center gap-1 whitespace-nowrap text-[13px] text-muted transition-colors hover:text-accent"
           >
             More options

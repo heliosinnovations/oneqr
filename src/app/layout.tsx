@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Serif_Display, Inter } from "next/font/google";
 import "./globals.css";
+import { PostHogProvider, PostHogPageview } from "@/lib/posthog";
+import { Suspense } from "react";
 
 const dmSerifDisplay = DM_Serif_Display({
   weight: "400",
@@ -204,9 +206,14 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {/* Grain texture overlay */}
-        <div className="grain" aria-hidden="true" />
-        {children}
+        <PostHogProvider>
+          <Suspense fallback={null}>
+            <PostHogPageview />
+          </Suspense>
+          {/* Grain texture overlay */}
+          <div className="grain" aria-hidden="true" />
+          {children}
+        </PostHogProvider>
       </body>
     </html>
   );
