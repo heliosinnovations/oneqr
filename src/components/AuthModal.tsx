@@ -120,10 +120,18 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-accent px-6 py-4 text-[15px] font-semibold text-white transition-colors hover:bg-fg disabled:opacity-50"
+            disabled={loading || message?.type === 'success'}
+            className={`w-full px-6 py-4 text-[15px] font-semibold transition-colors disabled:cursor-not-allowed ${
+              message?.type === 'success'
+                ? 'bg-green-600 text-white'
+                : 'bg-accent text-white hover:bg-fg disabled:opacity-50'
+            }`}
           >
-            {loading ? 'Sending...' : 'Send Magic Link'}
+            {loading
+              ? 'Sending...'
+              : message?.type === 'success'
+                ? 'Magic Link Sent ✓'
+                : 'Send Magic Link'}
           </button>
         </form>
 
