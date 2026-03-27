@@ -1,0 +1,28 @@
+import Stripe from "stripe";
+
+let stripeInstance: Stripe | null = null;
+
+export function getStripe(): Stripe {
+  if (!stripeInstance) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error("STRIPE_SECRET_KEY is not set");
+    }
+
+    stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2026-03-25.dahlia",
+      typescript: true,
+    });
+  }
+
+  return stripeInstance;
+}
+
+// Keep stripe export for backward compatibility, but use getter pattern
+export const stripe = {
+  get checkout() {
+    return getStripe().checkout;
+  },
+  get webhooks() {
+    return getStripe().webhooks;
+  },
+};

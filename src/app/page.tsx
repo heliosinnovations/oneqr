@@ -1,5 +1,6 @@
 import SimpleQRGenerator from "@/components/SimpleQRGenerator";
 import ComparisonSection from "@/components/ComparisonSection";
+import PricingSection from "@/components/PricingSection";
 import UserMenu from "@/components/UserMenu";
 import Link from "next/link";
 
@@ -321,6 +322,9 @@ export default function Home() {
             </aside>
           </div>
         </section>
+
+        {/* Pricing Section */}
+        <PricingSection />
 
         {/* Comparison Section */}
         <ComparisonSection />
