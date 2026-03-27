@@ -1,142 +1,79 @@
-# OneQR Automated Tests
+# OneQR Test Suite
 
-This directory contains comprehensive Playwright tests for the OneQR application's free QR code generation features.
+Comprehensive end-to-end tests for The QR Spot using Playwright.
 
 ## Test Coverage
 
-### 1. QR Generation Tests (`qr-generation.spec.ts`)
-- ✅ Valid URL with https:// prefix
-- ✅ URL without https:// prefix (auto-prefixing)
-- ✅ Empty input validation
-- ✅ Whitespace-only input validation
-- ✅ Error message clearing on valid input
-- ✅ Loading state display
-- ✅ Complex URLs with query parameters
-- ✅ Localhost URLs
-- ✅ Different QR codes for different URLs
-- ✅ Visual QR code rendering verification
+### Authentication Flow (`auth-flow.spec.ts`)
+Complete authentication testing including:
 
-### 2. Download Tests (`qr-download.spec.ts`)
-- ✅ PNG download with correct filename
-- ✅ SVG download with correct filename
-- ✅ PNG MIME type validation
-- ✅ SVG MIME type validation
-- ✅ Non-empty file validation (PNG)
-- ✅ Non-empty file validation (SVG)
-- ✅ Download buttons visibility (before/after QR generation)
-- ✅ Multiple downloads of same QR code
-- ✅ Different format downloads (PNG vs SVG)
+#### Sign In Flow (12 tests)
+- ✅ Modal opening and closing (button, X, backdrop)
+- ✅ Email input validation (format, empty, special characters)
+- ✅ Magic link sending states (loading, success, disabled)
+- ✅ Email clearing after success
+- ✅ Privacy policy link
+- ✅ Form disabling during submission
 
-### 3. Print Tests (`qr-print.spec.ts`)
-- ✅ Print dialog trigger
-- ✅ New window opening for print
-- ✅ QR code content in print window
-- ✅ Print window layout (centered)
-- ✅ Print button visibility state
-- ✅ Different QR codes print correctly
-- ✅ Print button icon display
-- ✅ QR quality maintenance in print
+#### Auth Callback (3 tests)
+- ✅ Successful authentication redirect
+- ✅ Invalid/expired magic link handling
+- ✅ Error page display with return home button
 
-### 4. UI/UX Tests (`ui-interactions.spec.ts`)
-- ✅ Text input field interaction
-- ✅ Enter key trigger for generation
-- ✅ Other keys don't trigger generation
-- ✅ Placeholder text display
-- ✅ Loading state on button
-- ✅ Error message styling
-- ✅ Success state with visible buttons
-- ✅ Input value persistence after generation
-- ✅ URL modification and regeneration
-- ✅ Input field focus
-- ✅ Button hover states
-- ✅ Rapid consecutive clicks handling
-- ✅ "Try it now" label display
-- ✅ Free generation note display
-- ✅ Very long URL handling
-- ✅ Accessible button labels
-- ✅ Proper input label
+#### Session Persistence (3 tests)
+- ✅ Session state across page refresh
+- ✅ Session state across navigation
+- ✅ Loading state during session check
 
-### 5. Visual Regression Tests (`visual-regression.spec.ts`)
-- ✅ Homepage baseline screenshot
-- ✅ Mobile viewport (375x667)
-- ✅ Tablet viewport (768x1024)
-- ✅ Desktop wide viewport (1920x1080)
-- ✅ QR generator component initial state
-- ✅ QR generator with generated QR code
-- ✅ Error state
-- ✅ Navigation bar
-- ✅ Footer
-- ✅ "How it works" section
-- ✅ "Features" section
-- ✅ Cross-browser consistency (Chromium, Firefox, WebKit)
+#### Sign Out Flow (1 test)
+- ✅ Unauthenticated state verification
+
+#### Error Cases (8 tests)
+- ✅ Empty email submission
+- ✅ Network error handling
+- ✅ Expired magic link
+- ✅ Already used magic link
+- ✅ Malformed callback URL
+- ✅ Invalid email formats
+- ✅ Rate limiting
+
+#### Accessibility (5 tests)
+- ✅ ARIA labels on modal and buttons
+- ✅ Form input labels
+- ✅ Keyboard navigation
+- ✅ Focus trap and Escape key
+- ✅ Visible focus indicators
+
+#### Cross-Browser (1 test)
+- ✅ Chrome, Firefox, Safari (webkit) compatibility
+
+**Total: 33 comprehensive authentication tests**
 
 ## Running Tests
 
 ### Prerequisites
 ```bash
 npm install
+npx playwright install
 ```
 
-### Run all tests
+### Run All Tests
 ```bash
 npm test
 ```
 
-### Run tests in UI mode
+### Run Specific Test File
 ```bash
-npm run test:ui
+npx playwright test tests/auth-flow.spec.ts
 ```
 
-### Run tests in headed mode (visible browser)
+### Run Against Production
 ```bash
-npm run test:headed
+TEST_URL=https://theqrspot.com npm test
 ```
 
-### View test report
-```bash
-npm run test:report
-```
+## Known Limitations
 
-### Update visual regression baselines
-```bash
-npx playwright test --update-snapshots
-```
-
-## CI/CD Integration
-
-Tests run automatically on every pull request via GitHub Actions (`.github/workflows/playwright.yml`).
-
-The workflow:
-1. Installs dependencies
-2. Installs Playwright browsers
-3. Runs all tests across multiple browsers
-4. Uploads test results and screenshots on failure
-
-## Test Results
-
-All 57 tests pass consistently across 3 runs with no flakiness detected:
-
-- **QR Generation**: 10/10 ✅
-- **Downloads**: 10/10 ✅
-- **Print**: 9/9 ✅
-- **UI/UX**: 16/16 ✅
-- **Visual Regression**: 12/12 ✅
-
-**Total: 57/57 tests passing**
-
-## Browser Support
-
-Tests are configured to run on:
-- ✅ Chromium (Desktop Chrome)
-- ✅ Firefox (Desktop)
-- ✅ WebKit (Desktop Safari)
-- ✅ Mobile Chrome (Pixel 5)
-- ✅ Mobile Safari (iPhone 12)
-
-## Test Philosophy
-
-- **Deterministic**: All tests produce consistent results
-- **No Flakiness**: Tests run reliably 3+ times
-- **Comprehensive**: Cover success paths, error paths, and edge cases
-- **Fast**: Complete test suite runs in ~11 seconds
-- **Maintainable**: Clear test names and organized structure
+### Email Testing
+Real magic link emails require live email service integration.
+Current tests verify UI flow and callback behavior.
