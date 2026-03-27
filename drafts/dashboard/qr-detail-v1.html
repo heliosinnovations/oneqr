@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Details - Marketing Campaign Q1 | OneQR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-hover: #e64500;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --success: #198754;
+      --success-light: #d1e7dd;
+      --warning: #ffc107;
+      --warning-light: #fff3cd;
+      --info: #0d6efd;
+      --info-light: #cfe2ff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'DM Serif Display', serif;
+      font-weight: 400;
+    }
+
+    /* Header */
+    .header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .nav-link {
+      font-size: 0.875rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--accent);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+
+    /* Main Content */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .breadcrumb a:hover {
+      color: var(--accent);
+    }
+
+    .breadcrumb-sep {
+      color: var(--muted);
+    }
+
+    .breadcrumb-current {
+      color: var(--fg);
+      font-weight: 500;
+    }
+
+    /* Detail Layout */
+    .detail-grid {
+      display: grid;
+      gap: 2rem;
+    }
+
+    @media (min-width: 1024px) {
+      .detail-grid {
+        grid-template-columns: 320px 1fr;
+      }
+    }
+
+    /* QR Preview Section */
+    .qr-preview-section {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .qr-code-large {
+      width: 240px;
+      height: 240px;
+      margin: 0 auto 1.5rem;
+      background: var(--surface);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-code-large svg {
+      width: 200px;
+      height: 200px;
+    }
+
+    .qr-name-title {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .qr-short-url {
+      font-size: 0.875rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .qr-short-url a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .qr-short-url a:hover {
+      text-decoration: underline;
+    }
+
+    .qr-badges-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-paid {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .badge-dynamic {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .badge-free {
+      background: var(--surface);
+      color: var(--muted);
+    }
+
+    .download-options {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .download-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 8px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--fg);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .download-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .download-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .edit-btn {
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.5rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .edit-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .edit-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Details Section */
+    .details-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .detail-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+
+    .detail-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .detail-card-title {
+      font-size: 1.125rem;
+    }
+
+    .detail-card-action {
+      font-size: 0.8125rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .detail-card-action:hover {
+      text-decoration: underline;
+    }
+
+    /* Destination Info */
+    .destination-box {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .destination-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: var(--accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .destination-icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--accent);
+    }
+
+    .destination-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .destination-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .destination-url {
+      font-size: 0.875rem;
+      color: var(--fg);
+      word-break: break-all;
+    }
+
+    .destination-updated {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    /* Analytics Chart */
+    .analytics-chart {
+      height: 200px;
+      background: var(--surface);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 100%;
+      padding: 1rem 1.5rem;
+      gap: 8px;
+    }
+
+    .chart-bar-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .chart-bar {
+      width: 100%;
+      max-width: 40px;
+      background: var(--accent);
+      border-radius: 4px 4px 0 0;
+      min-height: 8px;
+      transition: height 0.3s;
+    }
+
+    .chart-bar:hover {
+      background: var(--accent-hover);
+    }
+
+    .chart-label {
+      font-size: 0.625rem;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 1rem;
+      background: var(--surface);
+      border-radius: 12px;
+    }
+
+    .stat-value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      color: var(--fg);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.25rem;
+    }
+
+    .stat-change {
+      font-size: 0.6875rem;
+      color: var(--success);
+      margin-top: 0.25rem;
+    }
+
+    /* History List */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem;
+      background: var(--surface);
+      border-radius: 8px;
+    }
+
+    .history-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .history-icon svg {
+      width: 16px;
+      height: 16px;
+      color: var(--accent);
+    }
+
+    .history-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .history-text {
+      font-size: 0.875rem;
+      color: var(--fg);
+    }
+
+    .history-date {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* CTA Banner */
+    .cta-banner {
+      background: linear-gradient(135deg, var(--accent) 0%, #ff8c42 100%);
+      border-radius: 16px;
+      padding: 2rem;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .cta-banner {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .cta-content h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .cta-content p {
+      font-size: 0.875rem;
+      opacity: 0.9;
+    }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.5rem;
+      background: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 4rem;
+      padding: 2rem 1.5rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .footer-text {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 639px) {
+      .nav-links {
+        display: none;
+      }
+
+      .qr-code-large {
+        width: 200px;
+        height: 200px;
+      }
+
+      .qr-code-large svg {
+        width: 160px;
+        height: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo">The<span>QR</span>Spot</a>
+
+      <nav class="nav-links">
+        <a href="dashboard-list-v1.html" class="nav-link active">Dashboard</a>
+        <a href="#" class="nav-link">Create New</a>
+        <a href="#" class="nav-link">Bulk Create</a>
+        <a href="#" class="nav-link">Help</a>
+      </nav>
+
+      <div class="user-avatar">JS</div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+      <a href="dashboard-list-v1.html">Dashboard</a>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Marketing Campaign Q1</span>
+    </nav>
+
+    <!-- Detail Grid -->
+    <div class="detail-grid">
+      <!-- QR Preview Section -->
+      <div class="qr-preview-section">
+        <div class="qr-code-large">
+          <svg viewBox="0 0 200 200" fill="none">
+            <rect width="200" height="200" fill="#f7f6f1"/>
+            <rect x="20" y="20" width="50" height="50" fill="#1a1a1a"/>
+            <rect x="130" y="20" width="50" height="50" fill="#1a1a1a"/>
+            <rect x="20" y="130" width="50" height="50" fill="#1a1a1a"/>
+            <rect x="30" y="30" width="30" height="30" fill="#f7f6f1"/>
+            <rect x="140" y="30" width="30" height="30" fill="#f7f6f1"/>
+            <rect x="30" y="140" width="30" height="30" fill="#f7f6f1"/>
+            <rect x="36" y="36" width="18" height="18" fill="#ff4d00"/>
+            <rect x="146" y="36" width="18" height="18" fill="#ff4d00"/>
+            <rect x="36" y="146" width="18" height="18" fill="#ff4d00"/>
+            <rect x="80" y="20" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="100" y="20" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="80" y="40" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="80" y="80" width="40" height="40" fill="#1a1a1a"/>
+            <rect x="90" y="90" width="20" height="20" fill="#ff4d00"/>
+            <rect x="20" y="80" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="40" y="80" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="20" y="100" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="130" y="80" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="150" y="80" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="170" y="80" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="130" y="130" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="150" y="130" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="170" y="130" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="130" y="150" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="150" y="170" width="10" height="10" fill="#1a1a1a"/>
+            <rect x="170" y="150" width="10" height="10" fill="#1a1a1a"/>
+          </svg>
+        </div>
+
+        <h2 class="qr-name-title">Marketing Campaign Q1</h2>
+        <div class="qr-short-url">
+          <a href="#">theqrspot.com/r/abc123</a>
+        </div>
+
+        <div class="qr-badges-row">
+          <span class="badge badge-paid">Paid</span>
+          <span class="badge badge-dynamic">Dynamic</span>
+        </div>
+
+        <div class="download-options">
+          <button class="download-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            PNG
+          </button>
+          <button class="download-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            SVG
+          </button>
+        </div>
+
+        <a href="edit-modal-v1.html?mode=edit" class="edit-btn">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          </svg>
+          Edit Destination URL
+        </a>
+      </div>
+
+      <!-- Details Section -->
+      <div class="details-section">
+        <!-- Current Destination -->
+        <div class="detail-card">
+          <div class="detail-card-header">
+            <h3 class="detail-card-title">Current Destination</h3>
+            <a href="edit-modal-v1.html?mode=edit" class="detail-card-action">Edit</a>
+          </div>
+          <div class="destination-box">
+            <div class="destination-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+              </svg>
+            </div>
+            <div class="destination-info">
+              <div class="destination-label">Redirects to</div>
+              <div class="destination-url">https://mycompany.com/campaigns/q1-2026/landing-page?utm_source=qr&utm_medium=print</div>
+              <div class="destination-updated">Last updated: March 15, 2026</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics -->
+        <div class="detail-card">
+          <div class="detail-card-header">
+            <h3 class="detail-card-title">Scan Analytics</h3>
+            <a href="#" class="detail-card-action">Last 7 days</a>
+          </div>
+
+          <div class="analytics-chart">
+            <div class="chart-bars">
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar" style="height: 60%;"></div>
+                <span class="chart-label">Mon</span>
+              </div>
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar" style="height: 85%;"></div>
+                <span class="chart-label">Tue</span>
+              </div>
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar" style="height: 45%;"></div>
+                <span class="chart-label">Wed</span>
+              </div>
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar" style="height: 70%;"></div>
+                <span class="chart-label">Thu</span>
+              </div>
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar" style="height: 95%;"></div>
+                <span class="chart-label">Fri</span>
+              </div>
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar" style="height: 35%;"></div>
+                <span class="chart-label">Sat</span>
+              </div>
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar" style="height: 25%;"></div>
+                <span class="chart-label">Sun</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-grid" style="margin-top: 1rem;">
+            <div class="stat-item">
+              <div class="stat-value">342</div>
+              <div class="stat-label">Total Scans</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">28</div>
+              <div class="stat-label">This Week</div>
+              <div class="stat-change">+12%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">8.2</div>
+              <div class="stat-label">Avg/Day</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">5</div>
+              <div class="stat-label">Total Edits</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit History -->
+        <div class="detail-card">
+          <div class="detail-card-header">
+            <h3 class="detail-card-title">Edit History</h3>
+            <a href="#" class="detail-card-action">View all</a>
+          </div>
+
+          <div class="history-list">
+            <div class="history-item">
+              <div class="history-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </div>
+              <div class="history-content">
+                <div class="history-text">URL updated to Q1 campaign page</div>
+                <div class="history-date">March 15, 2026 at 2:34 PM</div>
+              </div>
+            </div>
+            <div class="history-item">
+              <div class="history-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </div>
+              <div class="history-content">
+                <div class="history-text">Added UTM parameters</div>
+                <div class="history-date">March 10, 2026 at 11:15 AM</div>
+              </div>
+            </div>
+            <div class="history-item">
+              <div class="history-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div class="history-content">
+                <div class="history-text">QR code created and paid for</div>
+                <div class="history-date">January 8, 2026 at 9:00 AM</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upgrade CTA (hidden for paid QRs, shown for free) -->
+        <!--
+        <div class="cta-banner">
+          <div class="cta-content">
+            <h3>Unlock Editing Forever</h3>
+            <p>Pay once, edit unlimited times. Never reprint your QR code again.</p>
+          </div>
+          <button class="cta-button">
+            Upgrade for $9.99
+          </button>
+        </div>
+        -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p class="footer-text">&copy; 2026 TheQRSpot. Simple, honest QR codes.</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My QR Codes - Dashboard | OneQR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-hover: #e64500;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --success: #198754;
+      --success-light: #d1e7dd;
+      --warning: #ffc107;
+      --warning-light: #fff3cd;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'DM Serif Display', serif;
+      font-weight: 400;
+    }
+
+    /* Header */
+    .header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .nav-link {
+      font-size: 0.875rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--accent);
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 0.875rem;
+    }
+
+    .user-info {
+      display: none;
+    }
+
+    @media (min-width: 640px) {
+      .user-info {
+        display: block;
+      }
+      .user-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--fg);
+      }
+      .user-email {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+    }
+
+    /* Main Content */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Dashboard Header */
+    .dashboard-header {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (min-width: 640px) {
+      .dashboard-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .dashboard-title {
+      font-size: 2rem;
+    }
+
+    .dashboard-subtitle {
+      color: var(--muted);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    .create-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .create-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .create-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .stats-bar {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .stat-card {
+      background: var(--surface);
+      padding: 1.25rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.75rem;
+      color: var(--fg);
+      margin-top: 0.25rem;
+    }
+
+    .stat-change {
+      font-size: 0.75rem;
+      color: var(--success);
+      margin-top: 0.25rem;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .filter-bar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
+      background: var(--surface);
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    .filter-tab {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: transparent;
+      font-size: 0.875rem;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .filter-tab.active {
+      background: white;
+      color: var(--fg);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .filter-tab:hover:not(.active) {
+      color: var(--fg);
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-input {
+      padding: 0.625rem 1rem 0.625rem 2.5rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      width: 100%;
+      min-width: 250px;
+      background: white;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--muted);
+    }
+
+    /* QR Cards Grid */
+    .qr-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .qr-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .qr-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .qr-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .qr-card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    .qr-card-header {
+      padding: 1.5rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .qr-preview {
+      width: 80px;
+      height: 80px;
+      background: var(--surface);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .qr-preview svg {
+      width: 64px;
+      height: 64px;
+    }
+
+    .qr-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .qr-name {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--fg);
+      margin-bottom: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .qr-url {
+      font-size: 0.75rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .qr-badges {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.625rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-paid {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .badge-free {
+      background: var(--surface);
+      color: var(--muted);
+    }
+
+    .badge-dynamic {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .qr-card-stats {
+      padding: 1rem 1.5rem;
+      background: var(--surface);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .qr-stat {
+      text-align: center;
+    }
+
+    .qr-stat-value {
+      font-weight: 700;
+      font-size: 1.125rem;
+      color: var(--fg);
+    }
+
+    .qr-stat-label {
+      font-size: 0.625rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .qr-card-actions {
+      padding: 1rem 1.5rem;
+      display: flex;
+      gap: 0.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .action-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 8px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--fg);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .action-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .action-btn.primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .action-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--surface);
+      border-radius: 16px;
+      border: 2px dashed var(--border);
+    }
+
+    .empty-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1.5rem;
+      color: var(--muted);
+    }
+
+    .empty-title {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-text {
+      color: var(--muted);
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 4rem;
+      padding: 2rem 1.5rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .footer-text {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 639px) {
+      .nav-links {
+        display: none;
+      }
+
+      .dashboard-title {
+        font-size: 1.5rem;
+      }
+
+      .stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stat-value {
+        font-size: 1.5rem;
+      }
+
+      .qr-card-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .qr-badges {
+        justify-content: center;
+      }
+
+      .qr-card-actions {
+        flex-wrap: wrap;
+      }
+
+      .action-btn {
+        flex: 1 1 calc(50% - 0.25rem);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo">The<span>QR</span>Spot</a>
+
+      <nav class="nav-links">
+        <a href="#" class="nav-link active">Dashboard</a>
+        <a href="#" class="nav-link">Create New</a>
+        <a href="#" class="nav-link">Bulk Create</a>
+        <a href="#" class="nav-link">Help</a>
+      </nav>
+
+      <div class="user-menu">
+        <div class="user-info">
+          <div class="user-name">John Smith</div>
+          <div class="user-email">john@example.com</div>
+        </div>
+        <div class="user-avatar">JS</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+      <div>
+        <h1 class="dashboard-title">My QR Codes</h1>
+        <p class="dashboard-subtitle">Manage and track all your QR codes</p>
+      </div>
+      <a href="#" class="create-btn">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Create New QR
+      </a>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-label">Total QR Codes</div>
+        <div class="stat-value">12</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Scans</div>
+        <div class="stat-value">1,847</div>
+        <div class="stat-change">+12% this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Editable (Paid)</div>
+        <div class="stat-value">4</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Static (Free)</div>
+        <div class="stat-value">8</div>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-tabs">
+        <button class="filter-tab active">All</button>
+        <button class="filter-tab">Editable</button>
+        <button class="filter-tab">Static</button>
+      </div>
+      <div class="search-box">
+        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input type="text" class="search-input" placeholder="Search QR codes...">
+      </div>
+    </div>
+
+    <!-- QR Cards Grid -->
+    <div class="qr-grid">
+      <!-- QR Card 1 - Paid/Dynamic -->
+      <div class="qr-card">
+        <div class="qr-card-header">
+          <div class="qr-preview">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect width="100" height="100" fill="#f7f6f1"/>
+              <rect x="10" y="10" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="65" y="10" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="10" y="65" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="15" y="15" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="70" y="15" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="15" y="70" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="18" y="18" width="9" height="9" fill="#ff4d00"/>
+              <rect x="73" y="18" width="9" height="9" fill="#ff4d00"/>
+              <rect x="18" y="73" width="9" height="9" fill="#ff4d00"/>
+              <rect x="40" y="40" width="20" height="20" fill="#1a1a1a"/>
+              <rect x="45" y="45" width="10" height="10" fill="#ff4d00"/>
+            </svg>
+          </div>
+          <div class="qr-info">
+            <div class="qr-name">Marketing Campaign Q1</div>
+            <div class="qr-url">theqrspot.com/r/abc123</div>
+            <div class="qr-badges">
+              <span class="badge badge-paid">Paid</span>
+              <span class="badge badge-dynamic">Dynamic</span>
+            </div>
+          </div>
+        </div>
+        <div class="qr-card-stats">
+          <div class="qr-stat">
+            <div class="qr-stat-value">342</div>
+            <div class="qr-stat-label">Total Scans</div>
+          </div>
+          <div class="qr-stat">
+            <div class="qr-stat-value">28</div>
+            <div class="qr-stat-label">This Week</div>
+          </div>
+          <div class="qr-stat">
+            <div class="qr-stat-value">5</div>
+            <div class="qr-stat-label">Edits</div>
+          </div>
+        </div>
+        <div class="qr-card-actions">
+          <a href="qr-detail-v1.html" class="action-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            View
+          </a>
+          <button class="action-btn primary" onclick="openEditModal()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+            Edit
+          </button>
+          <button class="action-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Download
+          </button>
+        </div>
+      </div>
+
+      <!-- QR Card 2 - Free/Static -->
+      <div class="qr-card">
+        <div class="qr-card-header">
+          <div class="qr-preview">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect width="100" height="100" fill="#f7f6f1"/>
+              <rect x="10" y="10" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="65" y="10" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="10" y="65" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="15" y="15" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="70" y="15" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="15" y="70" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="18" y="18" width="9" height="9" fill="#1a1a1a"/>
+              <rect x="73" y="18" width="9" height="9" fill="#1a1a1a"/>
+              <rect x="18" y="73" width="9" height="9" fill="#1a1a1a"/>
+              <rect x="40" y="40" width="20" height="20" fill="#1a1a1a"/>
+            </svg>
+          </div>
+          <div class="qr-info">
+            <div class="qr-name">Business Card Link</div>
+            <div class="qr-url">linkedin.com/in/johnsmith</div>
+            <div class="qr-badges">
+              <span class="badge badge-free">Free</span>
+            </div>
+          </div>
+        </div>
+        <div class="qr-card-stats">
+          <div class="qr-stat">
+            <div class="qr-stat-value">156</div>
+            <div class="qr-stat-label">Total Scans</div>
+          </div>
+          <div class="qr-stat">
+            <div class="qr-stat-value">12</div>
+            <div class="qr-stat-label">This Week</div>
+          </div>
+          <div class="qr-stat">
+            <div class="qr-stat-value">-</div>
+            <div class="qr-stat-label">Edits</div>
+          </div>
+        </div>
+        <div class="qr-card-actions">
+          <a href="qr-detail-v1.html" class="action-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            View
+          </a>
+          <button class="action-btn primary" onclick="openUpgradeModal()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            Unlock Edit
+          </button>
+          <button class="action-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Download
+          </button>
+        </div>
+      </div>
+
+      <!-- QR Card 3 - Paid/Dynamic -->
+      <div class="qr-card">
+        <div class="qr-card-header">
+          <div class="qr-preview">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect width="100" height="100" fill="#f7f6f1"/>
+              <rect x="10" y="10" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="65" y="10" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="10" y="65" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="15" y="15" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="70" y="15" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="15" y="70" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="18" y="18" width="9" height="9" fill="#ff4d00"/>
+              <rect x="73" y="18" width="9" height="9" fill="#ff4d00"/>
+              <rect x="18" y="73" width="9" height="9" fill="#ff4d00"/>
+              <rect x="40" y="40" width="20" height="20" fill="#1a1a1a"/>
+              <rect x="45" y="45" width="10" height="10" fill="#ff4d00"/>
+            </svg>
+          </div>
+          <div class="qr-info">
+            <div class="qr-name">Restaurant Menu</div>
+            <div class="qr-url">theqrspot.com/r/menu456</div>
+            <div class="qr-badges">
+              <span class="badge badge-paid">Paid</span>
+              <span class="badge badge-dynamic">Dynamic</span>
+            </div>
+          </div>
+        </div>
+        <div class="qr-card-stats">
+          <div class="qr-stat">
+            <div class="qr-stat-value">892</div>
+            <div class="qr-stat-label">Total Scans</div>
+          </div>
+          <div class="qr-stat">
+            <div class="qr-stat-value">145</div>
+            <div class="qr-stat-label">This Week</div>
+          </div>
+          <div class="qr-stat">
+            <div class="qr-stat-value">12</div>
+            <div class="qr-stat-label">Edits</div>
+          </div>
+        </div>
+        <div class="qr-card-actions">
+          <a href="qr-detail-v1.html" class="action-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            View
+          </a>
+          <button class="action-btn primary" onclick="openEditModal()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+            Edit
+          </button>
+          <button class="action-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Download
+          </button>
+        </div>
+      </div>
+
+      <!-- QR Card 4 - Free/Static -->
+      <div class="qr-card">
+        <div class="qr-card-header">
+          <div class="qr-preview">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect width="100" height="100" fill="#f7f6f1"/>
+              <rect x="10" y="10" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="65" y="10" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="10" y="65" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="15" y="15" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="70" y="15" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="15" y="70" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="18" y="18" width="9" height="9" fill="#1a1a1a"/>
+              <rect x="73" y="18" width="9" height="9" fill="#1a1a1a"/>
+              <rect x="18" y="73" width="9" height="9" fill="#1a1a1a"/>
+              <rect x="40" y="40" width="20" height="20" fill="#1a1a1a"/>
+            </svg>
+          </div>
+          <div class="qr-info">
+            <div class="qr-name">Website Homepage</div>
+            <div class="qr-url">mycompany.com</div>
+            <div class="qr-badges">
+              <span class="badge badge-free">Free</span>
+            </div>
+          </div>
+        </div>
+        <div class="qr-card-stats">
+          <div class="qr-stat">
+            <div class="qr-stat-value">234</div>
+            <div class="qr-stat-label">Total Scans</div>
+          </div>
+          <div class="qr-stat">
+            <div class="qr-stat-value">18</div>
+            <div class="qr-stat-label">This Week</div>
+          </div>
+          <div class="qr-stat">
+            <div class="qr-stat-value">-</div>
+            <div class="qr-stat-label">Edits</div>
+          </div>
+        </div>
+        <div class="qr-card-actions">
+          <a href="qr-detail-v1.html" class="action-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            View
+          </a>
+          <button class="action-btn primary" onclick="openUpgradeModal()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            Unlock Edit
+          </button>
+          <button class="action-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Download
+          </button>
+        </div>
+      </div>
+
+      <!-- QR Card 5 - Paid/Dynamic -->
+      <div class="qr-card">
+        <div class="qr-card-header">
+          <div class="qr-preview">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect width="100" height="100" fill="#f7f6f1"/>
+              <rect x="10" y="10" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="65" y="10" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="10" y="65" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="15" y="15" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="70" y="15" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="15" y="70" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="18" y="18" width="9" height="9" fill="#ff4d00"/>
+              <rect x="73" y="18" width="9" height="9" fill="#ff4d00"/>
+              <rect x="18" y="73" width="9" height="9" fill="#ff4d00"/>
+              <rect x="40" y="40" width="20" height="20" fill="#1a1a1a"/>
+              <rect x="45" y="45" width="10" height="10" fill="#ff4d00"/>
+            </svg>
+          </div>
+          <div class="qr-info">
+            <div class="qr-name">Product Catalog</div>
+            <div class="qr-url">theqrspot.com/r/prod789</div>
+            <div class="qr-badges">
+              <span class="badge badge-paid">Paid</span>
+              <span class="badge badge-dynamic">Dynamic</span>
+            </div>
+          </div>
+        </div>
+        <div class="qr-card-stats">
+          <div class="qr-stat">
+            <div class="qr-stat-value">567</div>
+            <div class="qr-stat-label">Total Scans</div>
+          </div>
+          <div class="qr-stat">
+            <div class="qr-stat-value">89</div>
+            <div class="qr-stat-label">This Week</div>
+          </div>
+          <div class="qr-stat">
+            <div class="qr-stat-value">8</div>
+            <div class="qr-stat-label">Edits</div>
+          </div>
+        </div>
+        <div class="qr-card-actions">
+          <a href="qr-detail-v1.html" class="action-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            View
+          </a>
+          <button class="action-btn primary" onclick="openEditModal()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+            Edit
+          </button>
+          <button class="action-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Download
+          </button>
+        </div>
+      </div>
+
+      <!-- QR Card 6 - Free/Static -->
+      <div class="qr-card">
+        <div class="qr-card-header">
+          <div class="qr-preview">
+            <svg viewBox="0 0 100 100" fill="none">
+              <rect width="100" height="100" fill="#f7f6f1"/>
+              <rect x="10" y="10" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="65" y="10" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="10" y="65" width="25" height="25" fill="#1a1a1a"/>
+              <rect x="15" y="15" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="70" y="15" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="15" y="70" width="15" height="15" fill="#f7f6f1"/>
+              <rect x="18" y="18" width="9" height="9" fill="#1a1a1a"/>
+              <rect x="73" y="18" width="9" height="9" fill="#1a1a1a"/>
+              <rect x="18" y="73" width="9" height="9" fill="#1a1a1a"/>
+              <rect x="40" y="40" width="20" height="20" fill="#1a1a1a"/>
+            </svg>
+          </div>
+          <div class="qr-info">
+            <div class="qr-name">WiFi Network</div>
+            <div class="qr-url">WIFI:S:OfficeNet;T:WPA;P:***</div>
+            <div class="qr-badges">
+              <span class="badge badge-free">Free</span>
+            </div>
+          </div>
+        </div>
+        <div class="qr-card-stats">
+          <div class="qr-stat">
+            <div class="qr-stat-value">45</div>
+            <div class="qr-stat-label">Total Scans</div>
+          </div>
+          <div class="qr-stat">
+            <div class="qr-stat-value">3</div>
+            <div class="qr-stat-label">This Week</div>
+          </div>
+          <div class="qr-stat">
+            <div class="qr-stat-value">-</div>
+            <div class="qr-stat-label">Edits</div>
+          </div>
+        </div>
+        <div class="qr-card-actions">
+          <a href="qr-detail-v1.html" class="action-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            View
+          </a>
+          <button class="action-btn primary" onclick="openUpgradeModal()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            Unlock Edit
+          </button>
+          <button class="action-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Download
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p class="footer-text">&copy; 2026 TheQRSpot. Simple, honest QR codes.</p>
+  </footer>
+
+  <script>
+    // Interactive hover states
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    function openEditModal() {
+      window.location.href = 'edit-modal-v1.html?mode=edit';
+    }
+
+    function openUpgradeModal() {
+      window.location.href = 'edit-modal-v1.html?mode=upgrade';
+    }
+  </script>
+</body>
+</html>

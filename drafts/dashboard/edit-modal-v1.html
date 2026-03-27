@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit QR Code | OneQR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-hover: #e64500;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --success: #198754;
+      --success-light: #d1e7dd;
+      --warning: #ffc107;
+      --error: #dc3545;
+      --error-light: #f8d7da;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: rgba(26, 26, 26, 0.5);
+      color: var(--fg);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'DM Serif Display', serif;
+      font-weight: 400;
+    }
+
+    /* Modal Container */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(26, 26, 26, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal {
+      background: var(--bg);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-header {
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: var(--surface);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .modal-close:hover {
+      background: var(--border);
+    }
+
+    .modal-close svg {
+      width: 18px;
+      height: 18px;
+      color: var(--muted);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem 1.5rem;
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    /* QR Info Section */
+    .qr-info-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--surface);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .qr-mini-preview {
+      width: 56px;
+      height: 56px;
+      background: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+
+    .qr-mini-preview svg {
+      width: 44px;
+      height: 44px;
+    }
+
+    .qr-info-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .qr-info-name {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--fg);
+      margin-bottom: 0.125rem;
+    }
+
+    .qr-info-url {
+      font-size: 0.75rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--fg);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.9375rem;
+      font-family: inherit;
+      background: white;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255, 77, 0, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: var(--muted);
+    }
+
+    .form-hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .form-error {
+      font-size: 0.75rem;
+      color: var(--error);
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .form-input.error {
+      border-color: var(--error);
+    }
+
+    .form-input.error + .form-error {
+      display: block;
+    }
+
+    /* Current URL Display */
+    .current-url-box {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .current-url-label {
+      font-size: 0.6875rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .current-url-value {
+      font-size: 0.8125rem;
+      color: var(--fg);
+      word-break: break-all;
+    }
+
+    /* Buttons */
+    .btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--fg);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      background: var(--muted);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Success Message */
+    .success-message {
+      display: none;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1rem;
+      background: var(--success-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .success-icon svg {
+      width: 32px;
+      height: 32px;
+      color: var(--success);
+    }
+
+    .success-title {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .success-text {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    /* ============================================
+       UPGRADE/PAYWALL MODAL SECTION
+       ============================================ */
+
+    .paywall-content {
+      display: none;
+    }
+
+    .paywall-header {
+      text-align: center;
+      padding: 2rem 1.5rem 1.5rem;
+    }
+
+    .paywall-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      background: var(--accent-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .paywall-icon svg {
+      width: 40px;
+      height: 40px;
+      color: var(--accent);
+    }
+
+    .paywall-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .paywall-subtitle {
+      font-size: 0.9375rem;
+      color: var(--muted);
+    }
+
+    .paywall-body {
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    /* Feature List */
+    .feature-list {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+    }
+
+    .feature-item:not(:last-child) {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .feature-icon {
+      width: 24px;
+      height: 24px;
+      background: var(--success-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .feature-icon svg {
+      width: 14px;
+      height: 14px;
+      color: var(--success);
+    }
+
+    .feature-text {
+      font-size: 0.875rem;
+      color: var(--fg);
+    }
+
+    .feature-text strong {
+      font-weight: 600;
+    }
+
+    /* Price Box */
+    .price-box {
+      background: linear-gradient(135deg, var(--accent) 0%, #ff8c42 100%);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .price-value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .price-label {
+      font-size: 0.875rem;
+      opacity: 0.9;
+    }
+
+    .price-note {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      margin-top: 0.5rem;
+    }
+
+    .paywall-footer {
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    .pay-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem 1.5rem;
+      background: var(--fg);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.2s;
+    }
+
+    .pay-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .pay-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .secure-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .secure-note svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .cancel-link {
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.8125rem;
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .cancel-link:hover {
+      color: var(--fg);
+    }
+
+    /* Mode Toggle - Demo Only */
+    .mode-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 1000;
+    }
+
+    .mode-btn {
+      padding: 0.5rem 1rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    /* Show/hide based on mode */
+    .edit-content { display: block; }
+    .paywall-content { display: none; }
+
+    body.paywall-mode .edit-content { display: none; }
+    body.paywall-mode .paywall-content { display: block; }
+  </style>
+</head>
+<body>
+  <!-- Mode Toggle (Demo Only) -->
+  <div class="mode-toggle">
+    <button class="mode-btn active" onclick="setMode('edit')">Edit Mode (Paid)</button>
+    <button class="mode-btn" onclick="setMode('paywall')">Paywall Mode (Free)</button>
+  </div>
+
+  <!-- Modal Backdrop -->
+  <div class="modal-backdrop">
+    <div class="modal">
+      <!-- ================================
+           EDIT MODE (for paid QR codes)
+           ================================ -->
+      <div class="edit-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Edit QR Destination</h2>
+          <button class="modal-close" onclick="closeModal()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <!-- QR Info Row -->
+          <div class="qr-info-row">
+            <div class="qr-mini-preview">
+              <svg viewBox="0 0 100 100" fill="none">
+                <rect width="100" height="100" fill="#f7f6f1"/>
+                <rect x="10" y="10" width="25" height="25" fill="#1a1a1a"/>
+                <rect x="65" y="10" width="25" height="25" fill="#1a1a1a"/>
+                <rect x="10" y="65" width="25" height="25" fill="#1a1a1a"/>
+                <rect x="15" y="15" width="15" height="15" fill="#f7f6f1"/>
+                <rect x="70" y="15" width="15" height="15" fill="#f7f6f1"/>
+                <rect x="15" y="70" width="15" height="15" fill="#f7f6f1"/>
+                <rect x="18" y="18" width="9" height="9" fill="#ff4d00"/>
+                <rect x="73" y="18" width="9" height="9" fill="#ff4d00"/>
+                <rect x="18" y="73" width="9" height="9" fill="#ff4d00"/>
+                <rect x="40" y="40" width="20" height="20" fill="#1a1a1a"/>
+                <rect x="45" y="45" width="10" height="10" fill="#ff4d00"/>
+              </svg>
+            </div>
+            <div class="qr-info-text">
+              <div class="qr-info-name">Marketing Campaign Q1</div>
+              <div class="qr-info-url">theqrspot.com/r/abc123</div>
+            </div>
+          </div>
+
+          <!-- Current URL -->
+          <div class="current-url-box">
+            <div class="current-url-label">Current destination</div>
+            <div class="current-url-value">https://mycompany.com/campaigns/q1-2026/landing-page</div>
+          </div>
+
+          <!-- New URL Input -->
+          <div class="form-group">
+            <label class="form-label" for="new-url">New Destination URL</label>
+            <input
+              type="url"
+              id="new-url"
+              class="form-input"
+              placeholder="https://example.com/new-page"
+              value=""
+            >
+            <p class="form-hint">Enter the new URL where your QR code should redirect</p>
+            <p class="form-error">Please enter a valid URL starting with http:// or https://</p>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveChanges()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            Save Changes
+          </button>
+        </div>
+
+        <!-- Success State -->
+        <div class="success-message" id="success-message">
+          <div class="success-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <h3 class="success-title">URL Updated!</h3>
+          <p class="success-text">Your QR code now redirects to the new destination.</p>
+        </div>
+      </div>
+
+      <!-- =====================================
+           PAYWALL MODE (for free/static QR codes)
+           ===================================== -->
+      <div class="paywall-content">
+        <button class="modal-close" onclick="closeModal()" style="position: absolute; top: 1rem; right: 1rem;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+
+        <div class="paywall-header">
+          <div class="paywall-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <h2 class="paywall-title">Unlock Editing</h2>
+          <p class="paywall-subtitle">Make this QR code editable forever</p>
+        </div>
+
+        <div class="paywall-body">
+          <!-- QR Info Row -->
+          <div class="qr-info-row">
+            <div class="qr-mini-preview">
+              <svg viewBox="0 0 100 100" fill="none">
+                <rect width="100" height="100" fill="#f7f6f1"/>
+                <rect x="10" y="10" width="25" height="25" fill="#1a1a1a"/>
+                <rect x="65" y="10" width="25" height="25" fill="#1a1a1a"/>
+                <rect x="10" y="65" width="25" height="25" fill="#1a1a1a"/>
+                <rect x="15" y="15" width="15" height="15" fill="#f7f6f1"/>
+                <rect x="70" y="15" width="15" height="15" fill="#f7f6f1"/>
+                <rect x="15" y="70" width="15" height="15" fill="#f7f6f1"/>
+                <rect x="18" y="18" width="9" height="9" fill="#1a1a1a"/>
+                <rect x="73" y="18" width="9" height="9" fill="#1a1a1a"/>
+                <rect x="18" y="73" width="9" height="9" fill="#1a1a1a"/>
+                <rect x="40" y="40" width="20" height="20" fill="#1a1a1a"/>
+              </svg>
+            </div>
+            <div class="qr-info-text">
+              <div class="qr-info-name">Business Card Link</div>
+              <div class="qr-info-url">linkedin.com/in/johnsmith</div>
+            </div>
+          </div>
+
+          <!-- Feature List -->
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+              <div class="feature-text">
+                <strong>Unlimited edits</strong> - Change the destination URL anytime
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+              <div class="feature-text">
+                <strong>No expiration</strong> - Your QR code works forever
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+              <div class="feature-text">
+                <strong>Scan analytics</strong> - Track who scans your code
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+              <div class="feature-text">
+                <strong>One-time payment</strong> - No subscriptions, ever
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Box -->
+          <div class="price-box">
+            <div class="price-value">$9.99</div>
+            <div class="price-label">One-time payment</div>
+            <div class="price-note">No subscriptions. No hidden fees.</div>
+          </div>
+        </div>
+
+        <div class="paywall-footer">
+          <button class="pay-btn" onclick="processPayment()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+            Pay $9.99 &amp; Unlock
+          </button>
+
+          <div class="secure-note">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            Secure payment via Stripe
+          </div>
+
+          <a href="dashboard-list-v1.html" class="cancel-link">Maybe later</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check URL parameter for mode
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get('mode');
+    if (mode === 'upgrade' || mode === 'paywall') {
+      setMode('paywall');
+    }
+
+    function setMode(mode) {
+      document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+      if (mode === 'paywall') {
+        document.body.classList.add('paywall-mode');
+        document.querySelector('.mode-btn:nth-child(2)').classList.add('active');
+      } else {
+        document.body.classList.remove('paywall-mode');
+        document.querySelector('.mode-btn:nth-child(1)').classList.add('active');
+      }
+    }
+
+    function closeModal() {
+      window.location.href = 'dashboard-list-v1.html';
+    }
+
+    function saveChanges() {
+      const input = document.getElementById('new-url');
+      const url = input.value.trim();
+
+      // Basic URL validation
+      if (!url || (!url.startsWith('http://') && !url.startsWith('https://'))) {
+        input.classList.add('error');
+        return;
+      }
+
+      input.classList.remove('error');
+
+      // Show success message
+      document.querySelector('.modal-body').style.display = 'none';
+      document.querySelector('.modal-footer').style.display = 'none';
+      document.getElementById('success-message').style.display = 'block';
+
+      // Redirect after delay
+      setTimeout(() => {
+        window.location.href = 'qr-detail-v1.html';
+      }, 2000);
+    }
+
+    function processPayment() {
+      // In production, this would redirect to Stripe checkout
+      alert('This would redirect to Stripe checkout in production.\n\nPrice: $9.99 one-time');
+    }
+
+    // Clear error on input
+    document.getElementById('new-url')?.addEventListener('input', function() {
+      this.classList.remove('error');
+    });
+  </script>
+</body>
+</html>
