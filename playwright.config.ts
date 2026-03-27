@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import * as path from "path";
 
 /**
  * Playwright configuration for OneQR testing
@@ -6,6 +7,9 @@ import { defineConfig, devices } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "./tests",
+
+  /* Custom browser path */
+  _customBrowsersPath: path.join(__dirname, ".playwright"),
 
   /* Run tests in files in parallel */
   fullyParallel: true,
