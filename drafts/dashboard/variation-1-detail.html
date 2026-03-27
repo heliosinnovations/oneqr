@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Detail - Variation 1: Minimal/Clean | OneQR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --success: #198754;
+      --success-light: #d1e7dd;
+      --error: #dc3545;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'DM Serif Display', serif;
+      font-weight: 400;
+    }
+
+    /* Header */
+    .header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      color: var(--fg);
+    }
+
+    /* Main Content */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 2rem;
+    }
+
+    /* QR Preview Section */
+    .qr-preview-section {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .qr-preview-large {
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .qr-preview-large img {
+      width: 200px;
+      height: 200px;
+    }
+
+    .qr-shortcode-display {
+      font-family: monospace;
+      font-size: 1rem;
+      color: var(--muted);
+      background: var(--surface);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+
+    .download-options {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .download-btn {
+      background: var(--fg);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .download-btn:hover {
+      opacity: 0.9;
+    }
+
+    .download-btn.secondary {
+      background: transparent;
+      color: var(--fg);
+      border: 1px solid var(--border);
+    }
+
+    .download-btn.secondary:hover {
+      background: var(--surface);
+    }
+
+    /* Details Section */
+    .details-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .detail-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .detail-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .detail-card h2 {
+      font-size: 1.25rem;
+    }
+
+    .status-badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .status-badge.editable {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .status-badge.static {
+      background: var(--surface);
+      color: var(--muted);
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+
+    .detail-value {
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+
+    .detail-value.url {
+      color: var(--accent);
+      max-width: 300px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Analytics */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .analytics-stat {
+      text-align: center;
+      padding: 1rem;
+      background: var(--surface);
+      border-radius: 8px;
+    }
+
+    .analytics-stat-value {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--fg);
+      font-family: 'DM Serif Display', serif;
+    }
+
+    .analytics-stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Chart Placeholder */
+    .chart-container {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 1.5rem;
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .chart-title {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .chart-period {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.5rem;
+      flex: 1;
+      padding-top: 1rem;
+    }
+
+    .chart-bar {
+      flex: 1;
+      background: var(--accent);
+      border-radius: 4px 4px 0 0;
+      opacity: 0.8;
+      position: relative;
+    }
+
+    .chart-bar:hover {
+      opacity: 1;
+    }
+
+    .chart-label {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.625rem;
+      color: var(--muted);
+    }
+
+    /* Recent Scans */
+    .recent-scans {
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .scan-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+
+    .scan-item:last-child {
+      border-bottom: none;
+    }
+
+    .scan-time {
+      color: var(--muted);
+    }
+
+    .scan-location {
+      color: var(--fg);
+    }
+
+    /* Actions Card */
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+
+    .action-btn {
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .action-btn:hover {
+      background: var(--surface);
+    }
+
+    .action-btn.primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .action-btn.primary:hover {
+      opacity: 0.9;
+    }
+
+    .action-btn.danger {
+      color: var(--error);
+    }
+
+    .action-btn.danger:hover {
+      background: #fff5f5;
+      border-color: var(--error);
+    }
+
+    .action-btn-icon {
+      width: 24px;
+      height: 24px;
+      margin: 0 auto 0.5rem;
+    }
+
+    .action-btn-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    /* Upgrade CTA */
+    .upgrade-cta {
+      background: linear-gradient(135deg, var(--accent-light) 0%, #fff 100%);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .upgrade-cta h3 {
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .upgrade-cta p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .upgrade-price {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .upgrade-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .upgrade-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Focus states */
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .analytics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .actions-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Section Divider */
+    .section-divider {
+      margin: 3rem 0;
+      border: none;
+      border-top: 2px dashed var(--border);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--muted);
+      font-family: 'DM Serif Display', serif;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo">The<span>QR</span>Spot</a>
+      <nav class="breadcrumb">
+        <a href="/dashboard">My QR Codes</a>
+        <span>/</span>
+        <span>Business Card</span>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div class="detail-grid">
+      <!-- QR Preview -->
+      <div class="qr-preview-section">
+        <div class="qr-preview-large">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://oneqr.app/abc123&color=1a1a1a" alt="QR Code for Business Card">
+        </div>
+        <div class="qr-shortcode-display">oneqr.app/abc123</div>
+        <div class="download-options">
+          <button class="download-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            PNG
+          </button>
+          <button class="download-btn secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            SVG
+          </button>
+        </div>
+      </div>
+
+      <!-- Details -->
+      <div class="details-section">
+        <!-- Info Card -->
+        <div class="detail-card">
+          <div class="detail-card-header">
+            <h2>Business Card</h2>
+            <span class="status-badge editable">Editable</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Short Code</span>
+            <span class="detail-value">abc123</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Destination URL</span>
+            <span class="detail-value url">https://linkedin.com/in/johndoe</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Created</span>
+            <span class="detail-value">March 15, 2024</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Last Edited</span>
+            <span class="detail-value">March 20, 2024</span>
+          </div>
+        </div>
+
+        <!-- Analytics Card -->
+        <div class="detail-card">
+          <h2 style="margin-bottom: 1rem;">Scan Analytics</h2>
+          <div class="analytics-grid">
+            <div class="analytics-stat">
+              <div class="analytics-stat-value">1,247</div>
+              <div class="analytics-stat-label">Total Scans</div>
+            </div>
+            <div class="analytics-stat">
+              <div class="analytics-stat-value">89</div>
+              <div class="analytics-stat-label">This Week</div>
+            </div>
+            <div class="analytics-stat">
+              <div class="analytics-stat-value">12</div>
+              <div class="analytics-stat-label">Today</div>
+            </div>
+          </div>
+
+          <!-- Chart -->
+          <div class="chart-container">
+            <div class="chart-header">
+              <span class="chart-title">Last 7 Days</span>
+              <span class="chart-period">Mar 21 - Mar 27</span>
+            </div>
+            <div class="chart-bars">
+              <div class="chart-bar" style="height: 60%;"><span class="chart-label">Mon</span></div>
+              <div class="chart-bar" style="height: 80%;"><span class="chart-label">Tue</span></div>
+              <div class="chart-bar" style="height: 45%;"><span class="chart-label">Wed</span></div>
+              <div class="chart-bar" style="height: 90%;"><span class="chart-label">Thu</span></div>
+              <div class="chart-bar" style="height: 70%;"><span class="chart-label">Fri</span></div>
+              <div class="chart-bar" style="height: 55%;"><span class="chart-label">Sat</span></div>
+              <div class="chart-bar" style="height: 100%;"><span class="chart-label">Sun</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Scans -->
+        <div class="detail-card">
+          <h2 style="margin-bottom: 1rem;">Recent Scans</h2>
+          <div class="recent-scans">
+            <div class="scan-item">
+              <span class="scan-time">2 minutes ago</span>
+              <span class="scan-location">San Francisco, CA</span>
+            </div>
+            <div class="scan-item">
+              <span class="scan-time">15 minutes ago</span>
+              <span class="scan-location">New York, NY</span>
+            </div>
+            <div class="scan-item">
+              <span class="scan-time">1 hour ago</span>
+              <span class="scan-location">Austin, TX</span>
+            </div>
+            <div class="scan-item">
+              <span class="scan-time">3 hours ago</span>
+              <span class="scan-location">Seattle, WA</span>
+            </div>
+            <div class="scan-item">
+              <span class="scan-time">5 hours ago</span>
+              <span class="scan-location">Chicago, IL</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="detail-card">
+          <h2 style="margin-bottom: 1rem;">Actions</h2>
+          <div class="actions-grid">
+            <button class="action-btn primary">
+              <svg class="action-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              <span class="action-btn-label">Edit URL</span>
+            </button>
+            <button class="action-btn">
+              <svg class="action-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span class="action-btn-label">Download</span>
+            </button>
+            <button class="action-btn">
+              <svg class="action-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+              <span class="action-btn-label">Share</span>
+            </button>
+            <button class="action-btn danger">
+              <svg class="action-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+              <span class="action-btn-label">Delete</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Divider for Upgrade CTA Preview -->
+    <hr class="section-divider">
+    <h2 class="section-title">Upgrade CTA (for non-paid QRs)</h2>
+
+    <!-- Upgrade CTA -->
+    <div class="upgrade-cta" style="max-width: 500px;">
+      <h3>Make This QR Editable</h3>
+      <p>Update the destination URL anytime without reprinting. Perfect for business cards, posters, and marketing materials.</p>
+      <div class="upgrade-price">$9.99 <span style="font-size: 0.875rem; color: var(--muted); font-weight: 400;">one-time</span></div>
+      <button class="upgrade-btn">Upgrade Now</button>
+      <p style="margin-top: 0.75rem; font-size: 0.75rem; color: var(--muted);">Or get unlimited editable QRs for $19.99</p>
+    </div>
+  </main>
+</body>
+</html>

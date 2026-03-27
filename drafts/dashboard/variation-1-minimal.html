@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Variation 1: Minimal/Clean | OneQR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --success: #198754;
+      --error: #dc3545;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'DM Serif Display', serif;
+      font-weight: 400;
+    }
+
+    /* Header */
+    .header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 0.875rem;
+    }
+
+    .user-name {
+      font-size: 0.875rem;
+      color: var(--fg);
+    }
+
+    /* Main Content */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--fg);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface);
+    }
+
+    /* Filters */
+    .filters {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8125rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--fg);
+      color: var(--fg);
+    }
+
+    .filter-btn.active {
+      background: var(--fg);
+      color: white;
+      border-color: var(--fg);
+    }
+
+    /* QR Grid */
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .qr-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .qr-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    .qr-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .qr-title {
+      font-size: 1.125rem;
+      font-family: 'DM Serif Display', serif;
+      margin-bottom: 0.25rem;
+    }
+
+    .qr-shortcode {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: monospace;
+    }
+
+    .qr-badge {
+      font-size: 0.6875rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .qr-badge.editable {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .qr-badge.static {
+      background: var(--surface);
+      color: var(--muted);
+    }
+
+    .qr-preview {
+      display: flex;
+      justify-content: center;
+      padding: 1rem 0;
+      background: var(--surface);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .qr-preview img {
+      width: 120px;
+      height: 120px;
+    }
+
+    .qr-url {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 1rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--surface);
+      border-radius: 6px;
+    }
+
+    .qr-stats {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.8125rem;
+    }
+
+    .qr-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .qr-stat-value {
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    .qr-stat-label {
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .qr-actions {
+      display: flex;
+      gap: 0.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .qr-action-btn {
+      flex: 1;
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+    }
+
+    .qr-action-btn:hover {
+      background: var(--surface);
+      color: var(--fg);
+    }
+
+    .qr-action-btn.danger:hover {
+      background: #fff5f5;
+      color: var(--error);
+      border-color: var(--error);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 2px dashed var(--border);
+    }
+
+    .empty-state-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1.5rem;
+      color: var(--muted);
+    }
+
+    .empty-state h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Focus states for accessibility */
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .qr-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .qr-actions {
+        flex-wrap: wrap;
+      }
+
+      .qr-action-btn {
+        flex: 1 1 45%;
+      }
+    }
+
+    /* Section Divider */
+    .section-divider {
+      margin: 3rem 0;
+      border: none;
+      border-top: 2px dashed var(--border);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--muted);
+      font-family: 'DM Serif Display', serif;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo">The<span>QR</span>Spot</a>
+      <div class="user-menu">
+        <span class="user-name">john@example.com</span>
+        <div class="user-avatar">JD</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">My QR Codes</h1>
+      <a href="/generator" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Create New
+      </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <button class="filter-btn active">All (8)</button>
+      <button class="filter-btn">Recent</button>
+      <button class="filter-btn">Most Scanned</button>
+      <button class="filter-btn">Alphabetical</button>
+      <button class="filter-btn">Editable</button>
+    </div>
+
+    <!-- QR Grid -->
+    <div class="qr-grid">
+      <!-- QR Card 1 - Editable -->
+      <article class="qr-card">
+        <div class="qr-card-header">
+          <div>
+            <h3 class="qr-title">Business Card</h3>
+            <span class="qr-shortcode">oneqr.app/abc123</span>
+          </div>
+          <span class="qr-badge editable">Editable</span>
+        </div>
+        <div class="qr-preview">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://oneqr.app/abc123&color=1a1a1a" alt="QR Code">
+        </div>
+        <div class="qr-url">https://linkedin.com/in/johndoe</div>
+        <div class="qr-stats">
+          <div class="qr-stat">
+            <span class="qr-stat-value">1,247</span>
+            <span class="qr-stat-label">Total scans</span>
+          </div>
+          <div class="qr-stat">
+            <span class="qr-stat-value">89</span>
+            <span class="qr-stat-label">This week</span>
+          </div>
+          <div class="qr-stat">
+            <span class="qr-stat-value">Mar 15, 2024</span>
+            <span class="qr-stat-label">Created</span>
+          </div>
+        </div>
+        <div class="qr-actions">
+          <button class="qr-action-btn">View</button>
+          <button class="qr-action-btn">Edit</button>
+          <button class="qr-action-btn">Download</button>
+          <button class="qr-action-btn danger">Delete</button>
+        </div>
+      </article>
+
+      <!-- QR Card 2 - Static -->
+      <article class="qr-card">
+        <div class="qr-card-header">
+          <div>
+            <h3 class="qr-title">Restaurant Menu</h3>
+            <span class="qr-shortcode">oneqr.app/menu42</span>
+          </div>
+          <span class="qr-badge static">Static</span>
+        </div>
+        <div class="qr-preview">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://oneqr.app/menu42&color=1a1a1a" alt="QR Code">
+        </div>
+        <div class="qr-url">https://restaurant.com/menu</div>
+        <div class="qr-stats">
+          <div class="qr-stat">
+            <span class="qr-stat-value">532</span>
+            <span class="qr-stat-label">Total scans</span>
+          </div>
+          <div class="qr-stat">
+            <span class="qr-stat-value">45</span>
+            <span class="qr-stat-label">This week</span>
+          </div>
+          <div class="qr-stat">
+            <span class="qr-stat-value">Feb 28, 2024</span>
+            <span class="qr-stat-label">Created</span>
+          </div>
+        </div>
+        <div class="qr-actions">
+          <button class="qr-action-btn">View</button>
+          <button class="qr-action-btn" style="color: var(--accent);">Upgrade</button>
+          <button class="qr-action-btn">Download</button>
+          <button class="qr-action-btn danger">Delete</button>
+        </div>
+      </article>
+
+      <!-- QR Card 3 -->
+      <article class="qr-card">
+        <div class="qr-card-header">
+          <div>
+            <h3 class="qr-title">Portfolio Website</h3>
+            <span class="qr-shortcode">oneqr.app/port99</span>
+          </div>
+          <span class="qr-badge editable">Editable</span>
+        </div>
+        <div class="qr-preview">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://oneqr.app/port99&color=1a1a1a" alt="QR Code">
+        </div>
+        <div class="qr-url">https://johndoe.design</div>
+        <div class="qr-stats">
+          <div class="qr-stat">
+            <span class="qr-stat-value">2,891</span>
+            <span class="qr-stat-label">Total scans</span>
+          </div>
+          <div class="qr-stat">
+            <span class="qr-stat-value">156</span>
+            <span class="qr-stat-label">This week</span>
+          </div>
+          <div class="qr-stat">
+            <span class="qr-stat-value">Jan 10, 2024</span>
+            <span class="qr-stat-label">Created</span>
+          </div>
+        </div>
+        <div class="qr-actions">
+          <button class="qr-action-btn">View</button>
+          <button class="qr-action-btn">Edit</button>
+          <button class="qr-action-btn">Download</button>
+          <button class="qr-action-btn danger">Delete</button>
+        </div>
+      </article>
+
+      <!-- QR Card 4 -->
+      <article class="qr-card">
+        <div class="qr-card-header">
+          <div>
+            <h3 class="qr-title">Event Registration</h3>
+            <span class="qr-shortcode">oneqr.app/evt24</span>
+          </div>
+          <span class="qr-badge static">Static</span>
+        </div>
+        <div class="qr-preview">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://oneqr.app/evt24&color=1a1a1a" alt="QR Code">
+        </div>
+        <div class="qr-url">https://eventbrite.com/my-event</div>
+        <div class="qr-stats">
+          <div class="qr-stat">
+            <span class="qr-stat-value">178</span>
+            <span class="qr-stat-label">Total scans</span>
+          </div>
+          <div class="qr-stat">
+            <span class="qr-stat-value">23</span>
+            <span class="qr-stat-label">This week</span>
+          </div>
+          <div class="qr-stat">
+            <span class="qr-stat-value">Mar 20, 2024</span>
+            <span class="qr-stat-label">Created</span>
+          </div>
+        </div>
+        <div class="qr-actions">
+          <button class="qr-action-btn">View</button>
+          <button class="qr-action-btn" style="color: var(--accent);">Upgrade</button>
+          <button class="qr-action-btn">Download</button>
+          <button class="qr-action-btn danger">Delete</button>
+        </div>
+      </article>
+    </div>
+
+    <!-- Section Divider for Empty State Preview -->
+    <hr class="section-divider">
+    <h2 class="section-title">Empty State Preview</h2>
+
+    <!-- Empty State -->
+    <div class="empty-state">
+      <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+      </svg>
+      <h3>No QR codes yet</h3>
+      <p>Create your first QR code to get started tracking scans and managing your links.</p>
+      <a href="/generator" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Create Your First QR Code
+      </a>
+    </div>
+  </main>
+</body>
+</html>

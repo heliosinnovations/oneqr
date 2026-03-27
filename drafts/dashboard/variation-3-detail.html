@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Detail - Variation 3: Compact/Data-Focused | OneQR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --bg-white: #ffffff;
+      --fg: #212529;
+      --fg-secondary: #6c757d;
+      --accent: #ff4d00;
+      --accent-light: #fff5f0;
+      --border: #dee2e6;
+      --border-light: #e9ecef;
+      --success: #198754;
+      --success-bg: #d1e7dd;
+      --error: #dc3545;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.5;
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'DM Serif Display', serif;
+      font-weight: 400;
+    }
+
+    /* Top Navigation */
+    .topnav {
+      background: var(--bg-white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--fg-secondary);
+      text-decoration: none;
+      font-size: 0.8125rem;
+      margin-right: 1.5rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+
+    .back-link:hover {
+      background: var(--bg);
+      color: var(--fg);
+    }
+
+    .nav-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .nav-spacer {
+      flex: 1;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-small {
+      padding: 0.5rem 0.875rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid var(--border);
+      background: var(--bg-white);
+      color: var(--fg);
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .btn-small:hover {
+      background: var(--bg);
+    }
+
+    .btn-small.primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .btn-small.primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn-small.danger {
+      color: var(--error);
+      border-color: var(--error);
+    }
+
+    .btn-small.danger:hover {
+      background: #fff5f5;
+    }
+
+    .btn-small svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Main Content */
+    .main {
+      padding: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Layout Grid */
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 1.5rem;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--fg-secondary);
+    }
+
+    .card-body {
+      padding: 1rem;
+    }
+
+    /* QR Preview */
+    .qr-preview {
+      text-align: center;
+    }
+
+    .qr-preview-img {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .qr-preview-img img {
+      width: 160px;
+      height: 160px;
+    }
+
+    .qr-shortcode {
+      font-family: monospace;
+      font-size: 0.8125rem;
+      color: var(--fg-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .download-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .download-btn {
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-white);
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      transition: all 0.15s;
+    }
+
+    .download-btn:hover {
+      background: var(--bg);
+    }
+
+    .download-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* Info List */
+    .info-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 0.8125rem;
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      color: var(--fg-secondary);
+    }
+
+    .info-value {
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .info-value.accent {
+      color: var(--accent);
+    }
+
+    .info-value.url {
+      color: var(--accent);
+      max-width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Main Content Area */
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-value.accent {
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--fg-secondary);
+      margin-top: 0.125rem;
+    }
+
+    .stat-change {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.125rem;
+      font-size: 0.6875rem;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      margin-top: 0.375rem;
+    }
+
+    .stat-change.up {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .stat-change.down {
+      background: #f8d7da;
+      color: var(--error);
+    }
+
+    /* Chart Card */
+    .chart-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .chart-header {
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chart-title {
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+
+    .chart-tabs {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .chart-tab {
+      padding: 0.25rem 0.625rem;
+      border-radius: 4px;
+      border: none;
+      background: transparent;
+      font-size: 0.75rem;
+      color: var(--fg-secondary);
+      cursor: pointer;
+    }
+
+    .chart-tab:hover {
+      background: var(--bg);
+    }
+
+    .chart-tab.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .chart-body {
+      padding: 1rem;
+      height: 200px;
+    }
+
+    .chart-visual {
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+      gap: 0.5rem;
+    }
+
+    .chart-bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .chart-bar {
+      width: 100%;
+      max-width: 40px;
+      background: linear-gradient(180deg, var(--accent) 0%, #ff8c00 100%);
+      border-radius: 4px 4px 0 0;
+    }
+
+    .chart-bar-label {
+      font-size: 0.625rem;
+      color: var(--fg-secondary);
+      margin-top: 0.5rem;
+    }
+
+    /* Recent Scans Table */
+    .scans-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .scans-table th {
+      text-align: left;
+      padding: 0.625rem 1rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--fg-secondary);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .scans-table td {
+      padding: 0.625rem 1rem;
+      font-size: 0.8125rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .scans-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .location-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .location-icon {
+      width: 24px;
+      height: 24px;
+      background: var(--bg);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--fg-secondary);
+    }
+
+    .location-icon svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .time-cell {
+      color: var(--fg-secondary);
+    }
+
+    /* Upgrade CTA */
+    .upgrade-cta {
+      background: var(--accent-light);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .upgrade-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .upgrade-content {
+      flex: 1;
+    }
+
+    .upgrade-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .upgrade-desc {
+      font-size: 0.8125rem;
+      color: var(--fg-secondary);
+    }
+
+    .upgrade-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.625rem 1.25rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .upgrade-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Focus states */
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .detail-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Section Divider */
+    .section-divider {
+      margin: 2rem 0;
+      border: none;
+      border-top: 2px dashed var(--border);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: var(--fg-secondary);
+      font-family: 'DM Serif Display', serif;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Navigation -->
+  <nav class="topnav">
+    <a href="/dashboard" class="back-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Back
+    </a>
+    <span class="nav-title">Business Card</span>
+    <span class="nav-spacer"></span>
+    <div class="nav-actions">
+      <button class="btn-small">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+        Share
+      </button>
+      <button class="btn-small primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+        Edit URL
+      </button>
+      <button class="btn-small danger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+        </svg>
+        Delete
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div class="detail-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <!-- QR Preview Card -->
+        <div class="card">
+          <div class="card-header">QR Code</div>
+          <div class="card-body">
+            <div class="qr-preview">
+              <div class="qr-preview-img">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://oneqr.app/abc123&color=1a1a1a" alt="QR Code">
+              </div>
+              <div class="qr-shortcode">oneqr.app/abc123</div>
+              <div class="download-btns">
+                <button class="download-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  PNG
+                </button>
+                <button class="download-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  SVG
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Details Card -->
+        <div class="card">
+          <div class="card-header">Details</div>
+          <div class="card-body">
+            <div class="info-list">
+              <div class="info-item">
+                <span class="info-label">Short Code</span>
+                <span class="info-value">abc123</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Status</span>
+                <span class="info-value accent">Editable</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Destination</span>
+                <span class="info-value url" title="linkedin.com/in/johndoe">linkedin.com/in/johndoe</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Created</span>
+                <span class="info-value">Mar 15, 2024</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Last Edit</span>
+                <span class="info-value">Mar 20, 2024</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="content">
+        <!-- Stats Row -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-value accent">1,247</div>
+            <div class="stat-label">Total Scans</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">89</div>
+            <div class="stat-label">This Week</div>
+            <div class="stat-change up">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+              </svg>
+              +12%
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Today</div>
+            <div class="stat-change up">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+              </svg>
+              +3
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">4.2</div>
+            <div class="stat-label">Avg Daily</div>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <span class="chart-title">Scan History</span>
+            <div class="chart-tabs">
+              <button class="chart-tab active">7D</button>
+              <button class="chart-tab">30D</button>
+              <button class="chart-tab">90D</button>
+              <button class="chart-tab">All</button>
+            </div>
+          </div>
+          <div class="chart-body">
+            <div class="chart-visual">
+              <div class="chart-bar-group">
+                <div class="chart-bar" style="height: 65%;"></div>
+                <span class="chart-bar-label">Mon</span>
+              </div>
+              <div class="chart-bar-group">
+                <div class="chart-bar" style="height: 85%;"></div>
+                <span class="chart-bar-label">Tue</span>
+              </div>
+              <div class="chart-bar-group">
+                <div class="chart-bar" style="height: 50%;"></div>
+                <span class="chart-bar-label">Wed</span>
+              </div>
+              <div class="chart-bar-group">
+                <div class="chart-bar" style="height: 95%;"></div>
+                <span class="chart-bar-label">Thu</span>
+              </div>
+              <div class="chart-bar-group">
+                <div class="chart-bar" style="height: 75%;"></div>
+                <span class="chart-bar-label">Fri</span>
+              </div>
+              <div class="chart-bar-group">
+                <div class="chart-bar" style="height: 60%;"></div>
+                <span class="chart-bar-label">Sat</span>
+              </div>
+              <div class="chart-bar-group">
+                <div class="chart-bar" style="height: 100%;"></div>
+                <span class="chart-bar-label">Sun</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Scans -->
+        <div class="card">
+          <div class="card-header">Recent Scans</div>
+          <table class="scans-table">
+            <thead>
+              <tr>
+                <th>Location</th>
+                <th>Device</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="location-cell">
+                    <div class="location-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                    </div>
+                    San Francisco, CA
+                  </div>
+                </td>
+                <td>iPhone 15</td>
+                <td class="time-cell">2 min ago</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="location-cell">
+                    <div class="location-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                    </div>
+                    New York, NY
+                  </div>
+                </td>
+                <td>Samsung Galaxy</td>
+                <td class="time-cell">15 min ago</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="location-cell">
+                    <div class="location-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                    </div>
+                    Austin, TX
+                  </div>
+                </td>
+                <td>Pixel 8</td>
+                <td class="time-cell">1 hour ago</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="location-cell">
+                    <div class="location-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                    </div>
+                    Seattle, WA
+                  </div>
+                </td>
+                <td>iPhone 14 Pro</td>
+                <td class="time-cell">3 hours ago</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Divider for Upgrade CTA -->
+    <hr class="section-divider">
+    <h2 class="section-title">Upgrade CTA (for non-paid QRs)</h2>
+
+    <!-- Upgrade CTA -->
+    <div class="upgrade-cta" style="max-width: 700px;">
+      <div class="upgrade-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0110 0v4"></path>
+        </svg>
+      </div>
+      <div class="upgrade-content">
+        <div class="upgrade-title">Make This QR Editable</div>
+        <div class="upgrade-desc">Change where this QR code points anytime, without reprinting. One-time payment, edit forever.</div>
+      </div>
+      <button class="upgrade-btn">Upgrade for $9.99</button>
+    </div>
+  </main>
+</body>
+</html>
