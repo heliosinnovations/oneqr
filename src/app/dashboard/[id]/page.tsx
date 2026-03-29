@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
 import { createClient } from "@/lib/supabase/client";
+import { trackEvent } from "@/lib/analytics";
 import EditModal from "@/components/dashboard/EditModal";
 
 interface QRCodeData {
@@ -173,8 +174,21 @@ export default function QRDetailPage({
         link.click();
         URL.revokeObjectURL(url);
       }
+      // Track download event
+      trackEvent.qrDownloaded(format, "simple");
     } catch (error) {
       console.error("Error downloading QR:", error);
+    }
+  };
+
+  const copyShareLink = async () => {
+    if (!qrCode) return;
+    const shareUrl = `https://theqrspot.com/r/${qrCode.short_code}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      trackEvent.shareLinkCopied(qrCode.id);
+    } catch (error) {
+      console.error("Error copying link:", error);
     }
   };
 
@@ -261,9 +275,26 @@ export default function QRDetailPage({
           <h2 className="mb-2 font-serif text-xl text-[var(--fg)]">
             {qrCode.title}
           </h2>
-          <p className="mb-4 text-sm text-[var(--accent)]">
+          <button
+            onClick={copyShareLink}
+            className="mb-4 flex items-center justify-center gap-2 text-sm text-[var(--accent)] transition-colors hover:text-[#e64500]"
+            title="Click to copy link"
+          >
             theqrspot.com/r/{qrCode.short_code}
-          </p>
+            <svg
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+              />
+            </svg>
+          </button>
 
           <div className="mb-6 flex justify-center gap-2">
             {qrCode.is_editable ? (

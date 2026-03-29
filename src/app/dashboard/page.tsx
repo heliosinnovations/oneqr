@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import QRCode from "qrcode";
 import { createClient } from "@/lib/supabase/client";
+import { trackEvent } from "@/lib/analytics";
 
 interface QRCodeData {
   id: string;
@@ -96,6 +97,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchQRCodes();
+    // Track dashboard view
+    trackEvent.dashboardViewed();
   }, [fetchQRCodes]);
 
   // Apply filters and search
@@ -164,6 +167,8 @@ export default function DashboardPage() {
         link.click();
         URL.revokeObjectURL(url);
       }
+      // Track download event
+      trackEvent.qrDownloaded(format, "simple");
     } catch (error) {
       console.error("Error downloading QR:", error);
     }
