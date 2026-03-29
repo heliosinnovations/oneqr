@@ -178,7 +178,7 @@ export default function SimpleQRGenerator() {
         type: "success",
         message: "QR code saved! View in dashboard",
       });
-      trackEvent.qrGenerated("simple");
+      trackEvent.qrSaved("simple");
       setIsSaving(false);
       return;
     }

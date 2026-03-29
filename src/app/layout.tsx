@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { DM_Serif_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { PostHogProvider, PostHogPageview } from "@/lib/posthog";
+import { Analytics } from "@vercel/analytics/react";
 import { Suspense } from "react";
 
 const dmSerifDisplay = DM_Serif_Display({
@@ -214,6 +215,7 @@ export default function RootLayout({
           <div className="grain" aria-hidden="true" />
           {children}
         </PostHogProvider>
+        <Analytics />
       </body>
     </html>
   );

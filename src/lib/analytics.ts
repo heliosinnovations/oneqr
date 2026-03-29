@@ -22,6 +22,21 @@ export const trackEvent = {
     posthog.capture('qr_copied', { type });
   },
 
+  // QR Save Events
+  qrSaved: (type: 'simple' | 'advanced') => {
+    posthog.capture('qr_code_saved', { type });
+  },
+
+  // Dashboard Events
+  dashboardViewed: () => {
+    posthog.capture('dashboard_viewed');
+  },
+
+  // Share Events
+  shareLinkCopied: (qrId?: string) => {
+    posthog.capture('share_link_copied', { qr_id: qrId });
+  },
+
   // User Interaction Events
   moreButtonClicked: (section: string) => {
     posthog.capture('more_button_clicked', { section });
