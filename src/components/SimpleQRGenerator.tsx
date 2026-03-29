@@ -4,11 +4,42 @@ import { useState, useCallback, useEffect } from "react";
 import QRCode from "qrcode";
 import Link from "next/link";
 import { trackEvent } from "@/lib/analytics";
+import { createClient } from "@/lib/supabase/client";
+import AuthModal from "@/components/AuthModal";
+
+// Generate a random 8-character alphanumeric code
+function generateShortCode(): string {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < 8; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+// Extract a title from URL
+function extractTitleFromUrl(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    const hostname = urlObj.hostname.replace(/^www\./, "");
+    return `${hostname} QR`;
+  } catch {
+    return "QR Code";
+  }
+}
 
 export default function SimpleQRGenerator() {
   const [url, setUrl] = useState("");
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+  const [savedQrId, setSavedQrId] = useState<string | null>(null);
 
   // Generate QR code when URL changes (with debounce)
   const generateQR = useCallback(async (inputUrl: string) => {
@@ -39,7 +70,7 @@ export default function SimpleQRGenerator() {
         errorCorrectionLevel: "M",
       });
       setQrDataUrl(dataUrl);
-      trackEvent.qrGenerated('simple');
+      trackEvent.qrGenerated("simple");
     } catch {
       // Silent fail for invalid URLs
       setQrDataUrl(null);
@@ -72,8 +103,110 @@ export default function SimpleQRGenerator() {
     link.click();
     document.body.removeChild(link);
 
-    trackEvent.qrDownloaded('png', 'simple');
+    trackEvent.qrDownloaded("png", "simple");
   }, [qrDataUrl]);
+
+  // Save QR code to database
+  const saveQRCode = useCallback(async () => {
+    if (!qrDataUrl || !url.trim()) return;
+
+    const supabase = createClient();
+
+    // Check if user is authenticated
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      // Show auth modal if not authenticated
+      setShowAuthModal(true);
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveStatus(null);
+
+    // Process URL
+    let processedUrl = url.trim();
+    if (
+      !processedUrl.startsWith("http://") &&
+      !processedUrl.startsWith("https://")
+    ) {
+      processedUrl = "https://" + processedUrl;
+    }
+
+    // Generate title from URL
+    const title = extractTitleFromUrl(processedUrl);
+
+    // Try to insert with retry for duplicate short_code
+    let retries = 3;
+    while (retries > 0) {
+      const shortCode = generateShortCode();
+
+      const { data, error } = await supabase
+        .from("qr_codes")
+        .insert({
+          user_id: session.user.id,
+          title,
+          short_code: shortCode,
+          destination_url: processedUrl,
+          is_editable: false,
+          scan_count: 0,
+        })
+        .select("id")
+        .single();
+
+      if (error) {
+        // Check if it's a duplicate short_code error
+        if (error.code === "23505" && error.message.includes("short_code")) {
+          retries--;
+          continue;
+        }
+        // Other error
+        setSaveStatus({
+          type: "error",
+          message: error.message || "Failed to save QR code",
+        });
+        trackEvent.error("qr_save_failed", error.message);
+        setIsSaving(false);
+        return;
+      }
+
+      // Success
+      setSavedQrId(data.id);
+      setSaveStatus({
+        type: "success",
+        message: "QR code saved! View in dashboard",
+      });
+      trackEvent.qrGenerated("simple");
+      setIsSaving(false);
+      return;
+    }
+
+    // All retries exhausted
+    setSaveStatus({
+      type: "error",
+      message: "Failed to generate unique code. Please try again.",
+    });
+    setIsSaving(false);
+  }, [qrDataUrl, url]);
+
+  // Listen for auth state changes to auto-save after login
+  useEffect(() => {
+    const supabase = createClient();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" && showAuthModal) {
+        setShowAuthModal(false);
+        // Auto-save after successful sign in
+        saveQRCode();
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [showAuthModal, saveQRCode]);
 
   const moreOptionsUrl = url.trim()
     ? `/generator?url=${encodeURIComponent(url.trim())}`
@@ -105,7 +238,7 @@ export default function SimpleQRGenerator() {
           </div>
           <Link
             href={moreOptionsUrl}
-            onClick={() => trackEvent.moreButtonClicked('simple-generator')}
+            onClick={() => trackEvent.moreButtonClicked("simple-generator")}
             className="flex items-center gap-1 whitespace-nowrap text-[13px] text-muted transition-colors hover:text-accent"
           >
             More options
@@ -183,26 +316,78 @@ export default function SimpleQRGenerator() {
 
       {/* Actions Section */}
       {qrDataUrl && (
-        <div className="flex items-center gap-4">
-          <button
-            onClick={downloadPNG}
-            className="flex flex-1 items-center justify-center gap-2 bg-fg px-6 py-4 text-[15px] font-semibold text-bg transition-colors hover:bg-accent"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              className="h-[18px] w-[18px]"
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={downloadPNG}
+              className="flex flex-1 items-center justify-center gap-2 bg-fg px-6 py-4 text-[15px] font-semibold text-bg transition-colors hover:bg-accent"
             >
-              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
-            </svg>
-            Download PNG
-          </button>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="h-[18px] w-[18px]"
+              >
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+              </svg>
+              Download PNG
+            </button>
+            {savedQrId ? (
+              <Link
+                href="/dashboard"
+                className="flex flex-1 items-center justify-center gap-2 border-2 border-green-600 bg-green-50 px-6 py-4 text-[15px] font-semibold text-green-700 transition-colors hover:bg-green-100"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="h-[18px] w-[18px]"
+                >
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+                View in Dashboard
+              </Link>
+            ) : (
+              <button
+                onClick={saveQRCode}
+                disabled={isSaving}
+                className="flex flex-1 items-center justify-center gap-2 border-2 border-fg bg-transparent px-6 py-4 text-[15px] font-semibold text-fg transition-colors hover:bg-fg hover:text-bg disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="h-[18px] w-[18px]"
+                >
+                  <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                  <polyline points="7 3 7 8 15 8" />
+                </svg>
+                {isSaving ? "Saving..." : "Save QR Code"}
+              </button>
+            )}
+          </div>
+
+          {/* Save status message */}
+          {saveStatus && !savedQrId && (
+            <div
+              className={`rounded border p-3 text-center text-sm ${
+                saveStatus.type === "success"
+                  ? "border-green-600 bg-green-50 text-green-800"
+                  : "border-red-600 bg-red-50 text-red-800"
+              }`}
+            >
+              {saveStatus.message}
+            </div>
+          )}
+
           <Link
             href={moreOptionsUrl}
-            onClick={() => trackEvent.moreButtonClicked('simple-generator')}
-            className="flex items-center gap-1 whitespace-nowrap text-[13px] text-muted transition-colors hover:text-accent"
+            onClick={() => trackEvent.moreButtonClicked("simple-generator")}
+            className="flex items-center justify-center gap-1 text-[13px] text-muted transition-colors hover:text-accent"
           >
             More options
             <svg
@@ -217,6 +402,12 @@ export default function SimpleQRGenerator() {
           </Link>
         </div>
       )}
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+      />
     </div>
   );
 }
