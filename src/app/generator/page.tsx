@@ -6,7 +6,7 @@ import QRCode from "qrcode";
 import Link from "next/link";
 import { jsPDF } from "jspdf";
 
-type TabType = "content" | "colors" | "style" | "export";
+type TabType = "content" | "labels" | "colors" | "style" | "export";
 type ToastType = { message: string; type: "success" | "error"; id: number };
 type ErrorLevelType = "L" | "M" | "Q" | "H";
 type PatternType = "square" | "rounded" | "dots" | "classy";
@@ -14,6 +14,8 @@ type CornerType = "square" | "rounded" | "extra" | "dot";
 type FormatType = "png" | "svg" | "pdf" | "eps";
 type SizeType = 256 | 512 | 1024 | 2048;
 type DpiType = 72 | 150 | 300 | 600;
+type FontWeightType = "normal" | "500" | "bold";
+type FontFamilyType = "Arial" | "Helvetica" | "Times New Roman" | "Courier New";
 
 // Format info for cards
 const FORMAT_INFO = {
@@ -134,6 +136,24 @@ const COLOR_PRESETS = [
   { color: "#059669", name: "Green" },
   { color: "#ff4d00", name: "Orange" },
 ];
+
+// Font weight options for text labels
+const FONT_WEIGHT_OPTIONS: { value: FontWeightType; label: string }[] = [
+  { value: "normal", label: "Normal" },
+  { value: "500", label: "Medium" },
+  { value: "bold", label: "Bold" },
+];
+
+// Font family options for text labels
+const FONT_FAMILY_OPTIONS: { value: FontFamilyType; label: string }[] = [
+  { value: "Arial", label: "Arial" },
+  { value: "Helvetica", label: "Helvetica" },
+  { value: "Times New Roman", label: "Times" },
+  { value: "Courier New", label: "Courier" },
+];
+
+// Text padding between QR and labels (in pixels at 1000px resolution)
+const TEXT_PADDING = 16;
 
 // Quick action templates
 const QUICK_ACTIONS = [
@@ -313,6 +333,16 @@ const renderFinderPattern = (
   }
 };
 
+// Text label configuration interface
+interface TextLabelConfig {
+  textAbove: string;
+  textBelow: string;
+  fontSize: number;
+  fontWeight: FontWeightType;
+  fontFamily: FontFamilyType;
+  textColor: string;
+}
+
 // Custom QR code rendering with pattern and corner support
 const renderCustomQR = async (
   text: string,
@@ -322,7 +352,8 @@ const renderCustomQR = async (
   bgColor: string,
   errorLevel: ErrorLevelType,
   pattern: PatternType,
-  cornerStyle: CornerType
+  cornerStyle: CornerType,
+  textConfig?: TextLabelConfig
 ): Promise<string> => {
   // Create QR code data
   const qr = QRCode.create(text, {
@@ -332,19 +363,61 @@ const renderCustomQR = async (
   const modules = qr.modules;
   const size = modules.size;
   const moduleSize = Math.floor((width - margin * 2) / size);
-  const actualWidth = moduleSize * size + margin * 2;
+  const qrWidth = moduleSize * size + margin * 2;
+
+  // Calculate text heights if labels provided
+  const scaleFactor = width / 1000; // Scale based on target resolution
+  const basePadding = TEXT_PADDING * scaleFactor;
+  const fontSize = textConfig ? textConfig.fontSize * scaleFactor : 0;
+
+  let textAboveHeight = 0;
+  let textBelowHeight = 0;
+
+  if (textConfig?.textAbove) {
+    textAboveHeight = fontSize + basePadding;
+  }
+  if (textConfig?.textBelow) {
+    textBelowHeight = fontSize + basePadding;
+  }
+
+  const totalHeight = qrWidth + textAboveHeight + textBelowHeight;
 
   // Create canvas
   const canvas = document.createElement("canvas");
-  canvas.width = actualWidth;
-  canvas.height = actualWidth;
+  canvas.width = qrWidth;
+  canvas.height = totalHeight;
   const ctx = canvas.getContext("2d");
 
   if (!ctx) throw new Error("Failed to get canvas context");
 
   // Fill background
   ctx.fillStyle = bgColor;
-  ctx.fillRect(0, 0, actualWidth, actualWidth);
+  ctx.fillRect(0, 0, qrWidth, totalHeight);
+
+  // Draw text above QR if provided
+  if (textConfig?.textAbove) {
+    ctx.fillStyle = textConfig.textColor;
+    ctx.font = `${textConfig.fontWeight} ${fontSize}px "${textConfig.fontFamily}", sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+
+    // Truncate text if too long
+    const maxTextWidth = qrWidth - margin * 2;
+    let displayText = textConfig.textAbove;
+    let textWidth = ctx.measureText(displayText).width;
+    if (textWidth > maxTextWidth) {
+      while (textWidth > maxTextWidth && displayText.length > 0) {
+        displayText = displayText.slice(0, -1);
+        textWidth = ctx.measureText(displayText + "…").width;
+      }
+      displayText = displayText + "…";
+    }
+
+    ctx.fillText(displayText, qrWidth / 2, basePadding / 2);
+  }
+
+  // Offset for QR code position
+  const qrYOffset = textAboveHeight;
 
   // Draw data modules (excluding finder patterns)
   for (let row = 0; row < size; row++) {
@@ -355,7 +428,7 @@ const renderCustomQR = async (
       const isDark = modules.get(row, col);
       if (isDark) {
         const x = margin + col * moduleSize;
-        const y = margin + row * moduleSize;
+        const y = qrYOffset + margin + row * moduleSize;
         renderModule(ctx, x, y, moduleSize, pattern, fgColor);
       }
     }
@@ -366,7 +439,7 @@ const renderCustomQR = async (
   renderFinderPattern(
     ctx,
     margin,
-    margin,
+    qrYOffset + margin,
     moduleSize,
     cornerStyle,
     fgColor,
@@ -376,7 +449,7 @@ const renderCustomQR = async (
   renderFinderPattern(
     ctx,
     margin + (size - 7) * moduleSize,
-    margin,
+    qrYOffset + margin,
     moduleSize,
     cornerStyle,
     fgColor,
@@ -386,12 +459,35 @@ const renderCustomQR = async (
   renderFinderPattern(
     ctx,
     margin,
-    margin + (size - 7) * moduleSize,
+    qrYOffset + margin + (size - 7) * moduleSize,
     moduleSize,
     cornerStyle,
     fgColor,
     bgColor
   );
+
+  // Draw text below QR if provided
+  if (textConfig?.textBelow) {
+    ctx.fillStyle = textConfig.textColor;
+    ctx.font = `${textConfig.fontWeight} ${fontSize}px "${textConfig.fontFamily}", sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+
+    // Truncate text if too long
+    const maxTextWidth = qrWidth - margin * 2;
+    let displayText = textConfig.textBelow;
+    let textWidth = ctx.measureText(displayText).width;
+    if (textWidth > maxTextWidth) {
+      while (textWidth > maxTextWidth && displayText.length > 0) {
+        displayText = displayText.slice(0, -1);
+        textWidth = ctx.measureText(displayText + "…").width;
+      }
+      displayText = displayText + "…";
+    }
+
+    const textY = qrYOffset + qrWidth + basePadding / 2;
+    ctx.fillText(displayText, qrWidth / 2, textY);
+  }
 
   return canvas.toDataURL("image/png");
 };
@@ -403,7 +499,8 @@ const renderCustomSVG = (
   bgColor: string,
   errorLevel: ErrorLevelType,
   pattern: PatternType,
-  cornerStyle: CornerType
+  cornerStyle: CornerType,
+  textConfig?: TextLabelConfig
 ): string => {
   const qr = QRCode.create(text, {
     errorCorrectionLevel: errorLevel,
@@ -413,12 +510,38 @@ const renderCustomSVG = (
   const size = modules.size;
   const margin = 2;
   const moduleSize = 10; // SVG units per module
-  const totalSize = size * moduleSize + margin * 2 * moduleSize;
+  const qrSize = size * moduleSize + margin * 2 * moduleSize;
 
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalSize} ${totalSize}" width="${totalSize}" height="${totalSize}">`;
+  // Calculate text heights for SVG (using a scale factor)
+  const svgFontSize = textConfig ? textConfig.fontSize * 0.6 : 0; // Scale font for SVG units
+  const svgPadding = TEXT_PADDING * 0.6;
+
+  let textAboveHeight = 0;
+  let textBelowHeight = 0;
+
+  if (textConfig?.textAbove) {
+    textAboveHeight = svgFontSize + svgPadding;
+  }
+  if (textConfig?.textBelow) {
+    textBelowHeight = svgFontSize + svgPadding;
+  }
+
+  const totalHeight = qrSize + textAboveHeight + textBelowHeight;
+  const totalSize = qrSize; // Width stays the same
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalSize} ${totalHeight}" width="${totalSize}" height="${totalHeight}">`;
 
   // Background
-  svg += `<rect width="${totalSize}" height="${totalSize}" fill="${bgColor}"/>`;
+  svg += `<rect width="${totalSize}" height="${totalHeight}" fill="${bgColor}"/>`;
+
+  // Add text above QR if provided
+  if (textConfig?.textAbove) {
+    const textY = textAboveHeight / 2 + svgFontSize / 3;
+    svg += `<text x="${totalSize / 2}" y="${textY}" font-family="${textConfig.fontFamily}, sans-serif" font-size="${svgFontSize}" font-weight="${textConfig.fontWeight}" fill="${textConfig.textColor}" text-anchor="middle">${escapeXml(textConfig.textAbove)}</text>`;
+  }
+
+  // QR Y offset for positioning
+  const qrYOffset = textAboveHeight;
 
   // Helper function to generate module path
   const getModulePath = (
@@ -496,25 +619,41 @@ const renderCustomSVG = (
       const isDark = modules.get(row, col);
       if (isDark) {
         const x = margin * moduleSize + col * moduleSize;
-        const y = margin * moduleSize + row * moduleSize;
+        const y = qrYOffset + margin * moduleSize + row * moduleSize;
         svg += getModulePath(x, y, moduleSize, pattern);
       }
     }
   }
 
   // Draw finder patterns
-  svg += drawFinderSVG(margin * moduleSize, margin * moduleSize);
+  svg += drawFinderSVG(margin * moduleSize, qrYOffset + margin * moduleSize);
   svg += drawFinderSVG(
     margin * moduleSize + (size - 7) * moduleSize,
-    margin * moduleSize
+    qrYOffset + margin * moduleSize
   );
   svg += drawFinderSVG(
     margin * moduleSize,
-    margin * moduleSize + (size - 7) * moduleSize
+    qrYOffset + margin * moduleSize + (size - 7) * moduleSize
   );
+
+  // Add text below QR if provided
+  if (textConfig?.textBelow) {
+    const textY = qrYOffset + qrSize + svgFontSize;
+    svg += `<text x="${totalSize / 2}" y="${textY}" font-family="${textConfig.fontFamily}, sans-serif" font-size="${svgFontSize}" font-weight="${textConfig.fontWeight}" fill="${textConfig.textColor}" text-anchor="middle">${escapeXml(textConfig.textBelow)}</text>`;
+  }
 
   svg += "</svg>";
   return svg;
+};
+
+// Helper function to escape XML special characters
+const escapeXml = (text: string): string => {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 };
 
 function GeneratorContent() {
@@ -544,6 +683,15 @@ function GeneratorContent() {
   const [exportSize, setExportSize] = useState<SizeType>(512);
   const [exportResolution, setExportResolution] = useState<number>(1000);
   const [dpi, setDpi] = useState<DpiType>(300);
+
+  // Text label options
+  const [textAbove, setTextAbove] = useState("");
+  const [textBelow, setTextBelow] = useState("");
+  const [textFontSize, setTextFontSize] = useState(20);
+  const [textFontWeight, setTextFontWeight] =
+    useState<FontWeightType>("normal");
+  const [textColor, setTextColor] = useState("#1a1a1a");
+  const [textFontFamily, setTextFontFamily] = useState<FontFamilyType>("Arial");
 
   // Toast state - support multiple toasts with IDs
   const [toasts, setToasts] = useState<ToastType[]>([]);
@@ -602,6 +750,26 @@ function GeneratorContent() {
     []
   );
 
+  // Helper to get text label configuration
+  const getTextConfig = useCallback((): TextLabelConfig | undefined => {
+    if (!textAbove && !textBelow) return undefined;
+    return {
+      textAbove,
+      textBelow,
+      fontSize: textFontSize,
+      fontWeight: textFontWeight,
+      fontFamily: textFontFamily,
+      textColor,
+    };
+  }, [
+    textAbove,
+    textBelow,
+    textFontSize,
+    textFontWeight,
+    textFontFamily,
+    textColor,
+  ]);
+
   // Generate QR code
   const generateQR = useCallback(async () => {
     if (!url.trim()) return;
@@ -631,7 +799,8 @@ function GeneratorContent() {
         bgColor,
         errorLevel,
         pattern,
-        cornerStyle
+        cornerStyle,
+        getTextConfig()
       );
       setQrDataUrl(dataUrl);
       setGeneratedUrl(processedUrl);
@@ -649,6 +818,7 @@ function GeneratorContent() {
     pattern,
     cornerStyle,
     showToast,
+    getTextConfig,
   ]);
 
   // Handle template selection
@@ -745,9 +915,18 @@ function GeneratorContent() {
       bgColor,
       errorLevel,
       pattern,
-      cornerStyle
+      cornerStyle,
+      getTextConfig()
     );
-  }, [generatedUrl, fgColor, bgColor, errorLevel, pattern, cornerStyle]);
+  }, [
+    generatedUrl,
+    fgColor,
+    bgColor,
+    errorLevel,
+    pattern,
+    cornerStyle,
+    getTextConfig,
+  ]);
 
   // Generate EPS from SVG - handles custom patterns (rect, circle, polygon)
   const generateEpsString = useCallback((): string => {
@@ -963,7 +1142,8 @@ showpage
             bgColor,
             errorLevel,
             pattern,
-            cornerStyle
+            cornerStyle,
+            getTextConfig()
           );
 
           const link = document.createElement("a");
@@ -1006,7 +1186,8 @@ showpage
             bgColor,
             errorLevel,
             pattern,
-            cornerStyle
+            cornerStyle,
+            getTextConfig()
           );
 
           // Create A4 PDF with centered QR code
@@ -1019,11 +1200,19 @@ showpage
           // A4 dimensions: 210 x 297 mm
           const pageWidth = 210;
           const pageHeight = 297;
-          const qrSize = 100; // 100mm QR code size
+          // Calculate QR height based on text labels
+          const textConfigPdf = getTextConfig();
+          const hasText =
+            textConfigPdf &&
+            (textConfigPdf.textAbove || textConfigPdf.textBelow);
+          const qrSize = 100; // 100mm QR code width
+          // Estimate height ratio if text is present (approximate)
+          const heightRatio = hasText ? 1.15 : 1;
+          const qrHeight = qrSize * heightRatio;
           const x = (pageWidth - qrSize) / 2;
-          const y = (pageHeight - qrSize) / 2;
+          const y = (pageHeight - qrHeight) / 2;
 
-          pdf.addImage(pngDataUrl, "PNG", x, y, qrSize, qrSize);
+          pdf.addImage(pngDataUrl, "PNG", x, y, qrSize, qrHeight);
 
           pdf.save("qr-code.pdf");
           showToast("PDF downloaded (print-ready)!", "success");
@@ -1067,6 +1256,7 @@ showpage
     showToast,
     generateSvgString,
     generateEpsString,
+    getTextConfig,
   ]);
 
   // Calculate contrast ratio
@@ -1110,7 +1300,8 @@ showpage
           bgColor,
           errorLevel,
           pattern,
-          cornerStyle
+          cornerStyle,
+          getTextConfig()
         );
         setQrDataUrl(dataUrl);
       } catch {
@@ -1122,7 +1313,20 @@ showpage
 
     regenerate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fgColor, bgColor, exportResolution, errorLevel, pattern, cornerStyle]);
+  }, [
+    fgColor,
+    bgColor,
+    exportResolution,
+    errorLevel,
+    pattern,
+    cornerStyle,
+    textAbove,
+    textBelow,
+    textFontSize,
+    textFontWeight,
+    textColor,
+    textFontFamily,
+  ]);
 
   // Initial QR generation
   useEffect(() => {
@@ -1482,10 +1686,15 @@ showpage
             </Link>
             <button
               onClick={() => {
-                const exportTab = document.querySelector('[role="tab"][aria-controls="export-panel"]');
+                const exportTab = document.querySelector(
+                  '[role="tab"][aria-controls="export-panel"]'
+                );
                 if (exportTab instanceof HTMLElement) {
                   exportTab.click();
-                  exportTab.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  exportTab.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  });
                 }
               }}
               className="flex items-center gap-1.5 rounded-md bg-[var(--pro-accent)] px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-[var(--pro-accent-hover)] sm:gap-2 sm:px-4 sm:py-2"
@@ -1507,21 +1716,27 @@ showpage
               {/* Tabs */}
               <div className="border-b border-[var(--pro-border)] px-3 sm:px-5">
                 <div className="scrollbar-hide -mb-px flex overflow-x-auto">
-                  {(["content", "colors", "style", "export"] as TabType[]).map(
-                    (tab) => (
-                      <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`shrink-0 border-b-2 px-3 py-3 text-xs font-medium transition-all sm:px-4 sm:py-3.5 sm:text-sm ${
-                          activeTab === tab
-                            ? "border-[var(--pro-accent)] text-[var(--pro-accent)]"
-                            : "border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]"
-                        }`}
-                      >
-                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                      </button>
-                    )
-                  )}
+                  {(
+                    [
+                      "content",
+                      "labels",
+                      "colors",
+                      "style",
+                      "export",
+                    ] as TabType[]
+                  ).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`shrink-0 border-b-2 px-3 py-3 text-xs font-medium transition-all sm:px-4 sm:py-3.5 sm:text-sm ${
+                        activeTab === tab
+                          ? "border-[var(--pro-accent)] text-[var(--pro-accent)]"
+                          : "border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]"
+                      }`}
+                    >
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -1595,6 +1810,184 @@ showpage
                       </button>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Labels Tab */}
+              {activeTab === "labels" && (
+                <div className="p-4 sm:p-5">
+                  {/* Text Above */}
+                  <div className="mb-4 sm:mb-5">
+                    <label className="mb-2 block text-xs font-semibold">
+                      Text Above QR
+                      <span className="ml-1 font-normal text-[var(--pro-muted)]">
+                        (optional)
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      value={textAbove}
+                      onChange={(e) => setTextAbove(e.target.value)}
+                      placeholder="e.g., Scan me!"
+                      className="w-full rounded-md border border-[var(--pro-border)] px-3 py-2.5 text-sm outline-none transition-all focus:border-[var(--pro-accent)] focus:shadow-[0_0_0_3px_var(--pro-accent-light)]"
+                    />
+                  </div>
+
+                  {/* Text Below */}
+                  <div className="mb-4 sm:mb-5">
+                    <label className="mb-2 block text-xs font-semibold">
+                      Text Below QR
+                      <span className="ml-1 font-normal text-[var(--pro-muted)]">
+                        (optional)
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      value={textBelow}
+                      onChange={(e) => setTextBelow(e.target.value)}
+                      placeholder="e.g., Visit our website"
+                      className="w-full rounded-md border border-[var(--pro-border)] px-3 py-2.5 text-sm outline-none transition-all focus:border-[var(--pro-accent)] focus:shadow-[0_0_0_3px_var(--pro-accent-light)]"
+                    />
+                  </div>
+
+                  {/* Text Styling - only show if text is entered */}
+                  {(textAbove || textBelow) && (
+                    <>
+                      {/* Font Size Slider */}
+                      <div className="mb-4 sm:mb-5">
+                        <label className="mb-2 flex items-center justify-between text-xs font-semibold">
+                          <span>Font Size</span>
+                          <span className="font-normal text-[var(--pro-muted)]">
+                            {textFontSize}px
+                          </span>
+                        </label>
+                        <input
+                          type="range"
+                          min="12"
+                          max="32"
+                          step="1"
+                          value={textFontSize}
+                          onChange={(e) =>
+                            setTextFontSize(Number(e.target.value))
+                          }
+                          className="w-full cursor-pointer accent-[var(--pro-accent)]"
+                        />
+                        <div className="mt-1 flex justify-between text-[10px] text-[var(--pro-muted)]">
+                          <span>12px</span>
+                          <span>32px</span>
+                        </div>
+                      </div>
+
+                      {/* Font Weight */}
+                      <div className="mb-4 sm:mb-5">
+                        <label className="mb-2 block text-xs font-semibold">
+                          Font Weight
+                        </label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {FONT_WEIGHT_OPTIONS.map((option) => (
+                            <button
+                              key={option.value}
+                              onClick={() => setTextFontWeight(option.value)}
+                              className={`rounded-md border p-2 text-center text-xs font-medium transition-all ${
+                                textFontWeight === option.value
+                                  ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)] text-[var(--pro-accent)]"
+                                  : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
+                              }`}
+                              style={{
+                                fontWeight:
+                                  option.value === "500" ? 500 : option.value,
+                              }}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Font Family */}
+                      <div className="mb-4 sm:mb-5">
+                        <label className="mb-2 block text-xs font-semibold">
+                          Font Family
+                        </label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {FONT_FAMILY_OPTIONS.map((option) => (
+                            <button
+                              key={option.value}
+                              onClick={() => setTextFontFamily(option.value)}
+                              className={`rounded-md border p-2 text-center text-xs transition-all ${
+                                textFontFamily === option.value
+                                  ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)] text-[var(--pro-accent)]"
+                                  : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
+                              }`}
+                              style={{ fontFamily: option.value }}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Text Color */}
+                      <div>
+                        <label className="mb-2 block text-xs font-semibold">
+                          Text Color
+                        </label>
+                        <div className="flex gap-2">
+                          <div
+                            className="relative h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-md border border-[var(--pro-border)]"
+                            style={{ backgroundColor: textColor }}
+                          >
+                            <input
+                              type="color"
+                              value={textColor}
+                              onChange={(e) => setTextColor(e.target.value)}
+                              className="absolute -left-1/2 -top-1/2 h-[200%] w-[200%] cursor-pointer"
+                            />
+                          </div>
+                          <input
+                            type="text"
+                            value={textColor.toUpperCase()}
+                            onChange={(e) =>
+                              handleHexInput(e.target.value, setTextColor)
+                            }
+                            onBlur={(e) => {
+                              if (!isValidHex(e.target.value)) {
+                                setTextColor("#1a1a1a");
+                              }
+                            }}
+                            className="flex-1 rounded-md border border-[var(--pro-border)] px-3 py-2 font-mono text-sm uppercase focus:border-[var(--pro-accent)] focus:outline-none"
+                          />
+                        </div>
+                        <p className="mt-1.5 text-[10px] text-[var(--pro-muted)] sm:text-xs">
+                          Tip: Use the QR foreground color for consistency
+                        </p>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Empty state hint */}
+                  {!textAbove && !textBelow && (
+                    <div className="mt-2 flex items-start gap-2 rounded-lg border border-blue-100 bg-[var(--pro-accent-light)] p-3">
+                      <svg
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--pro-accent)]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <p className="text-xs text-[var(--pro-accent)]">
+                        Add text above or below your QR code to provide context
+                        or branding. Text styling options will appear after you
+                        enter text.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
 
