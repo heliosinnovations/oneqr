@@ -141,17 +141,24 @@ export default function Home() {
                 <div className="mb-4 flex items-center gap-3">
                   <div className="text-accent">
                     <svg
-                      className="h-7 w-7"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={1.5}
+                      className="h-8 w-8"
+                      viewBox="0 0 32 32"
+                      fill="currentColor"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-                      />
+                      {/* QR code with expanding sizes */}
+                      <rect x="2" y="2" width="5" height="5" rx="0.5" />
+                      <rect x="2" y="25" width="5" height="5" rx="0.5" />
+                      <rect x="25" y="2" width="5" height="5" rx="0.5" />
+                      <rect x="9" y="2" width="2" height="2" />
+                      <rect x="13" y="2" width="2" height="2" />
+                      <rect x="9" y="6" width="2" height="2" />
+                      <rect x="2" y="9" width="2" height="2" />
+                      <rect x="2" y="13" width="2" height="2" />
+                      <rect x="9" y="25" width="2" height="2" />
+                      <rect x="13" y="25" width="2" height="2" />
+                      <rect x="9" y="29" width="2" height="2" />
+                      {/* Expanding arrows */}
+                      <path d="M18 14 L22 14 L22 10 M22 14 L22 18 L26 18" stroke="currentColor" strokeWidth="1.5" fill="none" />
                     </svg>
                   </div>
                   <h3 className="font-serif text-2xl tracking-tight">
@@ -168,17 +175,32 @@ export default function Home() {
                 <div className="mb-4 flex items-center gap-3">
                   <div className="text-accent">
                     <svg
-                      className="h-7 w-7"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={1.5}
+                      className="h-8 w-8"
+                      viewBox="0 0 32 32"
+                      fill="currentColor"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                      />
+                      {/* Layered QR codes representing multiple formats */}
+                      <g opacity="0.3">
+                        <rect x="6" y="6" width="4" height="4" rx="0.5" />
+                        <rect x="6" y="22" width="4" height="4" rx="0.5" />
+                        <rect x="22" y="6" width="4" height="4" rx="0.5" />
+                        <rect x="12" y="6" width="1.5" height="1.5" />
+                        <rect x="6" y="12" width="1.5" height="1.5" />
+                      </g>
+                      <g opacity="0.6">
+                        <rect x="4" y="4" width="4" height="4" rx="0.5" />
+                        <rect x="4" y="20" width="4" height="4" rx="0.5" />
+                        <rect x="20" y="4" width="4" height="4" rx="0.5" />
+                        <rect x="10" y="4" width="1.5" height="1.5" />
+                        <rect x="4" y="10" width="1.5" height="1.5" />
+                      </g>
+                      <g>
+                        <rect x="2" y="2" width="4" height="4" rx="0.5" />
+                        <rect x="2" y="18" width="4" height="4" rx="0.5" />
+                        <rect x="18" y="2" width="4" height="4" rx="0.5" />
+                        <rect x="8" y="2" width="1.5" height="1.5" />
+                        <rect x="2" y="8" width="1.5" height="1.5" />
+                      </g>
                     </svg>
                   </div>
                   <h3 className="font-serif text-2xl tracking-tight">
@@ -195,17 +217,28 @@ export default function Home() {
                 <div className="mb-4 flex items-center gap-3">
                   <div className="text-accent">
                     <svg
-                      className="h-7 w-7"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={1.5}
+                      className="h-8 w-8"
+                      viewBox="0 0 32 32"
+                      fill="currentColor"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"
-                      />
+                      {/* QR code with print quality indicators */}
+                      <rect x="2" y="8" width="4" height="4" rx="0.5" />
+                      <rect x="2" y="20" width="4" height="4" rx="0.5" />
+                      <rect x="20" y="8" width="4" height="4" rx="0.5" />
+                      <rect x="8" y="8" width="1.5" height="1.5" />
+                      <rect x="12" y="8" width="1.5" height="1.5" />
+                      <rect x="8" y="12" width="1.5" height="1.5" />
+                      <rect x="2" y="14" width="1.5" height="1.5" />
+                      <rect x="8" y="20" width="1.5" height="1.5" />
+                      <rect x="12" y="20" width="1.5" height="1.5" />
+                      {/* Print measurement lines */}
+                      <line x1="26" y1="8" x2="30" y2="8" stroke="currentColor" strokeWidth="1.5" />
+                      <line x1="26" y1="24" x2="30" y2="24" stroke="currentColor" strokeWidth="1.5" />
+                      <line x1="28" y1="8" x2="28" y2="24" stroke="currentColor" strokeWidth="1.5" />
+                      {/* Tick marks */}
+                      <line x1="27" y1="12" x2="29" y2="12" stroke="currentColor" strokeWidth="1" />
+                      <line x1="27" y1="16" x2="29" y2="16" stroke="currentColor" strokeWidth="1" />
+                      <line x1="27" y1="20" x2="29" y2="20" stroke="currentColor" strokeWidth="1" />
                     </svg>
                   </div>
                   <h3 className="font-serif text-2xl tracking-tight">
@@ -222,17 +255,33 @@ export default function Home() {
                 <div className="mb-4 flex items-center gap-3">
                   <div className="text-accent">
                     <svg
-                      className="h-7 w-7"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={1.5}
+                      className="h-8 w-8"
+                      viewBox="0 0 32 32"
+                      fill="currentColor"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"
-                      />
+                      {/* QR code with gradient/style variation */}
+                      <defs>
+                        <linearGradient id="qr-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="currentColor" stopOpacity="1" />
+                          <stop offset="100%" stopColor="currentColor" stopOpacity="0.4" />
+                        </linearGradient>
+                      </defs>
+                      {/* Corner blocks with rounded edges */}
+                      <rect x="2" y="2" width="5" height="5" rx="1" fill="url(#qr-gradient)" />
+                      <rect x="2" y="25" width="5" height="5" rx="1" fill="url(#qr-gradient)" />
+                      <rect x="25" y="2" width="5" height="5" rx="1" fill="url(#qr-gradient)" />
+                      {/* Styled data modules */}
+                      <circle cx="10" cy="3" r="1" opacity="0.8" />
+                      <circle cx="14" cy="3" r="1" opacity="0.6" />
+                      <circle cx="18" cy="3" r="1" opacity="0.4" />
+                      <circle cx="10" cy="7" r="1" opacity="0.7" />
+                      <circle cx="3" cy="10" r="1" opacity="0.8" />
+                      <circle cx="3" cy="14" r="1" opacity="0.6" />
+                      <circle cx="3" cy="18" r="1" opacity="0.4" />
+                      <circle cx="7" cy="10" r="1" opacity="0.7" />
+                      <circle cx="10" cy="26" r="1" opacity="0.8" />
+                      <circle cx="14" cy="26" r="1" opacity="0.6" />
+                      <circle cx="10" cy="30" r="1" opacity="0.7" />
                     </svg>
                   </div>
                   <h3 className="font-serif text-2xl tracking-tight">
