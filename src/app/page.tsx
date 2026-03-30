@@ -133,24 +133,31 @@ export default function Home() {
 
             {/* Features Grid */}
             <ul
-              className="grid gap-6 md:grid-cols-2 lg:gap-8"
+              className="grid gap-4 md:grid-cols-2 lg:gap-6"
               role="list"
               aria-label="Product features"
             >
-              <li className="hover:border-accent/30 group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.06] lg:p-8">
-                <div className="bg-accent/10 group-hover:bg-accent/20 absolute right-0 top-0 h-32 w-32 translate-x-8 translate-y-[-50%] rounded-full blur-3xl transition-all duration-500" />
-                <div className="relative flex items-start gap-4">
-                  <div
-                    className="from-accent/20 to-accent/5 ring-accent/20 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ring-1"
-                    role="img"
-                    aria-label="High Resolution"
-                  >
+              <li className="group relative overflow-hidden border-l-4 border-accent bg-white p-5 transition-all hover:border-l-[6px] hover:shadow-lg lg:p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-accent">
+                      Resolution
+                    </div>
+                    <h3 className="mb-2 font-serif text-xl font-medium tracking-tight text-fg lg:text-2xl">
+                      Up to 4K Export
+                    </h3>
+                    <p className="text-sm leading-relaxed text-muted">
+                      Export from 512px up to 4096px. Perfect for billboards,
+                      posters, and large format printing.
+                    </p>
+                  </div>
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-accent/10">
                     <svg
-                      className="h-5 w-5 text-accent"
+                      className="h-6 w-6 text-accent"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
-                      strokeWidth={1.5}
+                      strokeWidth={2}
                     >
                       <path
                         strokeLinecap="round"
@@ -159,40 +166,30 @@ export default function Home() {
                       />
                     </svg>
                   </div>
-                  <div className="flex-1 space-y-2">
-                    <h3 className="font-serif text-lg tracking-tight lg:text-xl">
-                      High-Resolution Export
-                    </h3>
-                    <p className="text-sm leading-relaxed text-white/60">
-                      Export from 512px up to 4096px. Perfect for billboards,
-                      posters, and large format printing.
-                    </p>
-                    <div className="flex items-center gap-2 text-xs font-medium text-accent">
-                      <span className="bg-accent/10 rounded-full px-3 py-1">
-                        Up to 4K
-                      </span>
-                      <span className="rounded-full bg-white/5 px-3 py-1 text-white/50">
-                        Print-ready
-                      </span>
-                    </div>
-                  </div>
                 </div>
               </li>
 
-              <li className="hover:border-accent/30 group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.06] lg:p-8">
-                <div className="bg-accent/10 group-hover:bg-accent/20 absolute right-0 top-0 h-32 w-32 translate-x-8 translate-y-[-50%] rounded-full blur-3xl transition-all duration-500" />
-                <div className="relative flex items-start gap-4">
-                  <div
-                    className="from-accent/20 to-accent/5 ring-accent/20 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ring-1"
-                    role="img"
-                    aria-label="File Formats"
-                  >
+              <li className="group relative overflow-hidden border-l-4 border-accent bg-white p-5 transition-all hover:border-l-[6px] hover:shadow-lg lg:p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-accent">
+                      Formats
+                    </div>
+                    <h3 className="mb-2 font-serif text-xl font-medium tracking-tight text-fg lg:text-2xl">
+                      PNG · SVG · PDF · EPS
+                    </h3>
+                    <p className="text-sm leading-relaxed text-muted">
+                      Download as PNG, SVG, PDF, or EPS. Vector formats for infinite
+                      scaling, raster for quick sharing.
+                    </p>
+                  </div>
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-accent/10">
                     <svg
-                      className="h-5 w-5 text-accent"
+                      className="h-6 w-6 text-accent"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
-                      strokeWidth={1.5}
+                      strokeWidth={2}
                     >
                       <path
                         strokeLinecap="round"
@@ -201,46 +198,30 @@ export default function Home() {
                       />
                     </svg>
                   </div>
-                  <div className="flex-1 space-y-2">
-                    <h3 className="font-serif text-lg tracking-tight lg:text-xl">
-                      Multi-Format Export
-                    </h3>
-                    <p className="text-sm leading-relaxed text-white/60">
-                      Download as PNG, SVG, PDF, or EPS. Vector formats for infinite
-                      scaling, raster for quick sharing.
-                    </p>
-                    <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
-                      <span className="bg-accent/10 rounded-full px-3 py-1 text-accent">
-                        PNG
-                      </span>
-                      <span className="bg-accent/10 rounded-full px-3 py-1 text-accent">
-                        SVG
-                      </span>
-                      <span className="rounded-full bg-white/5 px-3 py-1 text-white/50">
-                        PDF
-                      </span>
-                      <span className="rounded-full bg-white/5 px-3 py-1 text-white/50">
-                        EPS
-                      </span>
-                    </div>
-                  </div>
                 </div>
               </li>
 
-              <li className="hover:border-accent/30 group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.06] lg:p-8">
-                <div className="bg-accent/10 group-hover:bg-accent/20 absolute right-0 top-0 h-32 w-32 translate-x-8 translate-y-[-50%] rounded-full blur-3xl transition-all duration-500" />
-                <div className="relative flex items-start gap-4">
-                  <div
-                    className="from-accent/20 to-accent/5 ring-accent/20 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ring-1"
-                    role="img"
-                    aria-label="Print Quality"
-                  >
+              <li className="group relative overflow-hidden border-l-4 border-accent bg-white p-5 transition-all hover:border-l-[6px] hover:shadow-lg lg:p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-accent">
+                      Print Ready
+                    </div>
+                    <h3 className="mb-2 font-serif text-xl font-medium tracking-tight text-fg lg:text-2xl">
+                      72–600 DPI Control
+                    </h3>
+                    <p className="text-sm leading-relaxed text-muted">
+                      Set DPI from 72 to 600 with a built-in size calculator. Know
+                      exactly how your QR will print.
+                    </p>
+                  </div>
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-accent/10">
                     <svg
-                      className="h-5 w-5 text-accent"
+                      className="h-6 w-6 text-accent"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
-                      strokeWidth={1.5}
+                      strokeWidth={2}
                     >
                       <path
                         strokeLinecap="round"
@@ -249,40 +230,30 @@ export default function Home() {
                       />
                     </svg>
                   </div>
-                  <div className="flex-1 space-y-2">
-                    <h3 className="font-serif text-lg tracking-tight lg:text-xl">
-                      Print Quality Controls
-                    </h3>
-                    <p className="text-sm leading-relaxed text-white/60">
-                      Set DPI from 72 to 600 with a built-in size calculator. Know
-                      exactly how your QR will print.
-                    </p>
-                    <div className="flex items-center gap-2 text-xs font-medium text-accent">
-                      <span className="bg-accent/10 rounded-full px-3 py-1">
-                        72-600 DPI
-                      </span>
-                      <span className="rounded-full bg-white/5 px-3 py-1 text-white/50">
-                        Size calc
-                      </span>
-                    </div>
-                  </div>
                 </div>
               </li>
 
-              <li className="hover:border-accent/30 group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.06] lg:p-8">
-                <div className="bg-accent/10 group-hover:bg-accent/20 absolute right-0 top-0 h-32 w-32 translate-x-8 translate-y-[-50%] rounded-full blur-3xl transition-all duration-500" />
-                <div className="relative flex items-start gap-4">
-                  <div
-                    className="from-accent/20 to-accent/5 ring-accent/20 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ring-1"
-                    role="img"
-                    aria-label="Design"
-                  >
+              <li className="group relative overflow-hidden border-l-4 border-accent bg-white p-5 transition-all hover:border-l-[6px] hover:shadow-lg lg:p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-accent">
+                      Customization
+                    </div>
+                    <h3 className="mb-2 font-serif text-xl font-medium tracking-tight text-fg lg:text-2xl">
+                      6 Patterns · 9 Styles
+                    </h3>
+                    <p className="text-sm leading-relaxed text-muted">
+                      6 data patterns, 9 eye styles, gradient support, and custom
+                      colors. Make your QR code stand out.
+                    </p>
+                  </div>
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-accent/10">
                     <svg
-                      className="h-5 w-5 text-accent"
+                      className="h-6 w-6 text-accent"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
-                      strokeWidth={1.5}
+                      strokeWidth={2}
                     >
                       <path
                         strokeLinecap="round"
@@ -290,26 +261,6 @@ export default function Home() {
                         d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"
                       />
                     </svg>
-                  </div>
-                  <div className="flex-1 space-y-2">
-                    <h3 className="font-serif text-lg tracking-tight lg:text-xl">
-                      Advanced Design
-                    </h3>
-                    <p className="text-sm leading-relaxed text-white/60">
-                      6 data patterns, 9 eye styles, gradient support, and custom
-                      colors. Make your QR code stand out.
-                    </p>
-                    <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
-                      <span className="bg-accent/10 rounded-full px-3 py-1 text-accent">
-                        6 patterns
-                      </span>
-                      <span className="bg-accent/10 rounded-full px-3 py-1 text-accent">
-                        9 styles
-                      </span>
-                      <span className="rounded-full bg-white/5 px-3 py-1 text-white/50">
-                        Gradients
-                      </span>
-                    </div>
                   </div>
                 </div>
               </li>
