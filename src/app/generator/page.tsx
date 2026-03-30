@@ -1480,11 +1480,16 @@ showpage
               <Icon name="layers" />
               <span className="hidden sm:inline">Bulk Creation</span>
             </Link>
-            <button className="hidden items-center gap-2 rounded-md border border-[var(--pro-border)] bg-[var(--pro-surface)] px-3 py-1.5 text-sm font-medium transition-colors hover:bg-[var(--pro-surface-hover)] sm:flex sm:px-4 sm:py-2">
-              <Icon name="more-horizontal" />
-              <span className="hidden sm:inline">History</span>
-            </button>
-            <button className="flex items-center gap-1.5 rounded-md bg-[var(--pro-accent)] px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-[var(--pro-accent-hover)] sm:gap-2 sm:px-4 sm:py-2">
+            <button
+              onClick={() => {
+                const exportTab = document.querySelector('[role="tab"][aria-controls="export-panel"]');
+                if (exportTab instanceof HTMLElement) {
+                  exportTab.click();
+                  exportTab.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }}
+              className="flex items-center gap-1.5 rounded-md bg-[var(--pro-accent)] px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-[var(--pro-accent-hover)] sm:gap-2 sm:px-4 sm:py-2"
+            >
               <Icon name="upload" />
               <span className="xs:inline hidden">Export</span>
             </button>

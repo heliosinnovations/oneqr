@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { User } from '@supabase/supabase-js';
+import Link from 'next/link';
 import AuthModal from './AuthModal';
 
 export default function UserMenu() {
@@ -80,6 +81,13 @@ export default function UserMenu() {
           <div className="border-b border-border px-4 py-3">
             <p className="truncate text-xs text-muted">{user.email}</p>
           </div>
+          <Link
+            href="/dashboard"
+            className="block w-full px-4 py-2 text-left text-sm text-fg transition-colors hover:bg-surface"
+            onClick={() => setShowDropdown(false)}
+          >
+            Dashboard
+          </Link>
           <button
             onClick={handleSignOut}
             className="w-full px-4 py-2 text-left text-sm text-fg transition-colors hover:bg-surface"
