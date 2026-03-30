@@ -1,0 +1,12 @@
+{
+  "user": {
+    "id": "ceb2b826-4065-4939-b5b3-088cc775f6d6",
+    "email": "test-auth@theqrspot.com"
+  },
+  "session": {
+    "access_token": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImM3ZGY3NmY0LWIzNjgtNDcwMC1hMTAzLTVhYzNkODZlZWRhMyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2phZHNla2lydnZxemdlaGR6b2ppLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJjZWIyYjgyNi00MDY1LTQ5MzktYjViMy0wODhjYzc3NWY2ZDYiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc0ODM3NzExLCJpYXQiOjE3NzQ4MzQxMTEsImVtYWlsIjoidGVzdC1hdXRoQHRoZXFyc3BvdC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImNyZWF0ZWRfYnkiOiJoZWxpeC10ZXN0aW5nLXNjcmlwdCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJ0ZXN0X3VzZXIiOnRydWV9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzc0ODM0MTExfV0sInNlc3Npb25faWQiOiI0NjM2OGI4Yi05YWU4LTQ0YWQtYTk5Ni05YjRmNDU4ZWFkNjEiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.C7-7n7yjQ35CqLA44uS3LCB1AcOqhdPOqEesEcwNS_nnfZn2d9oZf84PJv1fz-bpi2VCJ2kCJXcXlwYZ0wYqEw",
+    "refresh_token": "7txvzlbfy5jk",
+    "expires_at": 1774837711
+  },
+  "created_at": "2026-03-30T01:28:31.376Z"
+}

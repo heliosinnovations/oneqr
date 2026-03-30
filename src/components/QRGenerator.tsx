@@ -81,6 +81,7 @@ export default function QRGenerator() {
   const generateQR = useCallback(async () => {
     if (!url.trim()) {
       setError("Please enter a URL");
+      setQrDataUrl(null); // Clear QR when input is empty
       return;
     }
 
@@ -350,11 +351,20 @@ export default function QRGenerator() {
 
   // Auto-regenerate QR when customization options change (only if QR already exists)
   useEffect(() => {
-    if (generatedUrl && qrDataUrl) {
+    if (generatedUrl && qrDataUrl && url.trim()) {
       generateQR();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fgColor, bgColor, size, errorLevel, logoDataUrl, gradientType, fgColorEnd]);
+
+  // Clear QR when URL input is cleared
+  useEffect(() => {
+    if (!url.trim() && qrDataUrl) {
+      setQrDataUrl(null);
+      setGeneratedUrl("");
+      setError(null);
+    }
+  }, [url, qrDataUrl]);
 
   // Tab icons
   const TabIcon = ({ type }: { type: TabType }) => {

@@ -1,0 +1,127 @@
+{
+  "passed": [
+    {
+      "test": "QR Input Field",
+      "message": "URL input accepts text"
+    },
+    {
+      "test": "QR Code Generation",
+      "message": "QR code renders on screen"
+    },
+    {
+      "test": "Download Button",
+      "message": "Download button visible"
+    },
+    {
+      "test": "Download Click",
+      "message": "Download button clickable"
+    },
+    {
+      "test": "Auth Modal",
+      "message": "Auth modal opens on save attempt"
+    },
+    {
+      "test": "Email Input",
+      "message": "Email field accepts input"
+    },
+    {
+      "test": "Magic Link Send",
+      "message": "Magic link request submitted"
+    },
+    {
+      "test": "Auth Confirmation",
+      "message": "Confirmation message shown"
+    },
+    {
+      "test": "Session Injection",
+      "message": "Authenticated session injected"
+    },
+    {
+      "test": "Dashboard Access",
+      "message": "Dashboard accessible when authenticated"
+    },
+    {
+      "test": "Saved QR Section",
+      "message": "Saved QR codes section exists"
+    },
+    {
+      "test": "Vercel Analytics",
+      "message": "Vercel Analytics script loaded"
+    },
+    {
+      "test": "PostHog Analytics",
+      "message": "PostHog script loaded"
+    },
+    {
+      "test": "Analytics Events",
+      "message": "Page view events should be tracked"
+    },
+    {
+      "test": "Page Title",
+      "message": "\"Free QR Code Generator | The QR Spot - Create, Download, Print\""
+    },
+    {
+      "test": "Meta Description",
+      "message": "Generate unlimited QR codes for free with The QR Spot. Creat..."
+    },
+    {
+      "test": "Open Graph Title",
+      "message": "OG title set"
+    },
+    {
+      "test": "Open Graph Image",
+      "message": "OG image set"
+    },
+    {
+      "test": "Canonical URL",
+      "message": "https://theqrspot.com"
+    },
+    {
+      "test": "JSON-LD Schema",
+      "message": "Type: WebSite"
+    },
+    {
+      "test": "Mobile Layout",
+      "message": "375x667 - elements visible"
+    },
+    {
+      "test": "Tablet Layout",
+      "message": "768x1024 - elements visible"
+    },
+    {
+      "test": "Desktop Layout",
+      "message": "1920x1080 - elements visible"
+    },
+    {
+      "test": "Invalid URL Handling",
+      "message": "Error message shown for invalid URL"
+    },
+    {
+      "test": "Long URL Handling",
+      "message": "Generates QR for very long URLs"
+    },
+    {
+      "test": "404 Page",
+      "message": "Custom 404 page exists"
+    }
+  ],
+  "failed": [],
+  "warnings": [
+    {
+      "test": "Color Customization",
+      "message": "Color picker not found (might not be implemented)"
+    },
+    {
+      "test": "QR Code Save",
+      "message": "Save completed but no success message"
+    },
+    {
+      "test": "User Profile",
+      "message": "User email not visible (might be in menu)"
+    },
+    {
+      "test": "Empty Input Handling",
+      "message": "QR code still showing (might use placeholder)"
+    }
+  ]
+}
