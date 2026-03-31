@@ -719,7 +719,7 @@ function GeneratorContent() {
     };
   };
 
-  // URL validation
+  // URL/Content validation - supports URLs and special QR content types
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const validateURL = useCallback(
     debounce((value: string) => {
@@ -727,11 +727,42 @@ function GeneratorContent() {
         setUrlValid(false);
         return;
       }
+
+      const trimmedValue = value.trim();
+
+      // Check for special QR content types that are valid but not URLs
+      const specialProtocols = [
+        "WIFI:", // WiFi network config
+        "wifi:", // WiFi network config (lowercase)
+        "BEGIN:VCARD", // vCard contact
+        "BEGIN:VCALENDAR", // Calendar event
+        "sms:", // SMS message
+        "tel:", // Phone number
+        "mailto:", // Email
+        "geo:", // Geographic location
+      ];
+
+      const isSpecialContent = specialProtocols.some((protocol) =>
+        trimmedValue.startsWith(protocol)
+      );
+
+      if (isSpecialContent) {
+        setUrlValid(true);
+        return;
+      }
+
+      // For regular URLs, validate normally
       try {
-        new URL(value);
+        new URL(trimmedValue);
         setUrlValid(true);
       } catch {
-        setUrlValid(false);
+        // If it doesn't have a protocol, try adding https://
+        try {
+          new URL("https://" + trimmedValue);
+          setUrlValid(true);
+        } catch {
+          setUrlValid(false);
+        }
       }
     }, 300),
     []
