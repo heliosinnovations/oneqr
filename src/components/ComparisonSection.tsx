@@ -112,7 +112,7 @@ export default function ComparisonSection() {
         </header>
 
         {/* Desktop Table */}
-        <div className="hidden overflow-x-auto rounded border-2 border-fg md:block">
+        <div className="hidden overflow-x-auto rounded border border-border md:block">
           <table className="w-full min-w-[640px] border-collapse bg-bg">
             <thead>
               <tr>
@@ -124,7 +124,7 @@ export default function ComparisonSection() {
                     key={competitor.name}
                     className={`border-b border-border px-5 py-4 text-left font-serif text-lg font-normal ${
                       competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-t-[3px] border-fg bg-accent text-white"
+                        ? "bg-accent text-white"
                         : "bg-surface"
                     } ${index === 0 ? "" : ""}`}
                   >
@@ -151,7 +151,7 @@ export default function ComparisonSection() {
                     key={`pricing-${competitor.name}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-fg bg-accent-light"
+                        ? "bg-accent-light"
                         : ""
                     }`}
                   >
@@ -176,7 +176,7 @@ export default function ComparisonSection() {
                     key={`expiration-${competitor.name}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-fg bg-accent-light"
+                        ? "bg-accent-light"
                         : ""
                     }`}
                   >
@@ -199,7 +199,7 @@ export default function ComparisonSection() {
                     key={`resolution-${competitor.name}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-fg bg-accent-light"
+                        ? "bg-accent-light"
                         : ""
                     }`}
                   >
@@ -222,7 +222,7 @@ export default function ComparisonSection() {
                     key={`formats-${competitor.name}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-fg bg-accent-light"
+                        ? "bg-accent-light"
                         : ""
                     }`}
                   >
@@ -245,7 +245,7 @@ export default function ComparisonSection() {
                     key={`scans-${competitor.name}`}
                     className={`border-b border-border px-5 py-4 ${
                       competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-fg bg-accent-light"
+                        ? "bg-accent-light"
                         : ""
                     }`}
                   >
@@ -268,7 +268,7 @@ export default function ComparisonSection() {
                     key={`design-${competitor.name}`}
                     className={`px-5 py-4 ${
                       competitor.isHighlighted
-                        ? "border-b-[3px] border-l-[3px] border-r-[3px] border-fg bg-accent-light"
+                        ? "bg-accent-light"
                         : ""
                     }`}
                   >
@@ -293,9 +293,9 @@ export default function ComparisonSection() {
           {competitors.map((competitor) => (
             <div
               key={`card-${competitor.name}`}
-              className={`rounded-lg border-2 p-6 ${
+              className={`rounded-lg border p-6 ${
                 competitor.isHighlighted
-                  ? "border-fg bg-accent-light"
+                  ? "border-accent bg-accent-light"
                   : "border-border bg-bg"
               }`}
             >
