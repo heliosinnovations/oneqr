@@ -12,7 +12,10 @@ function PaymentSuccessContent() {
   const qrId = searchParams.get("qr_id");
 
   // Determine redirect destination based on whether a QR code was upgraded
-  const redirectUrl = qrId ? `/dashboard/${qrId}?edit=true` : "/dashboard";
+  // Add refresh=true to force data refetch after payment (clears stale cache)
+  const redirectUrl = qrId
+    ? `/dashboard/${qrId}?edit=true&refresh=true`
+    : "/dashboard?refresh=true";
   const redirectLabel = qrId ? "your QR code" : "dashboard";
 
   useEffect(() => {
@@ -21,7 +24,12 @@ function PaymentSuccessContent() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          router.push(redirectUrl);
+          // Force Next.js to invalidate cached data before redirect
+          router.refresh();
+          // Small delay to allow cache invalidation, then redirect
+          setTimeout(() => {
+            router.push(redirectUrl);
+          }, 100);
           return 0;
         }
         return prev - 1;

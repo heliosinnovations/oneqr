@@ -40,12 +40,23 @@ export default function QRDetailPage({
 
   const supabase = createClient();
 
-  // Check URL params for modal triggers
+  // Check URL params for modal triggers and refresh
+  const shouldRefresh = searchParams.get("refresh") === "true";
+
   useEffect(() => {
     if (searchParams.get("edit") === "true" || searchParams.get("upgrade") === "true") {
       setShowEditModal(true);
     }
   }, [searchParams]);
+
+  // Clean up refresh param from URL after processing (prevents refetch on back/forward)
+  useEffect(() => {
+    if (shouldRefresh) {
+      // Remove refresh param from URL to prevent repeated refetches
+      const newUrl = `/dashboard/${id}${searchParams.get("edit") === "true" ? "?edit=true" : ""}`;
+      router.replace(newUrl);
+    }
+  }, [shouldRefresh, id, router, searchParams]);
 
   // Fetch QR code details
   const fetchQRCode = useCallback(async () => {
@@ -119,7 +130,8 @@ export default function QRDetailPage({
 
   useEffect(() => {
     fetchQRCode();
-  }, [fetchQRCode]);
+    // When shouldRefresh is true (coming from payment), refetch to get updated is_editable status
+  }, [fetchQRCode, shouldRefresh]);
 
   const handleDelete = async () => {
     if (
@@ -570,6 +582,7 @@ export default function QRDetailPage({
       {showEditModal && (
         <EditModal
           qrCode={qrCode}
+          forceRefresh={shouldRefresh}
           onClose={() => {
             setShowEditModal(false);
             // Remove query params
