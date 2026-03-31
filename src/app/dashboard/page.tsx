@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import { createClient } from "@/lib/supabase/client";
 
@@ -25,7 +26,9 @@ interface Stats {
 
 type FilterType = "all" | "editable" | "static";
 
-export default function DashboardPage() {
+function DashboardContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [qrCodes, setQrCodes] = useState<QRCodeData[]>([]);
   const [filteredCodes, setFilteredCodes] = useState<QRCodeData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +44,16 @@ export default function DashboardPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
 
   const supabase = createClient();
+
+  // Check if we need to force refresh (coming from payment success)
+  const shouldRefresh = searchParams.get("refresh") === "true";
+
+  // Clean up refresh param from URL after processing
+  useEffect(() => {
+    if (shouldRefresh) {
+      router.replace("/dashboard");
+    }
+  }, [shouldRefresh, router]);
 
   // Fetch QR codes from Supabase
   const fetchQRCodes = useCallback(async () => {
@@ -96,7 +109,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchQRCodes();
-  }, [fetchQRCodes]);
+    // shouldRefresh triggers refetch when coming from payment success
+  }, [fetchQRCodes, shouldRefresh]);
 
   // Apply filters and search
   useEffect(() => {
@@ -517,5 +531,24 @@ export default function DashboardPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function DashboardLoading() {
+  return (
+    <div className="flex min-h-[400px] items-center justify-center">
+      <div className="text-center">
+        <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-[var(--border)] border-t-[var(--accent)]"></div>
+        <p className="text-[var(--muted)]">Loading your QR codes...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<DashboardLoading />}>
+      <DashboardContent />
+    </Suspense>
   );
 }

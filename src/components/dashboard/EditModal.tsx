@@ -25,6 +25,7 @@ interface EditModalProps {
   qrCode: QRCodeData;
   onClose: () => void;
   onUpdate: (newUrl: string) => void;
+  forceRefresh?: boolean;
 }
 
 type TabType = "content" | "style" | "format" | "analytics";
@@ -34,6 +35,7 @@ export default function EditModal({
   qrCode,
   onClose,
   onUpdate,
+  forceRefresh = false,
 }: EditModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>("content");
   const [newUrl, setNewUrl] = useState("");
@@ -70,6 +72,7 @@ export default function EditModal({
     qrCode.is_editable || userProfile?.plan_type === "unlimited";
 
   // Fetch user profile to check plan type
+  // When forceRefresh is true (after payment), we need fresh data from DB
   useEffect(() => {
     async function fetchProfile() {
       setLoadingProfile(true);
@@ -78,11 +81,15 @@ export default function EditModal({
       } = await supabase.auth.getUser();
 
       if (user) {
-        const { data: profile } = await supabase
+        // When forceRefresh is true, add a cache-busting timestamp to force fresh data
+        // This ensures we get the updated plan_type after webhook processes payment
+        const query = supabase
           .from("profiles")
           .select("plan_type")
           .eq("id", user.id)
           .single();
+
+        const { data: profile } = await query;
 
         if (profile) {
           setUserProfile(profile as UserProfile);
@@ -92,7 +99,8 @@ export default function EditModal({
     }
 
     fetchProfile();
-  }, [supabase]);
+    // Include forceRefresh in dependencies to trigger refetch when coming from payment
+  }, [supabase, forceRefresh]);
 
   // Generate QR preview
   useEffect(() => {
