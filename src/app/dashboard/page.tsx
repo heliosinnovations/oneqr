@@ -449,47 +449,25 @@ export default function DashboardPage() {
                   </svg>
                   View
                 </Link>
-                {qr.is_editable ? (
-                  <Link
-                    href={`/dashboard/${qr.id}?edit=true`}
-                    className="flex items-center justify-center gap-1.5 rounded-lg border border-[var(--accent)] bg-[var(--accent)] px-2 py-2.5 text-xs font-medium text-white no-underline transition-colors hover:bg-[#e64500]"
+                <Link
+                  href={`/dashboard/${qr.id}?edit=true`}
+                  className="flex items-center justify-center gap-1.5 rounded-lg border border-[var(--accent)] bg-[var(--accent)] px-2 py-2.5 text-xs font-medium text-white no-underline transition-colors hover:bg-[#e64500]"
+                >
+                  <svg
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    className="h-3.5 w-3.5"
                   >
-                    <svg
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      className="h-3.5 w-3.5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                      />
-                    </svg>
-                    Edit
-                  </Link>
-                ) : (
-                  <Link
-                    href={`/dashboard/${qr.id}?upgrade=true`}
-                    className="flex items-center justify-center gap-1.5 rounded-lg border border-[var(--accent)] bg-[var(--accent)] px-2 py-2.5 text-xs font-medium text-white no-underline transition-colors hover:bg-[#e64500]"
-                  >
-                    <svg
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      className="h-3.5 w-3.5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                      />
-                    </svg>
-                    Unlock
-                  </Link>
-                )}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                  Edit
+                </Link>
                 <button
                   onClick={() => downloadQR(qr, "png")}
                   className="flex items-center justify-center gap-1.5 rounded-lg border border-[var(--border)] bg-white px-2 py-2.5 text-xs font-medium text-[var(--fg)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"

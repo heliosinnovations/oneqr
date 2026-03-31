@@ -57,6 +57,13 @@ export async function POST(request: NextRequest) {
         const qrCodeId = session.metadata?.qr_code_id;
         const customerEmail = session.customer_email;
 
+        console.log(`Processing checkout.session.completed:`, {
+          userId,
+          planType,
+          qrCodeId,
+          customerEmail,
+        });
+
         if (userId) {
           // Update user's plan in profiles table
           const { error: profileError } = await supabase
@@ -69,11 +76,33 @@ export async function POST(request: NextRequest) {
 
           if (profileError) {
             console.error("Error updating profile:", profileError);
+          } else {
+            console.log(`User ${userId} profile updated to plan: ${planType}`);
+          }
+
+          // For unlimited plan, mark ALL user's QR codes as editable
+          if (planType === "unlimited") {
+            const { data: updatedQrs, error: qrError } = await supabase
+              .from("qr_codes")
+              .update({
+                is_editable: true,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("user_id", userId)
+              .select("id");
+
+            if (qrError) {
+              console.error("Error updating QR codes for unlimited plan:", qrError);
+            } else {
+              console.log(
+                `Marked ${updatedQrs?.length || 0} QR codes as editable for user ${userId} (unlimited plan)`
+              );
+            }
           }
         }
 
-        // If a specific QR code was being upgraded, mark it as editable
-        if (qrCodeId) {
+        // For single plan OR if no userId but qrCodeId exists, mark the specific QR code as editable
+        if (qrCodeId && planType === "single") {
           const { error: qrError } = await supabase
             .from("qr_codes")
             .update({
@@ -85,7 +114,7 @@ export async function POST(request: NextRequest) {
           if (qrError) {
             console.error("Error updating QR code:", qrError);
           } else {
-            console.log(`QR code ${qrCodeId} marked as editable`);
+            console.log(`QR code ${qrCodeId} marked as editable (single plan)`);
           }
         }
 
@@ -97,6 +126,7 @@ export async function POST(request: NextRequest) {
           amount_total: session.amount_total,
           currency: session.currency,
           plan_type: planType,
+          qr_code_id: qrCodeId || null,
           customer_email: customerEmail,
           status: "completed",
           created_at: new Date().toISOString(),

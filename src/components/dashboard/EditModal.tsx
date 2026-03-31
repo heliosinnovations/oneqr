@@ -10,23 +10,32 @@ interface QRCodeData {
   short_code: string;
   destination_url: string;
   is_editable: boolean;
+  foreground_color?: string;
+  background_color?: string;
+  pattern_style?: string;
+  size?: number;
+  format?: string;
+}
+
+interface UserProfile {
+  plan_type: "free" | "single" | "unlimited";
 }
 
 interface EditModalProps {
   qrCode: QRCodeData;
-  mode: "edit" | "upgrade";
   onClose: () => void;
   onUpdate: (newUrl: string) => void;
 }
 
+type TabType = "content" | "style" | "format" | "analytics";
 type PricingPlan = "single" | "unlimited";
 
 export default function EditModal({
   qrCode,
-  mode,
   onClose,
   onUpdate,
 }: EditModalProps) {
+  const [activeTab, setActiveTab] = useState<TabType>("content");
   const [newUrl, setNewUrl] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -34,17 +43,65 @@ export default function EditModal({
   const [qrPreview, setQrPreview] = useState<string | null>(null);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan>("single");
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  // Style settings
+  const [foregroundColor, setForegroundColor] = useState(
+    qrCode.foreground_color || "#1a1a1a"
+  );
+  const [backgroundColor, setBackgroundColor] = useState(
+    qrCode.background_color || "#ffffff"
+  );
+  const [patternStyle, setPatternStyle] = useState(
+    qrCode.pattern_style || "square"
+  );
+
+  // Format settings
+  const [size, setSize] = useState(qrCode.size || 1024);
+  const [format, setFormat] = useState<"png" | "svg">(
+    (qrCode.format as "png" | "svg") || "png"
+  );
 
   const supabase = createClient();
+
+  // Check if user can edit content
+  const canEditContent =
+    qrCode.is_editable || userProfile?.plan_type === "unlimited";
+
+  // Fetch user profile to check plan type
+  useEffect(() => {
+    async function fetchProfile() {
+      setLoadingProfile(true);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("plan_type")
+          .eq("id", user.id)
+          .single();
+
+        if (profile) {
+          setUserProfile(profile as UserProfile);
+        }
+      }
+      setLoadingProfile(false);
+    }
+
+    fetchProfile();
+  }, [supabase]);
 
   // Generate QR preview
   useEffect(() => {
     QRCode.toDataURL(qrCode.destination_url, {
-      width: 88,
+      width: 200,
       margin: 1,
-      color: { dark: "#1a1a1a", light: "#f7f6f1" },
+      color: { dark: foregroundColor, light: backgroundColor },
     }).then(setQrPreview);
-  }, [qrCode.destination_url]);
+  }, [qrCode.destination_url, foregroundColor, backgroundColor]);
 
   const validateUrl = (url: string): boolean => {
     if (!url.trim()) {
@@ -64,7 +121,7 @@ export default function EditModal({
     }
   };
 
-  const handleSave = async () => {
+  const handleSaveContent = async () => {
     if (!validateUrl(newUrl)) return;
 
     setSaving(true);
@@ -91,6 +148,61 @@ export default function EditModal({
     // Close after showing success
     setTimeout(() => {
       onClose();
+    }, 1500);
+  };
+
+  const handleSaveStyle = async () => {
+    setSaving(true);
+    setError("");
+
+    const { error: updateError } = await supabase
+      .from("qr_codes")
+      .update({
+        foreground_color: foregroundColor,
+        background_color: backgroundColor,
+        pattern_style: patternStyle,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", qrCode.id);
+
+    if (updateError) {
+      console.error("Error updating QR style:", updateError);
+      setError("Failed to update style. Please try again.");
+      setSaving(false);
+      return;
+    }
+
+    setSuccess(true);
+    setTimeout(() => {
+      setSuccess(false);
+      setSaving(false);
+    }, 1500);
+  };
+
+  const handleSaveFormat = async () => {
+    setSaving(true);
+    setError("");
+
+    const { error: updateError } = await supabase
+      .from("qr_codes")
+      .update({
+        size: size,
+        format: format,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", qrCode.id);
+
+    if (updateError) {
+      console.error("Error updating QR format:", updateError);
+      setError("Failed to update format. Please try again.");
+      setSaving(false);
+      return;
+    }
+
+    setSuccess(true);
+    setTimeout(() => {
+      setSuccess(false);
+      setSaving(false);
     }, 1500);
   };
 
@@ -130,27 +242,401 @@ export default function EditModal({
     }
   };
 
-  // Edit Mode UI
-  if (mode === "edit") {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-        {/* Backdrop */}
-        <div
-          className="absolute inset-0 bg-[rgba(26,26,26,0.6)] backdrop-blur-sm"
-          onClick={onClose}
-        />
+  const tabs: { id: TabType; label: string; icon: JSX.Element }[] = [
+    {
+      id: "content",
+      label: "Content",
+      icon: (
+        <svg
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          className="h-4 w-4"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+          />
+        </svg>
+      ),
+    },
+    {
+      id: "style",
+      label: "Style",
+      icon: (
+        <svg
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          className="h-4 w-4"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+          />
+        </svg>
+      ),
+    },
+    {
+      id: "format",
+      label: "Format",
+      icon: (
+        <svg
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          className="h-4 w-4"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+          />
+        </svg>
+      ),
+    },
+    {
+      id: "analytics",
+      label: "Analytics",
+      icon: (
+        <svg
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          className="h-4 w-4"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+          />
+        </svg>
+      ),
+    },
+  ];
 
-        {/* Modal */}
-        <div className="animate-in fade-in zoom-in-95 relative w-full max-w-[480px] overflow-hidden rounded-[20px] bg-[var(--bg)] shadow-2xl duration-200">
-          {success ? (
-            // Success State
-            <div className="p-8 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#d1e7dd]">
+  // Content Tab - Locked State
+  const renderLockedContent = () => (
+    <div className="p-6">
+      {/* QR Info Row */}
+      <div className="mb-6 flex items-center gap-4 rounded-xl bg-[var(--surface)] p-4">
+        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white">
+          {qrPreview ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={qrPreview} alt="QR preview" className="h-11 w-11" />
+          ) : (
+            <div className="h-11 w-11 animate-pulse rounded bg-[var(--border)]" />
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="font-semibold text-[var(--fg)]">{qrCode.title}</div>
+          <div className="truncate text-xs text-[var(--muted)]">
+            theqrspot.com/r/{qrCode.short_code}
+          </div>
+        </div>
+      </div>
+
+      {/* Lock Message */}
+      <div className="mb-6 rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--surface)] p-8 text-center">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent-light)]">
+          <svg
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            className="h-8 w-8 text-[var(--accent)]"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
+          </svg>
+        </div>
+        <h3 className="mb-2 font-serif text-xl text-[var(--fg)]">
+          Content Editing Locked
+        </h3>
+        <p className="mb-4 text-sm text-[var(--muted)]">
+          Unlock to change where this QR code redirects
+        </p>
+
+        {/* Current URL */}
+        <div className="mb-6 rounded-lg bg-white p-3 text-left">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+            Current destination
+          </div>
+          <div className="mt-1 break-all text-sm text-[var(--fg)]">
+            {qrCode.destination_url}
+          </div>
+        </div>
+      </div>
+
+      {/* Pricing Options */}
+      <div className="mb-6 grid grid-cols-2 gap-3">
+        {/* Single QR Option */}
+        <button
+          onClick={() => setSelectedPlan("single")}
+          className={`relative rounded-xl border-2 p-4 text-left transition-all ${
+            selectedPlan === "single"
+              ? "border-[var(--accent)] bg-[var(--accent-light)]"
+              : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
+          }`}
+        >
+          {selectedPlan === "single" && (
+            <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)]">
+              <svg
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                className="h-3 w-3 text-white"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+          )}
+          <div className="font-serif text-2xl text-[var(--fg)]">$3.99</div>
+          <div className="mt-1 text-xs font-semibold text-[var(--fg)]">
+            This QR Only
+          </div>
+          <div className="mt-1 text-[10px] text-[var(--muted)]">
+            Edit this QR code forever
+          </div>
+        </button>
+
+        {/* Unlimited Option */}
+        <button
+          onClick={() => setSelectedPlan("unlimited")}
+          className={`relative rounded-xl border-2 p-4 text-left transition-all ${
+            selectedPlan === "unlimited"
+              ? "border-[var(--accent)] bg-[var(--accent-light)]"
+              : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
+          }`}
+        >
+          <div className="absolute -top-2 left-3 rounded bg-[var(--accent)] px-1.5 py-0.5 text-[9px] font-bold uppercase text-white">
+            Best Value
+          </div>
+          {selectedPlan === "unlimited" && (
+            <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)]">
+              <svg
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                className="h-3 w-3 text-white"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+          )}
+          <div className="font-serif text-2xl text-[var(--fg)]">$9.99</div>
+          <div className="mt-1 text-xs font-semibold text-[var(--fg)]">
+            Unlimited QRs
+          </div>
+          <div className="mt-1 text-[10px] text-[var(--muted)]">
+            Edit all QR codes forever
+          </div>
+        </button>
+      </div>
+
+      {error && <p className="mb-4 text-center text-sm text-red-500">{error}</p>}
+
+      {/* Unlock Button */}
+      <button
+        onClick={() => handleUpgrade()}
+        disabled={processingPayment}
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] hover:shadow-lg disabled:translate-y-0 disabled:opacity-70"
+      >
+        {processingPayment ? (
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+        ) : (
+          <>
+            <svg
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
+              />
+            </svg>
+            Unlock for {selectedPlan === "unlimited" ? "$9.99" : "$3.99"}
+          </>
+        )}
+      </button>
+
+      <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[var(--muted)]">
+        <svg
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          className="h-3.5 w-3.5"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+          />
+        </svg>
+        Secure payment via Stripe
+      </div>
+    </div>
+  );
+
+  // Content Tab - Editable State
+  const renderEditableContent = () => {
+    if (success) {
+      return (
+        <div className="p-8 text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#d1e7dd]">
+            <svg
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              className="h-8 w-8 text-[#198754]"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <h3 className="mb-2 font-serif text-xl text-[var(--fg)]">
+            URL Updated!
+          </h3>
+          <p className="text-sm text-[var(--muted)]">
+            Your QR code now redirects to the new destination.
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="p-6">
+        {/* QR Info Row */}
+        <div className="mb-6 flex items-center gap-4 rounded-xl bg-[var(--surface)] p-4">
+          <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white">
+            {qrPreview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={qrPreview} alt="QR preview" className="h-11 w-11" />
+            ) : (
+              <div className="h-11 w-11 animate-pulse rounded bg-[var(--border)]" />
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="font-semibold text-[var(--fg)]">{qrCode.title}</div>
+            <div className="truncate text-xs text-[var(--muted)]">
+              theqrspot.com/r/{qrCode.short_code}
+            </div>
+          </div>
+        </div>
+
+        {/* Current URL */}
+        <div className="mb-4 rounded-lg bg-[var(--surface)] p-3">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+            Current destination
+          </div>
+          <div className="mt-1 break-all text-sm text-[var(--fg)]">
+            {qrCode.destination_url}
+          </div>
+        </div>
+
+        {/* New URL Input */}
+        <div>
+          <label
+            htmlFor="new-url"
+            className="mb-2 block text-sm font-semibold text-[var(--fg)]"
+          >
+            New Destination URL
+          </label>
+          <input
+            id="new-url"
+            type="url"
+            value={newUrl}
+            onChange={(e) => {
+              setNewUrl(e.target.value);
+              setError("");
+            }}
+            placeholder="https://example.com/new-page"
+            className={`w-full rounded-xl border bg-white px-4 py-3.5 text-[15px] transition-all focus:outline-none ${
+              error
+                ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                : "border-[var(--border)] focus:border-[var(--accent)] focus:ring-[var(--accent-light)]"
+            } focus:ring-4`}
+          />
+          {error ? (
+            <p className="mt-2 text-xs text-red-500">{error}</p>
+          ) : (
+            <p className="mt-2 text-xs text-[var(--muted)]">
+              Enter the new URL where your QR code should redirect
+            </p>
+          )}
+        </div>
+
+        {/* Warning */}
+        <div className="mt-4 flex items-start gap-2 rounded-lg border border-yellow-200 bg-[#fff3cd] p-3">
+          <svg
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+          <p className="text-xs text-yellow-800">
+            <strong>Note:</strong> If you&apos;ve already printed this QR code,
+            it will automatically redirect to the new URL. No need to reprint!
+          </p>
+        </div>
+
+        {/* Save Button */}
+        <div className="mt-6 flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-6 py-3.5 text-[15px] font-semibold text-[var(--fg)] transition-colors hover:bg-[var(--border)]"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSaveContent}
+            disabled={saving || !newUrl.trim()}
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3.5 text-[15px] font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] disabled:translate-y-0 disabled:bg-[var(--muted)] disabled:opacity-70"
+          >
+            {saving ? (
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+            ) : (
+              <>
                 <svg
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
-                  className="h-8 w-8 text-[#198754]"
+                  className="h-[18px] w-[18px]"
                 >
                   <path
                     strokeLinecap="round"
@@ -159,175 +645,325 @@ export default function EditModal({
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-              </div>
-              <h3 className="mb-2 font-serif text-xl text-[var(--fg)]">
-                URL Updated!
-              </h3>
-              <p className="text-sm text-[var(--muted)]">
-                Your QR code now redirects to the new destination.
-              </p>
-            </div>
-          ) : (
-            <>
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
-                <h2 className="font-serif text-xl text-[var(--fg)]">
-                  Edit QR Destination
-                </h2>
-                <button
-                  onClick={onClose}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface)] transition-colors hover:bg-[var(--border)]"
-                >
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    className="h-[18px] w-[18px] text-[var(--muted)]"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Body */}
-              <div className="p-6">
-                {/* QR Info Row */}
-                <div className="mb-6 flex items-center gap-4 rounded-xl bg-[var(--surface)] p-4">
-                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white">
-                    {qrPreview ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={qrPreview}
-                        alt="QR preview"
-                        className="h-11 w-11"
-                      />
-                    ) : (
-                      <div className="h-11 w-11 animate-pulse rounded bg-[var(--border)]" />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="font-semibold text-[var(--fg)]">
-                      {qrCode.title}
-                    </div>
-                    <div className="truncate text-xs text-[var(--muted)]">
-                      theqrspot.com/r/{qrCode.short_code}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Current URL */}
-                <div className="mb-4 rounded-lg bg-[var(--surface)] p-3">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
-                    Current destination
-                  </div>
-                  <div className="mt-1 break-all text-sm text-[var(--fg)]">
-                    {qrCode.destination_url}
-                  </div>
-                </div>
-
-                {/* New URL Input */}
-                <div>
-                  <label
-                    htmlFor="new-url"
-                    className="mb-2 block text-sm font-semibold text-[var(--fg)]"
-                  >
-                    New Destination URL
-                  </label>
-                  <input
-                    id="new-url"
-                    type="url"
-                    value={newUrl}
-                    onChange={(e) => {
-                      setNewUrl(e.target.value);
-                      setError("");
-                    }}
-                    placeholder="https://example.com/new-page"
-                    className={`w-full rounded-xl border bg-white px-4 py-3.5 text-[15px] transition-all focus:outline-none ${
-                      error
-                        ? "border-red-500 focus:border-red-500 focus:ring-red-100"
-                        : "border-[var(--border)] focus:border-[var(--accent)] focus:ring-[var(--accent-light)]"
-                    } focus:ring-4`}
-                  />
-                  {error ? (
-                    <p className="mt-2 text-xs text-red-500">{error}</p>
-                  ) : (
-                    <p className="mt-2 text-xs text-[var(--muted)]">
-                      Enter the new URL where your QR code should redirect
-                    </p>
-                  )}
-                </div>
-
-                {/* Warning */}
-                <div className="mt-4 flex items-start gap-2 rounded-lg border border-yellow-200 bg-[#fff3cd] p-3">
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                  <p className="text-xs text-yellow-800">
-                    <strong>Note:</strong> If you&apos;ve already printed this
-                    QR code, it will automatically redirect to the new URL. No
-                    need to reprint!
-                  </p>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="flex gap-3 p-6 pt-0">
-                <button
-                  onClick={onClose}
-                  className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-6 py-3.5 text-[15px] font-semibold text-[var(--fg)] transition-colors hover:bg-[var(--border)]"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSave}
-                  disabled={saving || !newUrl.trim()}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3.5 text-[15px] font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] disabled:translate-y-0 disabled:bg-[var(--muted)] disabled:opacity-70"
-                >
-                  {saving ? (
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  ) : (
-                    <>
-                      <svg
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        className="h-[18px] w-[18px]"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      Save Changes
-                    </>
-                  )}
-                </button>
-              </div>
-            </>
-          )}
+                Save Changes
+              </>
+            )}
+          </button>
         </div>
       </div>
     );
-  }
+  };
 
-  // Upgrade Mode UI
+  // Style Tab
+  const renderStyleTab = () => (
+    <div className="p-6">
+      {/* QR Preview */}
+      <div className="mb-6 flex justify-center">
+        <div
+          className="flex h-40 w-40 items-center justify-center rounded-xl"
+          style={{ backgroundColor: backgroundColor }}
+        >
+          {qrPreview ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={qrPreview} alt="QR preview" className="h-32 w-32" />
+          ) : (
+            <div className="h-32 w-32 animate-pulse rounded bg-[var(--border)]" />
+          )}
+        </div>
+      </div>
+
+      {/* Color Pickers */}
+      <div className="mb-4">
+        <label className="mb-2 block text-sm font-semibold text-[var(--fg)]">
+          Foreground Color
+        </label>
+        <div className="flex items-center gap-3">
+          <input
+            type="color"
+            value={foregroundColor}
+            onChange={(e) => setForegroundColor(e.target.value)}
+            className="h-10 w-16 cursor-pointer rounded border border-[var(--border)]"
+          />
+          <input
+            type="text"
+            value={foregroundColor}
+            onChange={(e) => setForegroundColor(e.target.value)}
+            className="flex-1 rounded-lg border border-[var(--border)] px-3 py-2 text-sm uppercase"
+          />
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <label className="mb-2 block text-sm font-semibold text-[var(--fg)]">
+          Background Color
+        </label>
+        <div className="flex items-center gap-3">
+          <input
+            type="color"
+            value={backgroundColor}
+            onChange={(e) => setBackgroundColor(e.target.value)}
+            className="h-10 w-16 cursor-pointer rounded border border-[var(--border)]"
+          />
+          <input
+            type="text"
+            value={backgroundColor}
+            onChange={(e) => setBackgroundColor(e.target.value)}
+            className="flex-1 rounded-lg border border-[var(--border)] px-3 py-2 text-sm uppercase"
+          />
+        </div>
+      </div>
+
+      {/* Pattern Style */}
+      <div className="mb-6">
+        <label className="mb-2 block text-sm font-semibold text-[var(--fg)]">
+          Pattern Style
+        </label>
+        <div className="grid grid-cols-3 gap-2">
+          {["square", "rounded", "dots"].map((style) => (
+            <button
+              key={style}
+              onClick={() => setPatternStyle(style)}
+              className={`rounded-lg border-2 px-4 py-2 text-sm capitalize transition-all ${
+                patternStyle === style
+                  ? "border-[var(--accent)] bg-[var(--accent-light)] text-[var(--accent)]"
+                  : "border-[var(--border)] bg-white text-[var(--fg)] hover:border-[var(--accent)]"
+              }`}
+            >
+              {style}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {error && <p className="mb-4 text-center text-sm text-red-500">{error}</p>}
+
+      {success && (
+        <div className="mb-4 flex items-center justify-center gap-2 rounded-lg bg-[#d1e7dd] p-3 text-sm text-[#198754]">
+          <svg
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            className="h-4 w-4"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          Style saved!
+        </div>
+      )}
+
+      {/* Save Button */}
+      <button
+        onClick={handleSaveStyle}
+        disabled={saving}
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3.5 text-[15px] font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] disabled:translate-y-0 disabled:opacity-70"
+      >
+        {saving ? (
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+        ) : (
+          "Save Style"
+        )}
+      </button>
+    </div>
+  );
+
+  // Format Tab
+  const renderFormatTab = () => (
+    <div className="p-6">
+      {/* Size Selection */}
+      <div className="mb-6">
+        <label className="mb-2 block text-sm font-semibold text-[var(--fg)]">
+          Size (pixels)
+        </label>
+        <div className="grid grid-cols-4 gap-2">
+          {[256, 512, 1024, 2048].map((s) => (
+            <button
+              key={s}
+              onClick={() => setSize(s)}
+              className={`rounded-lg border-2 px-3 py-2 text-sm transition-all ${
+                size === s
+                  ? "border-[var(--accent)] bg-[var(--accent-light)] text-[var(--accent)]"
+                  : "border-[var(--border)] bg-white text-[var(--fg)] hover:border-[var(--accent)]"
+              }`}
+            >
+              {s}px
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Format Selection */}
+      <div className="mb-6">
+        <label className="mb-2 block text-sm font-semibold text-[var(--fg)]">
+          Export Format
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => setFormat("png")}
+            className={`flex items-center justify-center gap-2 rounded-xl border-2 p-4 transition-all ${
+              format === "png"
+                ? "border-[var(--accent)] bg-[var(--accent-light)]"
+                : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
+            }`}
+          >
+            <svg
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            <span className="font-semibold">PNG</span>
+          </button>
+          <button
+            onClick={() => setFormat("svg")}
+            className={`flex items-center justify-center gap-2 rounded-xl border-2 p-4 transition-all ${
+              format === "svg"
+                ? "border-[var(--accent)] bg-[var(--accent-light)]"
+                : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
+            }`}
+          >
+            <svg
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+              />
+            </svg>
+            <span className="font-semibold">SVG</span>
+          </button>
+        </div>
+        <p className="mt-2 text-xs text-[var(--muted)]">
+          PNG is best for printing. SVG is scalable for any size.
+        </p>
+      </div>
+
+      {error && <p className="mb-4 text-center text-sm text-red-500">{error}</p>}
+
+      {success && (
+        <div className="mb-4 flex items-center justify-center gap-2 rounded-lg bg-[#d1e7dd] p-3 text-sm text-[#198754]">
+          <svg
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            className="h-4 w-4"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          Format saved!
+        </div>
+      )}
+
+      {/* Save Button */}
+      <button
+        onClick={handleSaveFormat}
+        disabled={saving}
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3.5 text-[15px] font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] disabled:translate-y-0 disabled:opacity-70"
+      >
+        {saving ? (
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+        ) : (
+          "Save Format"
+        )}
+      </button>
+    </div>
+  );
+
+  // Analytics Tab
+  const renderAnalyticsTab = () => (
+    <div className="p-6">
+      {/* Coming Soon / Basic Stats */}
+      <div className="text-center">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--surface)]">
+          <svg
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            className="h-8 w-8 text-[var(--muted)]"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            />
+          </svg>
+        </div>
+        <h3 className="mb-2 font-serif text-lg text-[var(--fg)]">
+          Scan Analytics
+        </h3>
+        <p className="mb-6 text-sm text-[var(--muted)]">
+          View detailed analytics on the QR code detail page.
+        </p>
+
+        {/* Quick Stats */}
+        <div className="rounded-xl bg-[var(--surface)] p-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center">
+              <div className="font-serif text-3xl text-[var(--fg)]">0</div>
+              <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+                Total Scans
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="font-serif text-3xl text-[var(--fg)]">-</div>
+              <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+                This Week
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p className="mt-4 text-xs text-[var(--muted)]">
+          Analytics are updated in real-time as your QR code is scanned.
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "content":
+        if (loadingProfile) {
+          return (
+            <div className="flex h-64 items-center justify-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--border)] border-t-[var(--accent)]" />
+            </div>
+          );
+        }
+        return canEditContent ? renderEditableContent() : renderLockedContent();
+      case "style":
+        return renderStyleTab();
+      case "format":
+        return renderFormatTab();
+      case "analytics":
+        return renderAnalyticsTab();
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
       {/* Backdrop */}
@@ -337,247 +973,52 @@ export default function EditModal({
       />
 
       {/* Modal */}
-      <div className="animate-in fade-in zoom-in-95 relative w-full max-w-[480px] overflow-hidden rounded-[20px] bg-[var(--bg)] shadow-2xl duration-200">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface)] transition-colors hover:bg-[var(--border)]"
-        >
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            className="h-[18px] w-[18px] text-[var(--muted)]"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-
+      <div className="animate-in fade-in zoom-in-95 relative flex max-h-[90vh] w-full max-w-[520px] flex-col overflow-hidden rounded-[20px] bg-[var(--bg)] shadow-2xl duration-200">
         {/* Header */}
-        <div className="px-6 pb-6 pt-8 text-center">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[var(--accent-light)]">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              className="h-10 w-10 text-[var(--accent)]"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
-          </div>
-          <h2 className="mb-2 font-serif text-2xl text-[var(--fg)]">
-            Unlock Editing
+        <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
+          <h2 className="font-serif text-xl text-[var(--fg)]">
+            Edit QR Code
           </h2>
-          <p className="text-[15px] text-[var(--muted)]">
-            Make this QR code editable forever
-          </p>
-        </div>
-
-        {/* Body */}
-        <div className="px-6 pb-6">
-          {/* QR Info Row */}
-          <div className="mb-6 flex items-center gap-4 rounded-xl bg-[var(--surface)] p-4">
-            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white">
-              {qrPreview ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={qrPreview} alt="QR preview" className="h-11 w-11" />
-              ) : (
-                <div className="h-11 w-11 animate-pulse rounded bg-[var(--border)]" />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="font-semibold text-[var(--fg)]">
-                {qrCode.title}
-              </div>
-              <div className="truncate text-xs text-[var(--muted)]">
-                {qrCode.destination_url}
-              </div>
-            </div>
-          </div>
-
-          {/* Pricing Options */}
-          <div className="mb-6 grid grid-cols-2 gap-3">
-            {/* Single QR Option */}
-            <button
-              onClick={() => setSelectedPlan("single")}
-              className={`relative rounded-xl border-2 p-4 text-left transition-all ${
-                selectedPlan === "single"
-                  ? "border-[var(--accent)] bg-[var(--accent-light)]"
-                  : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
-              }`}
-            >
-              {selectedPlan === "single" && (
-                <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)]">
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    className="h-3 w-3 text-white"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-              )}
-              <div className="font-serif text-2xl text-[var(--fg)]">$3.99</div>
-              <div className="mt-1 text-xs font-semibold text-[var(--fg)]">
-                This QR Only
-              </div>
-              <div className="mt-1 text-[10px] text-[var(--muted)]">
-                Edit this QR code forever
-              </div>
-            </button>
-
-            {/* Unlimited Option */}
-            <button
-              onClick={() => setSelectedPlan("unlimited")}
-              className={`relative rounded-xl border-2 p-4 text-left transition-all ${
-                selectedPlan === "unlimited"
-                  ? "border-[var(--accent)] bg-[var(--accent-light)]"
-                  : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
-              }`}
-            >
-              <div className="absolute -top-2 left-3 rounded bg-[var(--accent)] px-1.5 py-0.5 text-[9px] font-bold uppercase text-white">
-                Best Value
-              </div>
-              {selectedPlan === "unlimited" && (
-                <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)]">
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    className="h-3 w-3 text-white"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-              )}
-              <div className="font-serif text-2xl text-[var(--fg)]">$9.99</div>
-              <div className="mt-1 text-xs font-semibold text-[var(--fg)]">
-                Unlimited QRs
-              </div>
-              <div className="mt-1 text-[10px] text-[var(--muted)]">
-                Edit all QR codes forever
-              </div>
-            </button>
-          </div>
-
-          {/* Feature List */}
-          <div className="mb-4 rounded-xl bg-[var(--surface)] p-4">
-            {[
-              {
-                title: selectedPlan === "unlimited" ? "All QR codes editable" : "Edit this QR forever",
-                desc: "Change the destination URL anytime",
-              },
-              { title: "No expiration", desc: "Your QR code works forever" },
-              {
-                title: "Scan analytics",
-                desc: "Track who scans your code",
-              },
-            ].map((feature, i) => (
-              <div
-                key={feature.title}
-                className={`flex items-start gap-3 py-2 ${i !== 2 ? "mb-1 border-b border-[var(--border)] pb-2" : ""}`}
-              >
-                <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#d1e7dd]">
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    className="h-3 w-3 text-[#198754]"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-                <div className="text-xs text-[var(--fg)]">
-                  <strong>{feature.title}</strong> - {feature.desc}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {error && (
-            <p className="mb-4 text-center text-sm text-red-500">{error}</p>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="px-6 pb-6">
-          <button
-            onClick={() => handleUpgrade()}
-            disabled={processingPayment}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] hover:shadow-lg disabled:translate-y-0 disabled:opacity-70"
-          >
-            {processingPayment ? (
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-            ) : (
-              <>
-                <svg
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  className="h-5 w-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                  />
-                </svg>
-                Pay {selectedPlan === "unlimited" ? "$9.99" : "$3.99"} &amp; Unlock
-              </>
-            )}
-          </button>
-
-          <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[var(--muted)]">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              className="h-3.5 w-3.5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
-            Secure payment via Stripe
-          </div>
-
           <button
             onClick={onClose}
-            className="mt-4 block w-full text-center text-sm text-[var(--muted)] transition-colors hover:text-[var(--fg)]"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface)] transition-colors hover:bg-[var(--border)]"
           >
-            Maybe later
+            <svg
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              className="h-[18px] w-[18px] text-[var(--muted)]"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
           </button>
         </div>
+
+        {/* Tabs */}
+        <div className="flex border-b border-[var(--border)]">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-all ${
+                activeTab === tab.id
+                  ? "border-b-2 border-[var(--accent)] text-[var(--accent)]"
+                  : "text-[var(--muted)] hover:text-[var(--fg)]"
+              }`}
+            >
+              {tab.icon}
+              <span className="hidden sm:inline">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        <div className="flex-1 overflow-y-auto">{renderTabContent()}</div>
       </div>
     </div>
   );

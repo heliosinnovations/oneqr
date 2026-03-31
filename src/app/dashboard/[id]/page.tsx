@@ -36,18 +36,14 @@ export default function QRDetailPage({
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [scanData, setScanData] = useState<ScanData[]>([]);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const supabase = createClient();
 
   // Check URL params for modal triggers
   useEffect(() => {
-    if (searchParams.get("edit") === "true") {
+    if (searchParams.get("edit") === "true" || searchParams.get("upgrade") === "true") {
       setShowEditModal(true);
-    }
-    if (searchParams.get("upgrade") === "true") {
-      setShowUpgradeModal(true);
     }
   }, [searchParams]);
 
@@ -324,48 +320,26 @@ export default function QRDetailPage({
             </button>
           </div>
 
-          {/* Edit/Upgrade Button */}
-          {qrCode.is_editable ? (
-            <button
-              onClick={() => setShowEditModal(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent)] px-6 py-3.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500]"
+          {/* Edit Button - Always shown */}
+          <button
+            onClick={() => setShowEditModal(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent)] px-6 py-3.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500]"
+          >
+            <svg
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              className="h-[18px] w-[18px]"
             >
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                className="h-[18px] w-[18px]"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
-              Edit Destination URL
-            </button>
-          ) : (
-            <button
-              onClick={() => setShowUpgradeModal(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent)] px-6 py-3.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500]"
-            >
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                className="h-[18px] w-[18px]"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
-              Unlock Editing - $9.99
-            </button>
-          )}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
+            </svg>
+            Edit QR Code
+          </button>
 
           {/* Delete Button */}
           <button
@@ -402,14 +376,12 @@ export default function QRDetailPage({
               <h3 className="font-serif text-lg text-[var(--fg)]">
                 Current Destination
               </h3>
-              {qrCode.is_editable && (
-                <button
-                  onClick={() => setShowEditModal(true)}
-                  className="text-sm font-medium text-[var(--accent)] transition-colors hover:underline"
-                >
-                  Edit
-                </button>
-              )}
+              <button
+                onClick={() => setShowEditModal(true)}
+                className="text-sm font-medium text-[var(--accent)] transition-colors hover:underline"
+              >
+                Edit
+              </button>
             </div>
             <div className="flex items-start gap-4 rounded-lg bg-[var(--surface)] p-4">
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)]">
@@ -583,10 +555,10 @@ export default function QRDetailPage({
                   </p>
                 </div>
                 <button
-                  onClick={() => setShowUpgradeModal(true)}
+                  onClick={() => setShowEditModal(true)}
                   className="inline-flex items-center justify-center whitespace-nowrap rounded-lg bg-white px-6 py-3 text-sm font-semibold text-[var(--accent)] transition-transform hover:-translate-y-0.5"
                 >
-                  Upgrade for $9.99
+                  Unlock for $9.99
                 </button>
               </div>
             </div>
@@ -594,11 +566,10 @@ export default function QRDetailPage({
         </div>
       </div>
 
-      {/* Edit Modal */}
-      {showEditModal && qrCode.is_editable && (
+      {/* Edit Modal - Always available */}
+      {showEditModal && (
         <EditModal
           qrCode={qrCode}
-          mode="edit"
           onClose={() => {
             setShowEditModal(false);
             // Remove query params
@@ -620,23 +591,6 @@ export default function QRDetailPage({
               margin: 2,
               color: { dark: "#1a1a1a", light: "#f7f6f1" },
             }).then(setQrDataUrl);
-          }}
-        />
-      )}
-
-      {/* Upgrade Modal */}
-      {showUpgradeModal && !qrCode.is_editable && (
-        <EditModal
-          qrCode={qrCode}
-          mode="upgrade"
-          onClose={() => {
-            setShowUpgradeModal(false);
-            // Remove query params
-            router.replace(`/dashboard/${id}`);
-          }}
-          onUpdate={() => {
-            // Refresh after payment
-            fetchQRCode();
           }}
         />
       )}
