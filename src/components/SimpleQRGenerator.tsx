@@ -18,10 +18,40 @@ function generateShortCode(): string {
   return result;
 }
 
-// Extract a title from URL
-function extractTitleFromUrl(url: string): string {
+// Extract a title from content
+function extractTitleFromContent(content: string): string {
+  // Handle special protocols
+  if (content.startsWith("mailto:")) {
+    const email = content.replace("mailto:", "").split("?")[0];
+    return `Email: ${email}`;
+  }
+  if (content.startsWith("tel:")) {
+    const phone = content.replace("tel:", "");
+    return `Phone: ${phone}`;
+  }
+  if (content.startsWith("sms:")) {
+    const phone = content.replace("sms:", "").split("?")[0];
+    return `SMS: ${phone}`;
+  }
+  if (content.toUpperCase().startsWith("WIFI:")) {
+    // Parse SSID from WIFI format: WIFI:T:WPA;S:NetworkName;P:Password;;
+    const ssidMatch = content.match(/S:([^;]+)/);
+    const ssid = ssidMatch ? ssidMatch[1] : "Network";
+    return `WiFi: ${ssid}`;
+  }
+  if (content.startsWith("BEGIN:VCARD")) {
+    // Parse name from vCard
+    const nameMatch = content.match(/FN:([^\r\n]+)/);
+    const name = nameMatch ? nameMatch[1] : "Contact";
+    return `vCard: ${name}`;
+  }
+  if (content.startsWith("geo:")) {
+    return "Location QR";
+  }
+
+  // Handle regular URLs
   try {
-    const urlObj = new URL(url);
+    const urlObj = new URL(content);
     const hostname = urlObj.hostname.replace(/^www\./, "");
     return `${hostname} QR`;
   } catch {
@@ -48,12 +78,23 @@ export default function SimpleQRGenerator() {
       return;
     }
 
-    // Basic URL processing
+    // Process URL - only add https:// if it's not a special protocol
     let processedUrl = inputUrl.trim();
-    if (
-      !processedUrl.startsWith("http://") &&
-      !processedUrl.startsWith("https://")
-    ) {
+    const specialProtocols = [
+      "http://",
+      "https://",
+      "mailto:",
+      "tel:",
+      "sms:",
+      "WIFI:",
+      "wifi:",
+      "BEGIN:",
+      "geo:",
+    ];
+    const hasProtocol = specialProtocols.some((protocol) =>
+      processedUrl.startsWith(protocol)
+    );
+    if (!hasProtocol) {
       processedUrl = "https://" + processedUrl;
     }
 
@@ -126,17 +167,28 @@ export default function SimpleQRGenerator() {
     setIsSaving(true);
     setSaveStatus(null);
 
-    // Process URL
+    // Process URL - only add https:// if it's not a special protocol
     let processedUrl = url.trim();
-    if (
-      !processedUrl.startsWith("http://") &&
-      !processedUrl.startsWith("https://")
-    ) {
+    const specialProtocols = [
+      "http://",
+      "https://",
+      "mailto:",
+      "tel:",
+      "sms:",
+      "WIFI:",
+      "wifi:",
+      "BEGIN:",
+      "geo:",
+    ];
+    const hasProtocol = specialProtocols.some((protocol) =>
+      processedUrl.startsWith(protocol)
+    );
+    if (!hasProtocol) {
       processedUrl = "https://" + processedUrl;
     }
 
     // Generate title from URL
-    const title = extractTitleFromUrl(processedUrl);
+    const title = extractTitleFromContent(processedUrl);
 
     // Try to insert with retry for duplicate short_code
     let retries = 3;

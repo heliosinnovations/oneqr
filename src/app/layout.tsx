@@ -60,7 +60,7 @@ export const metadata: Metadata = {
       "Generate unlimited QR codes for free. Create, download as PNG or SVG, and print instantly. No signup, no expiration, no hidden fees.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/api/og",
         width: 1200,
         height: 630,
         alt: "The QR Spot - Free QR Code Generator",
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     title: "Free QR Code Generator | The QR Spot - Create, Download, Print",
     description:
       "Generate unlimited QR codes for free. Create, download as PNG or SVG, and print instantly. No signup, no expiration, no hidden fees.",
-    images: ["/og-image.png"],
+    images: ["/api/og"],
     creator: "@heliosinnovations",
   },
   alternates: {
@@ -136,7 +136,7 @@ const webApplicationSchema = {
     "No expiration dates",
     "Free forever",
   ],
-  screenshot: `${siteUrl}/og-image.png`,
+  screenshot: `${siteUrl}/api/og`,
   aggregateRating: {
     "@type": "AggregateRating",
     ratingValue: "4.9",

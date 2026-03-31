@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.user_id;
         const planType = session.metadata?.plan_type;
+        const qrCodeId = session.metadata?.qr_code_id;
         const customerEmail = session.customer_email;
 
         if (userId) {
@@ -68,6 +69,23 @@ export async function POST(request: NextRequest) {
 
           if (profileError) {
             console.error("Error updating profile:", profileError);
+          }
+        }
+
+        // If a specific QR code was being upgraded, mark it as editable
+        if (qrCodeId) {
+          const { error: qrError } = await supabase
+            .from("qr_codes")
+            .update({
+              is_editable: true,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", qrCodeId);
+
+          if (qrError) {
+            console.error("Error updating QR code:", qrError);
+          } else {
+            console.log(`QR code ${qrCodeId} marked as editable`);
           }
         }
 

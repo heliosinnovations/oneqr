@@ -662,8 +662,8 @@ function GeneratorContent() {
   const urlParam = searchParams.get("url");
 
   // Form state
-  const [url, setUrl] = useState(urlParam || "https://example.com");
-  const [urlValid, setUrlValid] = useState(true);
+  const [url, setUrl] = useState(urlParam || "");
+  const [urlValid, setUrlValid] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState<string>("");

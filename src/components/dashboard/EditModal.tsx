@@ -19,6 +19,8 @@ interface EditModalProps {
   onUpdate: (newUrl: string) => void;
 }
 
+type PricingPlan = "single" | "unlimited";
+
 export default function EditModal({
   qrCode,
   mode,
@@ -31,6 +33,7 @@ export default function EditModal({
   const [success, setSuccess] = useState(false);
   const [qrPreview, setQrPreview] = useState<string | null>(null);
   const [processingPayment, setProcessingPayment] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<PricingPlan>("single");
 
   const supabase = createClient();
 
@@ -91,16 +94,22 @@ export default function EditModal({
     }, 1500);
   };
 
-  const handleUpgrade = async () => {
+  const handleUpgrade = async (plan: PricingPlan = selectedPlan) => {
     setProcessingPayment(true);
 
     try {
-      // Call checkout API with single QR price
+      // Get the price ID based on selected plan
+      const priceId =
+        plan === "unlimited"
+          ? process.env.NEXT_PUBLIC_STRIPE_PRICE_UNLIMITED
+          : process.env.NEXT_PUBLIC_STRIPE_PRICE_SINGLE;
+
+      // Call checkout API with selected price
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_SINGLE,
+          priceId,
           qrCodeId: qrCode.id,
         }),
       });
@@ -396,11 +405,87 @@ export default function EditModal({
             </div>
           </div>
 
+          {/* Pricing Options */}
+          <div className="mb-6 grid grid-cols-2 gap-3">
+            {/* Single QR Option */}
+            <button
+              onClick={() => setSelectedPlan("single")}
+              className={`relative rounded-xl border-2 p-4 text-left transition-all ${
+                selectedPlan === "single"
+                  ? "border-[var(--accent)] bg-[var(--accent-light)]"
+                  : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
+              }`}
+            >
+              {selectedPlan === "single" && (
+                <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)]">
+                  <svg
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    className="h-3 w-3 text-white"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+              )}
+              <div className="font-serif text-2xl text-[var(--fg)]">$3.99</div>
+              <div className="mt-1 text-xs font-semibold text-[var(--fg)]">
+                This QR Only
+              </div>
+              <div className="mt-1 text-[10px] text-[var(--muted)]">
+                Edit this QR code forever
+              </div>
+            </button>
+
+            {/* Unlimited Option */}
+            <button
+              onClick={() => setSelectedPlan("unlimited")}
+              className={`relative rounded-xl border-2 p-4 text-left transition-all ${
+                selectedPlan === "unlimited"
+                  ? "border-[var(--accent)] bg-[var(--accent-light)]"
+                  : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
+              }`}
+            >
+              <div className="absolute -top-2 left-3 rounded bg-[var(--accent)] px-1.5 py-0.5 text-[9px] font-bold uppercase text-white">
+                Best Value
+              </div>
+              {selectedPlan === "unlimited" && (
+                <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)]">
+                  <svg
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    className="h-3 w-3 text-white"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+              )}
+              <div className="font-serif text-2xl text-[var(--fg)]">$9.99</div>
+              <div className="mt-1 text-xs font-semibold text-[var(--fg)]">
+                Unlimited QRs
+              </div>
+              <div className="mt-1 text-[10px] text-[var(--muted)]">
+                Edit all QR codes forever
+              </div>
+            </button>
+          </div>
+
           {/* Feature List */}
-          <div className="mb-6 rounded-xl bg-[var(--surface)] p-5">
+          <div className="mb-4 rounded-xl bg-[var(--surface)] p-4">
             {[
               {
-                title: "Unlimited edits",
+                title: selectedPlan === "unlimited" ? "All QR codes editable" : "Edit this QR forever",
                 desc: "Change the destination URL anytime",
               },
               { title: "No expiration", desc: "Your QR code works forever" },
@@ -408,21 +493,17 @@ export default function EditModal({
                 title: "Scan analytics",
                 desc: "Track who scans your code",
               },
-              {
-                title: "One-time payment",
-                desc: "No subscriptions, ever",
-              },
             ].map((feature, i) => (
               <div
                 key={feature.title}
-                className={`flex items-start gap-3 py-2 ${i !== 3 ? "mb-2 border-b border-[var(--border)] pb-3" : ""}`}
+                className={`flex items-start gap-3 py-2 ${i !== 2 ? "mb-1 border-b border-[var(--border)] pb-2" : ""}`}
               >
-                <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#d1e7dd]">
+                <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#d1e7dd]">
                   <svg
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
-                    className="h-3.5 w-3.5 text-[#198754]"
+                    className="h-3 w-3 text-[#198754]"
                   >
                     <path
                       strokeLinecap="round"
@@ -432,20 +513,11 @@ export default function EditModal({
                     />
                   </svg>
                 </div>
-                <div className="text-sm text-[var(--fg)]">
+                <div className="text-xs text-[var(--fg)]">
                   <strong>{feature.title}</strong> - {feature.desc}
                 </div>
               </div>
             ))}
-          </div>
-
-          {/* Price Box */}
-          <div className="mb-4 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[#ff8c42] p-6 text-center text-white">
-            <div className="font-serif text-4xl">$9.99</div>
-            <div className="mt-1 text-sm opacity-90">One-time payment</div>
-            <div className="mt-2 text-xs opacity-80">
-              No subscriptions. No hidden fees.
-            </div>
           </div>
 
           {error && (
@@ -456,9 +528,9 @@ export default function EditModal({
         {/* Footer */}
         <div className="px-6 pb-6">
           <button
-            onClick={handleUpgrade}
+            onClick={() => handleUpgrade()}
             disabled={processingPayment}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--fg)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:translate-y-0 disabled:opacity-70"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] hover:shadow-lg disabled:translate-y-0 disabled:opacity-70"
           >
             {processingPayment ? (
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -477,7 +549,7 @@ export default function EditModal({
                     d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
                   />
                 </svg>
-                Pay $9.99 &amp; Unlock
+                Pay {selectedPlan === "unlimited" ? "$9.99" : "$3.99"} &amp; Unlock
               </>
             )}
           </button>

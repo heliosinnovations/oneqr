@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const { priceId } = await request.json();
+    const { priceId, qrCodeId } = await request.json();
 
     if (!priceId) {
       return NextResponse.json(
@@ -35,9 +35,10 @@ export async function POST(request: NextRequest) {
         ? "unlimited"
         : "single";
 
-    // Build success URL with session ID placeholder
+    // Build success URL with session ID placeholder and optional qrCodeId
     const origin = request.headers.get("origin") || "http://localhost:3000";
-    const successUrl = `${origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`;
+    const qrParam = qrCodeId ? `&qr_id=${qrCodeId}` : "";
+    const successUrl = `${origin}/payment/success?session_id={CHECKOUT_SESSION_ID}${qrParam}`;
     const cancelUrl = `${origin}/payment/cancelled`;
 
     // Create Stripe Checkout session
@@ -56,6 +57,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         user_id: user?.id || "",
         plan_type: planType,
+        qr_code_id: qrCodeId || "",
       },
       customer_email: user?.email || undefined,
     });

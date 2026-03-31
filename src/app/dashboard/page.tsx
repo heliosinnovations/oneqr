@@ -395,17 +395,17 @@ export default function DashboardPage() {
               </div>
 
               {/* Card Stats */}
-              <div className="flex justify-between bg-[var(--surface)] px-6 py-4">
+              <div className="grid grid-cols-3 gap-2 bg-[var(--surface)] px-4 py-4">
                 <div className="text-center">
-                  <div className="text-lg font-bold text-[var(--fg)]">
+                  <div className="text-base font-bold text-[var(--fg)]">
                     {qr.scan_count || 0}
                   </div>
                   <div className="text-[10px] uppercase tracking-wider text-[var(--muted)]">
-                    Total Scans
+                    Scans
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-[var(--fg)]">
+                  <div className="text-base font-bold text-[var(--fg)]">
                     {formatDate(qr.created_at)}
                   </div>
                   <div className="text-[10px] uppercase tracking-wider text-[var(--muted)]">
@@ -413,8 +413,8 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-[var(--fg)]">
-                    {qr.is_editable ? "1" : "-"}
+                  <div className="text-base font-bold text-[var(--fg)]">
+                    {qr.is_editable ? "∞" : "-"}
                   </div>
                   <div className="text-[10px] uppercase tracking-wider text-[var(--muted)]">
                     Edits
@@ -423,16 +423,16 @@ export default function DashboardPage() {
               </div>
 
               {/* Card Actions */}
-              <div className="flex flex-wrap gap-2 border-t border-[var(--border)] p-4">
+              <div className="grid grid-cols-4 gap-2 border-t border-[var(--border)] p-4">
                 <Link
                   href={`/dashboard/${qr.id}`}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-[var(--border)] bg-white px-3 py-2.5 text-sm font-medium text-[var(--fg)] no-underline transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                  className="flex items-center justify-center gap-1.5 rounded-lg border border-[var(--border)] bg-white px-2 py-2.5 text-xs font-medium text-[var(--fg)] no-underline transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
                 >
                   <svg
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
-                    className="h-4 w-4"
+                    className="h-3.5 w-3.5"
                   >
                     <path
                       strokeLinecap="round"
@@ -452,13 +452,13 @@ export default function DashboardPage() {
                 {qr.is_editable ? (
                   <Link
                     href={`/dashboard/${qr.id}?edit=true`}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-[var(--accent)] bg-[var(--accent)] px-3 py-2.5 text-sm font-medium text-white no-underline transition-colors hover:bg-[#e64500]"
+                    className="flex items-center justify-center gap-1.5 rounded-lg border border-[var(--accent)] bg-[var(--accent)] px-2 py-2.5 text-xs font-medium text-white no-underline transition-colors hover:bg-[#e64500]"
                   >
                     <svg
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
-                      className="h-4 w-4"
+                      className="h-3.5 w-3.5"
                     >
                       <path
                         strokeLinecap="round"
@@ -472,13 +472,13 @@ export default function DashboardPage() {
                 ) : (
                   <Link
                     href={`/dashboard/${qr.id}?upgrade=true`}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-[var(--accent)] bg-[var(--accent)] px-3 py-2.5 text-sm font-medium text-white no-underline transition-colors hover:bg-[#e64500]"
+                    className="flex items-center justify-center gap-1.5 rounded-lg border border-[var(--accent)] bg-[var(--accent)] px-2 py-2.5 text-xs font-medium text-white no-underline transition-colors hover:bg-[#e64500]"
                   >
                     <svg
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
-                      className="h-4 w-4"
+                      className="h-3.5 w-3.5"
                     >
                       <path
                         strokeLinecap="round"
@@ -487,42 +487,41 @@ export default function DashboardPage() {
                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                       />
                     </svg>
-                    Unlock Edit
+                    Unlock
                   </Link>
                 )}
-                <div className="group relative">
-                  <button
-                    onClick={() => downloadQR(qr, "png")}
-                    className="flex items-center justify-center gap-2 rounded-lg border border-[var(--border)] bg-white px-3 py-2.5 text-sm font-medium text-[var(--fg)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                <button
+                  onClick={() => downloadQR(qr, "png")}
+                  className="flex items-center justify-center gap-1.5 rounded-lg border border-[var(--border)] bg-white px-2 py-2.5 text-xs font-medium text-[var(--fg)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                >
+                  <svg
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    className="h-3.5 w-3.5"
                   >
-                    <svg
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      className="h-4 w-4"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                      />
-                    </svg>
-                  </button>
-                </div>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    />
+                  </svg>
+                  DL
+                </button>
                 <button
                   onClick={() => handleDelete(qr.id)}
                   disabled={deleting === qr.id}
-                  className="flex items-center justify-center rounded-lg border border-[var(--border)] bg-white px-3 py-2.5 text-sm font-medium text-[var(--fg)] transition-colors hover:border-red-500 hover:text-red-500 disabled:opacity-50"
+                  className="flex items-center justify-center gap-1.5 rounded-lg border border-[var(--border)] bg-white px-2 py-2.5 text-xs font-medium text-[var(--fg)] transition-colors hover:border-red-500 hover:text-red-500 disabled:opacity-50"
                 >
                   {deleting === qr.id ? (
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--border)] border-t-red-500" />
+                    <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[var(--border)] border-t-red-500" />
                   ) : (
                     <svg
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
-                      className="h-4 w-4"
+                      className="h-3.5 w-3.5"
                     >
                       <path
                         strokeLinecap="round"
@@ -532,6 +531,7 @@ export default function DashboardPage() {
                       />
                     </svg>
                   )}
+                  Del
                 </button>
               </div>
             </div>

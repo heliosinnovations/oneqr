@@ -9,6 +9,11 @@ function PaymentSuccessContent() {
   const router = useRouter();
   const [countdown, setCountdown] = useState(5);
   const sessionId = searchParams.get("session_id");
+  const qrId = searchParams.get("qr_id");
+
+  // Determine redirect destination based on whether a QR code was upgraded
+  const redirectUrl = qrId ? `/dashboard/${qrId}?edit=true` : "/dashboard";
+  const redirectLabel = qrId ? "your QR code" : "dashboard";
 
   useEffect(() => {
     // Countdown timer for redirect
@@ -16,7 +21,7 @@ function PaymentSuccessContent() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          router.push("/");
+          router.push(redirectUrl);
           return 0;
         }
         return prev - 1;
@@ -24,7 +29,7 @@ function PaymentSuccessContent() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [router]);
+  }, [router, redirectUrl]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg px-6">
@@ -51,7 +56,9 @@ function PaymentSuccessContent() {
           Payment Successful!
         </h1>
         <p className="mb-8 text-lg text-muted">
-          Thank you for your purchase. Your QR code plan has been activated.
+          {qrId
+            ? "Your QR code is now editable! You can change the destination URL anytime."
+            : "Thank you for your purchase. Your QR code plan has been activated."}
         </p>
 
         {/* Session ID (for reference) */}
@@ -63,7 +70,7 @@ function PaymentSuccessContent() {
 
         {/* Redirect Notice */}
         <p className="mb-8 text-sm text-muted">
-          Redirecting to home in{" "}
+          Redirecting to {redirectLabel} in{" "}
           <span className="font-semibold text-accent">{countdown}</span>{" "}
           seconds...
         </p>
@@ -71,10 +78,10 @@ function PaymentSuccessContent() {
         {/* CTA Buttons */}
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <Link
-            href="/"
+            href={redirectUrl}
             className="inline-flex items-center justify-center bg-accent px-8 py-3 font-semibold text-white transition-colors hover:bg-fg"
           >
-            Go to Home
+            {qrId ? "Edit QR Code Now" : "Go to Dashboard"}
           </Link>
           <Link
             href="/generator"
