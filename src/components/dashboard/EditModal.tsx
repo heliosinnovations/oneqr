@@ -898,7 +898,179 @@ export default function EditModal({
     </div>
   );
 
-  // Analytics Tab
+  // Analytics Tab - Locked State (for free users)
+  const renderLockedAnalytics = () => (
+    <div className="p-6">
+      {/* QR Info Row */}
+      <div className="mb-6 flex items-center gap-4 rounded-xl bg-[var(--surface)] p-4">
+        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white">
+          {qrPreview ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={qrPreview} alt="QR preview" className="h-11 w-11" />
+          ) : (
+            <div className="h-11 w-11 animate-pulse rounded bg-[var(--border)]" />
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="font-semibold text-[var(--fg)]">{qrCode.title}</div>
+          <div className="truncate text-xs text-[var(--muted)]">
+            theqrspot.com/r/{qrCode.short_code}
+          </div>
+        </div>
+      </div>
+
+      {/* Lock Message */}
+      <div className="mb-6 rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--surface)] p-8 text-center">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent-light)]">
+          <svg
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            className="h-8 w-8 text-[var(--accent)]"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
+          </svg>
+        </div>
+        <h3 className="mb-2 font-serif text-xl text-[var(--fg)]">
+          Analytics Locked
+        </h3>
+        <p className="mb-4 text-sm text-[var(--muted)]">
+          Unlock to view detailed scan analytics including total scans, weekly
+          trends, and more
+        </p>
+      </div>
+
+      {/* Pricing Options */}
+      <div className="mb-6 grid grid-cols-2 gap-3">
+        {/* Single QR Option */}
+        <button
+          onClick={() => setSelectedPlan("single")}
+          className={`relative rounded-xl border-2 p-4 text-left transition-all ${
+            selectedPlan === "single"
+              ? "border-[var(--accent)] bg-[var(--accent-light)]"
+              : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
+          }`}
+        >
+          {selectedPlan === "single" && (
+            <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)]">
+              <svg
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                className="h-3 w-3 text-white"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+          )}
+          <div className="font-serif text-2xl text-[var(--fg)]">$3.99</div>
+          <div className="mt-1 text-xs font-semibold text-[var(--fg)]">
+            This QR Only
+          </div>
+          <div className="mt-1 text-[10px] text-[var(--muted)]">
+            Unlock analytics for this QR
+          </div>
+        </button>
+
+        {/* Unlimited Option */}
+        <button
+          onClick={() => setSelectedPlan("unlimited")}
+          className={`relative rounded-xl border-2 p-4 text-left transition-all ${
+            selectedPlan === "unlimited"
+              ? "border-[var(--accent)] bg-[var(--accent-light)]"
+              : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
+          }`}
+        >
+          <div className="absolute -top-2 left-3 rounded bg-[var(--accent)] px-1.5 py-0.5 text-[9px] font-bold uppercase text-white">
+            Best Value
+          </div>
+          {selectedPlan === "unlimited" && (
+            <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)]">
+              <svg
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                className="h-3 w-3 text-white"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+          )}
+          <div className="font-serif text-2xl text-[var(--fg)]">$9.99</div>
+          <div className="mt-1 text-xs font-semibold text-[var(--fg)]">
+            Unlimited QRs
+          </div>
+          <div className="mt-1 text-[10px] text-[var(--muted)]">
+            Analytics for all QR codes
+          </div>
+        </button>
+      </div>
+
+      {error && <p className="mb-4 text-center text-sm text-red-500">{error}</p>}
+
+      {/* Unlock Button */}
+      <button
+        onClick={() => handleUpgrade()}
+        disabled={processingPayment}
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] hover:shadow-lg disabled:translate-y-0 disabled:opacity-70"
+      >
+        {processingPayment ? (
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+        ) : (
+          <>
+            <svg
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
+              />
+            </svg>
+            Unlock for {selectedPlan === "unlimited" ? "$9.99" : "$3.99"}
+          </>
+        )}
+      </button>
+
+      <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[var(--muted)]">
+        <svg
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          className="h-3.5 w-3.5"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+          />
+        </svg>
+        Secure payment via Stripe
+      </div>
+    </div>
+  );
+
+  // Analytics Tab - Unlocked State (for paid users)
   const renderAnalyticsTab = () => (
     <div className="p-6">
       {/* Coming Soon / Basic Stats */}
@@ -966,7 +1138,14 @@ export default function EditModal({
       case "format":
         return renderFormatTab();
       case "analytics":
-        return renderAnalyticsTab();
+        if (loadingProfile) {
+          return (
+            <div className="flex h-64 items-center justify-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--border)] border-t-[var(--accent)]" />
+            </div>
+          );
+        }
+        return canEditContent ? renderAnalyticsTab() : renderLockedAnalytics();
       default:
         return null;
     }

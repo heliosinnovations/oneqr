@@ -368,18 +368,18 @@ export default function SimpleQRGenerator() {
 
       {/* Actions Section */}
       {qrDataUrl && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={downloadPNG}
-              className="flex flex-1 items-center justify-center gap-2 bg-fg px-6 py-4 text-[15px] font-semibold text-bg transition-colors hover:bg-accent"
+              className="flex flex-1 items-center justify-center gap-1.5 bg-fg px-3 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-accent sm:gap-2 sm:px-6 sm:py-4 sm:text-[15px]"
             >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                className="h-[18px] w-[18px]"
+                className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
               >
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
               </svg>
@@ -388,14 +388,14 @@ export default function SimpleQRGenerator() {
             {savedQrId ? (
               <Link
                 href="/dashboard"
-                className="flex flex-1 items-center justify-center gap-2 border-2 border-green-600 bg-green-50 px-6 py-4 text-[15px] font-semibold text-green-700 transition-colors hover:bg-green-100"
+                className="flex flex-1 items-center justify-center gap-1.5 border-2 border-green-600 bg-green-50 px-3 py-2.5 text-sm font-semibold text-green-700 transition-colors hover:bg-green-100 sm:gap-2 sm:px-6 sm:py-4 sm:text-[15px]"
               >
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
-                  className="h-[18px] w-[18px]"
+                  className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
                 >
                   <path d="M20 6L9 17l-5-5" />
                 </svg>
@@ -405,14 +405,14 @@ export default function SimpleQRGenerator() {
               <button
                 onClick={saveQRCode}
                 disabled={isSaving}
-                className="flex flex-1 items-center justify-center gap-2 border-2 border-fg bg-transparent px-6 py-4 text-[15px] font-semibold text-fg transition-colors hover:bg-fg hover:text-bg disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex flex-1 items-center justify-center gap-1.5 border-2 border-fg bg-transparent px-3 py-2.5 text-sm font-semibold text-fg transition-colors hover:bg-fg hover:text-bg disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:px-6 sm:py-4 sm:text-[15px]"
               >
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
-                  className="h-[18px] w-[18px]"
+                  className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
                 >
                   <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
                   <polyline points="17 21 17 13 7 13 7 21" />
