@@ -16,21 +16,21 @@ const pricingPlans: PricingPlan[] = [
     name: "Single QR",
     price: "$3.99",
     priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_SINGLE || "",
-    description: "Perfect for one-time projects",
+    description: "Unlock editing for one QR code (one-time payment)",
     features: [
       "1 editable QR code",
       "All design customizations",
       "High-resolution export (up to 4K)",
       "All file formats (PNG, SVG, PDF)",
       "Edit your QR code forever",
-      "No expiration",
+      "No expiration, no recurring fees",
     ],
   },
   {
     name: "Unlimited QR",
     price: "$9.99",
     priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_UNLIMITED || "",
-    description: "Best value for teams & agencies",
+    description: "Unlock editing for all QR codes (one-time payment)",
     features: [
       "Unlimited editable QR codes",
       "All design customizations",
@@ -38,7 +38,7 @@ const pricingPlans: PricingPlan[] = [
       "All file formats (PNG, SVG, PDF)",
       "Edit all your QR codes forever",
       "Bulk creation tools",
-      "Priority support",
+      "No recurring fees, ever",
     ],
     popular: true,
   },
@@ -89,19 +89,47 @@ export default function PricingSection() {
         {/* Section Header */}
         <header className="mb-16 text-center">
           <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-accent">
-            Simple pricing
+            One-time pricing
           </p>
           <h2
             id="pricing-heading"
             className="font-serif text-4xl leading-[1.15] tracking-tight text-fg md:text-5xl"
           >
-            Pay once, edit <span className="italic text-accent">forever</span>.
+            Simple Pricing.{" "}
+            <span className="italic text-accent">No Subscriptions.</span>
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted">
-            Free to create and download. Pay only when you need to edit your QR
-            code after creation.
+            Create and save unlimited QR codes for free. Pay only when you need
+            to edit — one-time, no recurring fees.
           </p>
         </header>
+
+        {/* Free Tier Highlight */}
+        <div className="mb-12 rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-center">
+          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-semibold text-white">
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            FREE
+          </div>
+          <h3 className="mt-4 font-serif text-2xl text-fg">
+            Create and save unlimited QR codes
+          </h3>
+          <p className="mt-2 text-muted">
+            Generate, download, and save as many QR codes as you want — completely free.
+            No account required. No credit card. No limits.
+          </p>
+        </div>
 
         {/* Pricing Cards */}
         <div className="grid gap-8 md:grid-cols-2">

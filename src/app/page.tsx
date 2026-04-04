@@ -16,13 +16,18 @@ export default function Home() {
         >
           <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6 lg:px-12">
             {/* Logo */}
-            <Link
-              href="/"
-              className="font-serif text-[28px] italic text-fg"
-              aria-label="The QR Spot - Home"
-            >
-              The QR <span className="text-accent">Spot</span>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/"
+                className="font-serif text-[28px] italic text-fg"
+                aria-label="The QR Spot - Home"
+              >
+                The QR <span className="text-accent">Spot</span>
+              </Link>
+              <span className="hidden rounded-full bg-accent/10 px-2.5 py-1 text-xs font-semibold text-accent sm:inline-block">
+                ✓ No Subscriptions
+              </span>
+            </div>
 
             {/* Navigation Links */}
             <div className="flex items-center gap-6">
@@ -56,11 +61,13 @@ export default function Home() {
               id="hero-heading"
               className="font-serif text-4xl leading-[1.1] tracking-tight text-fg md:text-5xl lg:text-6xl"
             >
-              Create QR codes. <span className="italic text-accent">Free</span>{" "}
-              forever.
+              Create and save unlimited QR codes for{" "}
+              <span className="italic text-accent">free</span>.
+              <br />
+              <span className="text-accent">No subscriptions.</span>
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
-              No account required. No credit card. No limits.
+              One-time fee to unlock editing. Pay once, own forever.
             </p>
           </header>
 
@@ -123,11 +130,12 @@ export default function Home() {
               >
                 Professional QR codes.
                 <br />
-                <span className="italic text-accent">Free</span> forever.
+                <span className="italic text-accent">No subscriptions.</span> No
+                recurring fees.
               </h2>
               <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/60">
-                Enterprise-grade features without the enterprise price tag.
-                Everything you need to create stunning QR codes.
+                Pay once. No hidden costs. No surprises. Everything you need to
+                create stunning QR codes.
               </p>
             </header>
 
@@ -333,8 +341,13 @@ export default function Home() {
       >
         <div className="mx-auto grid max-w-7xl items-center gap-6 md:grid-cols-3">
           {/* Logo */}
-          <div className="font-serif text-2xl italic text-fg">
-            The QR <span className="text-accent">Spot</span>
+          <div>
+            <div className="font-serif text-2xl italic text-fg">
+              The QR <span className="text-accent">Spot</span>
+            </div>
+            <p className="mt-1 text-xs text-muted">
+              One-time pricing. No subscriptions. Ever.
+            </p>
           </div>
 
           {/* Links */}

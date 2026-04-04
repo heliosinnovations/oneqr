@@ -3,7 +3,8 @@ import Link from "next/link";
 interface CompetitorData {
   name: string;
   pricing: string;
-  pricingBadge?: "free" | "paid" | "limited";
+  pricingBadge?: "free" | "paid" | "limited" | "one-time";
+  pricingModel: string;
   expiration: string;
   maxResolution: string;
   exportFormats: string;
@@ -16,8 +17,9 @@ interface CompetitorData {
 const competitors: CompetitorData[] = [
   {
     name: "The QR Spot",
-    pricing: "Free Forever",
-    pricingBadge: "free",
+    pricing: "Free to create",
+    pricingBadge: "one-time",
+    pricingModel: "One-time",
     expiration: "Never expires",
     maxResolution: "4K / 600 DPI",
     exportFormats: "PNG, SVG, PDF, EPS",
@@ -29,6 +31,7 @@ const competitors: CompetitorData[] = [
   {
     name: "Others",
     pricing: "$5-40/month",
+    pricingModel: "Monthly subscription",
     expiration: "Expires with plan",
     maxResolution: "300-2000px",
     exportFormats: "PNG, SVG, PDF",
@@ -47,7 +50,11 @@ const features = [
   "Advanced Design Options",
 ] as const;
 
-function PricingBadge({ type }: { type: "free" | "paid" | "limited" }) {
+function PricingBadge({
+  type,
+}: {
+  type: "free" | "paid" | "limited" | "one-time";
+}) {
   const baseClasses =
     "inline-block rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wide";
 
@@ -56,6 +63,12 @@ function PricingBadge({ type }: { type: "free" | "paid" | "limited" }) {
       return (
         <span className={`${baseClasses} bg-emerald-500 text-white`}>
           Free Forever
+        </span>
+      );
+    case "one-time":
+      return (
+        <span className={`${baseClasses} bg-emerald-500 text-white`}>
+          No Subscription
         </span>
       );
     case "paid":
@@ -162,6 +175,29 @@ export default function ComparisonSection() {
                         {competitor.pricing}
                       </span>
                     )}
+                  </td>
+                ))}
+              </tr>
+
+              {/* Pricing Model Row */}
+              <tr>
+                <td className="border-b border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
+                  Pricing Model
+                </td>
+                {competitors.map((competitor) => (
+                  <td
+                    key={`model-${competitor.name}`}
+                    className={`border-b border-border px-5 py-4 ${
+                      competitor.isHighlighted
+                        ? "border-l-[3px] border-r-[3px] border-fg bg-accent-light"
+                        : ""
+                    }`}
+                  >
+                    <span
+                      className={`text-sm ${competitor.isHighlighted ? "font-semibold text-fg" : "text-muted"}`}
+                    >
+                      {competitor.pricingModel}
+                    </span>
                   </td>
                 ))}
               </tr>
@@ -319,6 +355,15 @@ export default function ComparisonSection() {
                     ) : (
                       competitor.pricing
                     )}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between border-b border-border py-3 text-sm">
+                  <span className="text-muted">Pricing Model</span>
+                  <span
+                    className={`text-right font-medium ${competitor.isHighlighted ? "text-fg" : ""}`}
+                  >
+                    {competitor.pricingModel}
                   </span>
                 </div>
 
