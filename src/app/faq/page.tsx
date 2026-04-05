@@ -35,12 +35,8 @@ export default function FAQPage() {
                     as PNG/SVG, print immediately
                   </li>
                   <li>
-                    <strong>$3.99:</strong> Make one QR code editable (change
-                    the destination URL anytime)
-                  </li>
-                  <li>
-                    <strong>$9.99:</strong> Make unlimited QR codes editable
-                    forever
+                    <strong>$1.99 per QR code:</strong> Unlock editing (change
+                    the destination URL anytime) and view analytics
                   </li>
                 </ul>
               </div>
@@ -204,8 +200,7 @@ export default function FAQPage() {
                 </h3>
                 <p className="text-gray-700">
                   No. Free QR codes point directly to your URL and can&apos;t be
-                  edited. To make a QR code editable, pay $3.99 (single) or
-                  $9.99 (unlimited).
+                  edited. To make a QR code editable, pay $1.99 per QR code.
                 </p>
               </div>
 

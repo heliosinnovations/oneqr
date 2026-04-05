@@ -559,18 +559,17 @@ export default function QRDetailPage({
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h3 className="mb-1 font-serif text-xl">
-                    Unlock Editing Forever
+                    Unlock Editing and Analytics
                   </h3>
                   <p className="text-sm opacity-90">
-                    Pay once, edit unlimited times. Never reprint your QR code
-                    again.
+                    $1.99 one-time. Edit this QR code forever.
                   </p>
                 </div>
                 <button
                   onClick={() => setShowEditModal(true)}
                   className="inline-flex items-center justify-center whitespace-nowrap rounded-lg bg-white px-6 py-3 text-sm font-semibold text-[var(--accent)] transition-transform hover:-translate-y-0.5"
                 >
-                  Unlock for $9.99
+                  Unlock for $1.99
                 </button>
               </div>
             </div>

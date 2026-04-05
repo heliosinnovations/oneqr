@@ -13,11 +13,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate price ID against allowed prices
-    const allowedPrices = [
-      process.env.NEXT_PUBLIC_STRIPE_PRICE_SINGLE,
-      process.env.NEXT_PUBLIC_STRIPE_PRICE_UNLIMITED,
-    ];
+    // Validate price ID - now only single $1.99 price
+    const allowedPrices = [process.env.NEXT_PUBLIC_STRIPE_PRICE_SINGLE];
 
     if (!allowedPrices.includes(priceId)) {
       return NextResponse.json({ error: "Invalid price ID" }, { status: 400 });
@@ -28,12 +25,6 @@ export async function POST(request: NextRequest) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-
-    // Determine plan type from price ID
-    const planType =
-      priceId === process.env.NEXT_PUBLIC_STRIPE_PRICE_UNLIMITED
-        ? "unlimited"
-        : "single";
 
     // Build success URL with session ID placeholder and optional qrCodeId
     const origin = request.headers.get("origin") || "http://localhost:3000";
@@ -56,7 +47,6 @@ export async function POST(request: NextRequest) {
       cancel_url: cancelUrl,
       metadata: {
         user_id: user?.id || "",
-        plan_type: planType,
         qr_code_id: qrCodeId || "",
       },
       customer_email: user?.email || undefined,
