@@ -2,61 +2,30 @@
 
 import { useState } from "react";
 
-interface PricingPlan {
-  name: string;
-  price: string;
-  priceId: string;
-  description: string;
-  features: { text: string; included: boolean }[];
-  popular?: boolean;
-  inheritsFree?: boolean;
-}
-
 const freePlanFeatures: { text: string; included: boolean }[] = [
   { text: "Create unlimited QR codes", included: true },
   { text: "High resolution export (PNG, SVG, PDF, EPS)", included: true },
   { text: "Customize colors and styles", included: true },
   { text: "Multiple format support", included: true },
-  { text: "Change where the QR points to", included: false },
-  { text: "Analytics", included: false },
 ];
 
-const pricingPlans: PricingPlan[] = [
-  {
-    name: "Single QR",
-    price: "$3.99",
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_SINGLE || "",
-    description: "Unlock editing for one QR code (one-time payment)",
-    features: [
-      { text: "Change where the QR points to (1 QR code)", included: true },
-      { text: "Analytics (1 QR code)", included: true },
-    ],
-    inheritsFree: true,
-  },
-  {
-    name: "Unlimited QR",
-    price: "$9.99",
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_UNLIMITED || "",
-    description: "Unlock editing for all QR codes (one-time payment)",
-    features: [
-      { text: "Change where the QR points to (unlimited)", included: true },
-      { text: "Analytics (unlimited)", included: true },
-    ],
-    popular: true,
-    inheritsFree: true,
-  },
+const paidFeatures: string[] = [
+  "Change where the QR points to",
+  "View scan analytics",
 ];
 
 export default function PricingSection() {
-  const [loading, setLoading] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handlePurchase = async (priceId: string) => {
+  const handlePurchase = async () => {
+    const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SINGLE || "";
+
     if (!priceId) {
       console.error("Price ID is not configured");
       return;
     }
 
-    setLoading(priceId);
+    setLoading(true);
 
     try {
       const response = await fetch("/api/checkout", {
@@ -74,11 +43,11 @@ export default function PricingSection() {
         window.location.href = data.url;
       } else {
         console.error("Failed to create checkout session:", data.error);
-        setLoading(null);
+        setLoading(false);
       }
     } catch (error) {
       console.error("Checkout error:", error);
-      setLoading(null);
+      setLoading(false);
     }
   };
 
@@ -88,11 +57,11 @@ export default function PricingSection() {
       className="scroll-mt-20 bg-surface px-6 py-24 lg:px-12 lg:py-32"
       aria-labelledby="pricing-heading"
     >
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-4xl">
         {/* Section Header */}
         <header className="mb-16 text-center">
           <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-accent">
-            One-time pricing
+            Simple pricing
           </p>
           <h2
             id="pricing-heading"
@@ -102,45 +71,41 @@ export default function PricingSection() {
             <span className="italic text-accent">No Subscriptions.</span>
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted">
-            Create and save unlimited QR codes for free. Pay only when you need
-            to edit — one-time, no recurring fees.
+            Create unlimited QR codes for free. $1.99 to unlock editing and analytics per QR code.
           </p>
         </header>
 
-        {/* Free Tier Card */}
-        <div className="mb-12 rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-8">
-          <div className="flex flex-col items-center text-center md:flex-row md:items-start md:text-left">
-            <div className="md:flex-1">
-              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-semibold text-white">
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                FREE
-              </div>
-              <h3 className="mt-4 font-serif text-2xl text-fg">
-                Everything you need to create QR codes
-              </h3>
-              <p className="mt-2 text-muted">
-                All pro features free. Pay only to edit content and view analytics.
-              </p>
+        {/* Two Column Layout */}
+        <div className="grid gap-8 md:grid-cols-2">
+          {/* Free Tier Card */}
+          <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-8">
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-semibold text-white">
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              FREE
             </div>
-          </div>
+            <h3 className="mt-4 font-serif text-2xl text-fg">
+              Create Unlimited QR Codes
+            </h3>
+            <p className="mt-2 text-sm text-muted">
+              Everything you need to create and export professional QR codes.
+            </p>
 
-          {/* Free tier features grid */}
-          <ul className="mt-6 grid gap-3 sm:grid-cols-2" role="list">
-            {freePlanFeatures.map((feature, index) => (
-              <li key={index} className="flex items-start gap-3">
-                {feature.included ? (
+            {/* Free tier features */}
+            <ul className="mt-6 space-y-3" role="list">
+              {freePlanFeatures.map((feature, index) => (
+                <li key={index} className="flex items-start gap-3">
                   <svg
                     className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-500"
                     fill="none"
@@ -154,9 +119,33 @@ export default function PricingSection() {
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                ) : (
+                  <span className="text-sm text-fg">{feature.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* $1.99 Unlock Card */}
+          <div className="relative overflow-hidden rounded-2xl border-2 border-accent bg-bg p-8 shadow-lg shadow-accent/10">
+            {/* Price Badge */}
+            <div className="mb-4">
+              <span className="font-serif text-5xl text-fg">$1.99</span>
+              <span className="ml-2 text-muted">per QR code</span>
+            </div>
+
+            <h3 className="font-serif text-2xl text-fg">
+              Unlock Editing & Analytics
+            </h3>
+            <p className="mt-2 text-sm text-muted">
+              One-time payment. No subscriptions. Own forever.
+            </p>
+
+            {/* Paid features */}
+            <ul className="mt-6 space-y-3" role="list">
+              {paidFeatures.map((feature, index) => (
+                <li key={index} className="flex items-start gap-3">
                   <svg
-                    className="mt-0.5 h-5 w-5 flex-shrink-0 text-muted"
+                    className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -165,115 +154,49 @@ export default function PricingSection() {
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      d="M5 13l4 4L19 7"
                     />
                   </svg>
-                )}
-                <span className={`text-sm ${feature.included ? "text-fg" : "text-muted"}`}>
-                  {feature.text}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+                  <span className="text-sm text-fg">{feature}</span>
+                </li>
+              ))}
+            </ul>
 
-        {/* Pricing Cards */}
-        <div className="grid gap-8 md:grid-cols-2">
-          {pricingPlans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`relative overflow-hidden rounded-2xl border bg-bg p-8 transition-all duration-300 lg:p-10 ${
-                plan.popular
-                  ? "shadow-accent/10 border-accent shadow-lg"
-                  : "hover:border-accent/50 border-border"
-              }`}
+            {/* CTA Button */}
+            <button
+              onClick={handlePurchase}
+              disabled={loading}
+              className="mt-8 w-full rounded-lg bg-accent py-4 text-center font-semibold text-white transition-all duration-200 hover:bg-fg disabled:bg-accent/50"
+              aria-label="Unlock editing and analytics for $1.99"
             >
-              {/* Popular Badge */}
-              {plan.popular && (
-                <div className="absolute right-6 top-6 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-white">
-                  Most Popular
-                </div>
-              )}
-
-              {/* Plan Name */}
-              <h3 className="mb-2 font-serif text-2xl text-fg">{plan.name}</h3>
-              <p className="mb-6 text-sm text-muted">{plan.description}</p>
-
-              {/* Price */}
-              <div className="mb-8">
-                <span className="font-serif text-5xl text-fg">
-                  {plan.price}
-                </span>
-                <span className="ml-2 text-muted">one-time</span>
-              </div>
-
-              {/* Features */}
-              <ul className="mb-8 space-y-4" role="list">
-                {plan.inheritsFree && (
-                  <li className="flex items-start gap-3 border-b border-border pb-4 mb-4">
-                    <span className="text-sm font-medium text-fg">Everything in Free, plus:</span>
-                  </li>
-                )}
-                {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <svg
-                      className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent"
-                      fill="none"
-                      viewBox="0 0 24 24"
+              {loading ? (
+                <span className="inline-flex items-center gap-2">
+                  <svg
+                    className="h-5 w-5 animate-spin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
                       stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="text-sm text-fg">{feature.text}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {/* CTA Button */}
-              <button
-                onClick={() => handlePurchase(plan.priceId)}
-                disabled={loading === plan.priceId}
-                className={`w-full rounded-lg py-4 text-center font-semibold transition-all duration-200 ${
-                  plan.popular
-                    ? "disabled:bg-accent/50 bg-accent text-white hover:bg-fg"
-                    : "border border-border bg-surface text-fg hover:border-accent hover:bg-accent hover:text-white disabled:opacity-50"
-                }`}
-                aria-label={`Buy ${plan.name} for ${plan.price}`}
-              >
-                {loading === plan.priceId ? (
-                  <span className="inline-flex items-center gap-2">
-                    <svg
-                      className="h-5 w-5 animate-spin"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    Processing...
-                  </span>
-                ) : (
-                  `Buy Now - ${plan.price}`
-                )}
-              </button>
-            </div>
-          ))}
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Processing...
+                </span>
+              ) : (
+                "Unlock for $1.99"
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Trust Badges */}

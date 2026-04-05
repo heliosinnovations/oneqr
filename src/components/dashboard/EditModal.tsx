@@ -17,10 +17,6 @@ interface QRCodeData {
   format?: string;
 }
 
-interface UserProfile {
-  plan_type: "free" | "single" | "unlimited";
-}
-
 interface EditModalProps {
   qrCode: QRCodeData;
   onClose: () => void;
@@ -29,7 +25,6 @@ interface EditModalProps {
 }
 
 type TabType = "content" | "style" | "format" | "analytics";
-type PricingPlan = "single" | "unlimited";
 
 export default function EditModal({
   qrCode,
@@ -44,8 +39,7 @@ export default function EditModal({
   const [success, setSuccess] = useState(false);
   const [qrPreview, setQrPreview] = useState<string | null>(null);
   const [processingPayment, setProcessingPayment] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<PricingPlan>("single");
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [isEditable, setIsEditable] = useState(qrCode.is_editable);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
   // Style settings
@@ -67,40 +61,30 @@ export default function EditModal({
 
   const supabase = createClient();
 
-  // Check if user can edit content
-  const canEditContent =
-    qrCode.is_editable || userProfile?.plan_type === "unlimited";
+  // Check if user can edit content - directly check is_editable on QR code
+  const canEditContent = isEditable;
 
-  // Fetch user profile to check plan type
-  // When forceRefresh is true (after payment), we need fresh data from DB
+  // Fetch QR code editable status (in case it was updated via payment)
   useEffect(() => {
-    async function fetchProfile() {
+    async function fetchQRStatus() {
       setLoadingProfile(true);
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
 
-      if (user) {
-        // When forceRefresh is true, add a cache-busting timestamp to force fresh data
-        // This ensures we get the updated plan_type after webhook processes payment
-        const query = supabase
-          .from("profiles")
-          .select("plan_type")
-          .eq("id", user.id)
-          .single();
+      // Re-fetch the QR code to check if it's editable
+      const { data: qrData } = await supabase
+        .from("qr_codes")
+        .select("is_editable")
+        .eq("id", qrCode.id)
+        .single();
 
-        const { data: profile } = await query;
-
-        if (profile) {
-          setUserProfile(profile as UserProfile);
-        }
+      if (qrData) {
+        setIsEditable(qrData.is_editable);
       }
+
       setLoadingProfile(false);
     }
 
-    fetchProfile();
-    // Include forceRefresh in dependencies to trigger refetch when coming from payment
-  }, [supabase, forceRefresh]);
+    fetchQRStatus();
+  }, [supabase, qrCode.id, forceRefresh]);
 
   // Generate QR preview
   useEffect(() => {
@@ -214,17 +198,13 @@ export default function EditModal({
     }, 1500);
   };
 
-  const handleUpgrade = async (plan: PricingPlan = selectedPlan) => {
+  const handleUnlock = async () => {
     setProcessingPayment(true);
 
     try {
-      // Get the price ID based on selected plan
-      const priceId =
-        plan === "unlimited"
-          ? process.env.NEXT_PUBLIC_STRIPE_PRICE_UNLIMITED
-          : process.env.NEXT_PUBLIC_STRIPE_PRICE_SINGLE;
+      const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SINGLE;
 
-      // Call checkout API with selected price
+      // Call checkout API with QR code ID
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -329,7 +309,7 @@ export default function EditModal({
     },
   ];
 
-  // Content Tab - Locked State
+  // Content Tab - Locked State (single $1.99 paywall)
   const renderLockedContent = () => (
     <div className="p-6">
       {/* QR Info Row */}
@@ -368,10 +348,10 @@ export default function EditModal({
           </svg>
         </div>
         <h3 className="mb-2 font-serif text-xl text-[var(--fg)]">
-          Content Editing Locked
+          Unlock Editing and Analytics
         </h3>
         <p className="mb-4 text-sm text-[var(--muted)]">
-          Unlock to change where this QR code redirects
+          Change where this QR code redirects and view scan analytics.
         </p>
 
         {/* Current URL */}
@@ -385,87 +365,22 @@ export default function EditModal({
         </div>
       </div>
 
-      {/* Pricing Options */}
-      <div className="mb-6 grid grid-cols-2 gap-3">
-        {/* Single QR Option */}
-        <button
-          onClick={() => setSelectedPlan("single")}
-          className={`relative rounded-xl border-2 p-4 text-left transition-all ${
-            selectedPlan === "single"
-              ? "border-[var(--accent)] bg-[var(--accent-light)]"
-              : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
-          }`}
-        >
-          {selectedPlan === "single" && (
-            <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)]">
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                className="h-3 w-3 text-white"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-          )}
-          <div className="font-serif text-2xl text-[var(--fg)]">$3.99</div>
-          <div className="mt-1 text-xs font-semibold text-[var(--fg)]">
-            This QR Only
-          </div>
-          <div className="mt-1 text-[10px] text-[var(--muted)]">
-            Edit this QR code forever
-          </div>
-        </button>
-
-        {/* Unlimited Option */}
-        <button
-          onClick={() => setSelectedPlan("unlimited")}
-          className={`relative rounded-xl border-2 p-4 text-left transition-all ${
-            selectedPlan === "unlimited"
-              ? "border-[var(--accent)] bg-[var(--accent-light)]"
-              : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
-          }`}
-        >
-          <div className="absolute -top-2 left-3 rounded bg-[var(--accent)] px-1.5 py-0.5 text-[9px] font-bold uppercase text-white">
-            Best Value
-          </div>
-          {selectedPlan === "unlimited" && (
-            <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)]">
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                className="h-3 w-3 text-white"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-          )}
-          <div className="font-serif text-2xl text-[var(--fg)]">$9.99</div>
-          <div className="mt-1 text-xs font-semibold text-[var(--fg)]">
-            Unlimited QRs
-          </div>
-          <div className="mt-1 text-[10px] text-[var(--muted)]">
-            Edit all QR codes forever
-          </div>
-        </button>
+      {/* Single $1.99 Pricing */}
+      <div className="mb-6 rounded-xl border-2 border-[var(--accent)] bg-[var(--accent-light)] p-6 text-center">
+        <div className="font-serif text-4xl text-[var(--fg)]">$1.99</div>
+        <div className="mt-1 text-sm font-semibold text-[var(--fg)]">
+          One-time payment
+        </div>
+        <div className="mt-2 text-xs text-[var(--muted)]">
+          Unlock editing and analytics for this QR code forever
+        </div>
       </div>
 
       {error && <p className="mb-4 text-center text-sm text-red-500">{error}</p>}
 
       {/* Unlock Button */}
       <button
-        onClick={() => handleUpgrade()}
+        onClick={handleUnlock}
         disabled={processingPayment}
         className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] hover:shadow-lg disabled:translate-y-0 disabled:opacity-70"
       >
@@ -486,7 +401,7 @@ export default function EditModal({
                 d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
               />
             </svg>
-            Unlock for {selectedPlan === "unlimited" ? "$9.99" : "$3.99"}
+            Unlock for $1.99
           </>
         )}
       </button>
@@ -898,7 +813,7 @@ export default function EditModal({
     </div>
   );
 
-  // Analytics Tab - Locked State (for free users)
+  // Analytics Tab - Locked State (single $1.99 paywall)
   const renderLockedAnalytics = () => (
     <div className="p-6">
       {/* QR Info Row */}
@@ -937,95 +852,29 @@ export default function EditModal({
           </svg>
         </div>
         <h3 className="mb-2 font-serif text-xl text-[var(--fg)]">
-          Analytics Locked
+          Unlock Editing and Analytics
         </h3>
         <p className="mb-4 text-sm text-[var(--muted)]">
-          Unlock to view detailed scan analytics including total scans, weekly
-          trends, and more
+          View detailed scan analytics including total scans, weekly trends, and more.
         </p>
       </div>
 
-      {/* Pricing Options */}
-      <div className="mb-6 grid grid-cols-2 gap-3">
-        {/* Single QR Option */}
-        <button
-          onClick={() => setSelectedPlan("single")}
-          className={`relative rounded-xl border-2 p-4 text-left transition-all ${
-            selectedPlan === "single"
-              ? "border-[var(--accent)] bg-[var(--accent-light)]"
-              : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
-          }`}
-        >
-          {selectedPlan === "single" && (
-            <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)]">
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                className="h-3 w-3 text-white"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-          )}
-          <div className="font-serif text-2xl text-[var(--fg)]">$3.99</div>
-          <div className="mt-1 text-xs font-semibold text-[var(--fg)]">
-            This QR Only
-          </div>
-          <div className="mt-1 text-[10px] text-[var(--muted)]">
-            Unlock analytics for this QR
-          </div>
-        </button>
-
-        {/* Unlimited Option */}
-        <button
-          onClick={() => setSelectedPlan("unlimited")}
-          className={`relative rounded-xl border-2 p-4 text-left transition-all ${
-            selectedPlan === "unlimited"
-              ? "border-[var(--accent)] bg-[var(--accent-light)]"
-              : "border-[var(--border)] bg-white hover:border-[var(--accent)]"
-          }`}
-        >
-          <div className="absolute -top-2 left-3 rounded bg-[var(--accent)] px-1.5 py-0.5 text-[9px] font-bold uppercase text-white">
-            Best Value
-          </div>
-          {selectedPlan === "unlimited" && (
-            <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)]">
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                className="h-3 w-3 text-white"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-          )}
-          <div className="font-serif text-2xl text-[var(--fg)]">$9.99</div>
-          <div className="mt-1 text-xs font-semibold text-[var(--fg)]">
-            Unlimited QRs
-          </div>
-          <div className="mt-1 text-[10px] text-[var(--muted)]">
-            Analytics for all QR codes
-          </div>
-        </button>
+      {/* Single $1.99 Pricing */}
+      <div className="mb-6 rounded-xl border-2 border-[var(--accent)] bg-[var(--accent-light)] p-6 text-center">
+        <div className="font-serif text-4xl text-[var(--fg)]">$1.99</div>
+        <div className="mt-1 text-sm font-semibold text-[var(--fg)]">
+          One-time payment
+        </div>
+        <div className="mt-2 text-xs text-[var(--muted)]">
+          Unlock editing and analytics for this QR code forever
+        </div>
       </div>
 
       {error && <p className="mb-4 text-center text-sm text-red-500">{error}</p>}
 
       {/* Unlock Button */}
       <button
-        onClick={() => handleUpgrade()}
+        onClick={handleUnlock}
         disabled={processingPayment}
         className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] hover:shadow-lg disabled:translate-y-0 disabled:opacity-70"
       >
@@ -1046,7 +895,7 @@ export default function EditModal({
                 d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
               />
             </svg>
-            Unlock for {selectedPlan === "unlimited" ? "$9.99" : "$3.99"}
+            Unlock for $1.99
           </>
         )}
       </button>

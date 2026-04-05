@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "The QR Spot - No Subscription QR Codes | Pay Once, Own Forever",
   description:
-    "Create editable QR codes with no subscriptions. One-time payment. Generate unlimited QR codes free, unlock editing for $3.99. No recurring fees, no hidden costs.",
+    "Create editable QR codes with no subscriptions. One-time payment. Generate unlimited QR codes free, unlock editing for $1.99. No recurring fees, no hidden costs.",
   keywords: [
     "no subscription qr code",
     "one time payment qr code",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     siteName: "The QR Spot",
     title: "The QR Spot - No Subscription QR Codes | Pay Once, Own Forever",
     description:
-      "Create editable QR codes with no subscriptions. One-time payment. Generate unlimited QR codes free, unlock editing for $3.99.",
+      "Create editable QR codes with no subscriptions. One-time payment. Generate unlimited QR codes free, unlock editing for $1.99.",
     images: [
       {
         url: "/api/og",
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "The QR Spot - No Subscription QR Codes | Pay Once, Own Forever",
     description:
-      "Create editable QR codes with no subscriptions. One-time payment. Generate unlimited QR codes free, unlock editing for $3.99.",
+      "Create editable QR codes with no subscriptions. One-time payment. Generate unlimited QR codes free, unlock editing for $1.99.",
     images: ["/api/og"],
     creator: "@heliosinnovations",
   },
@@ -106,7 +106,7 @@ const websiteSchema = {
   name: "The QR Spot",
   url: siteUrl,
   description:
-    "Create editable QR codes with no subscriptions. One-time payment. Generate unlimited QR codes free, unlock editing for $3.99.",
+    "Create editable QR codes with no subscriptions. One-time payment. Generate unlimited QR codes free, unlock editing for $1.99.",
   potentialAction: {
     "@type": "SearchAction",
     target: {

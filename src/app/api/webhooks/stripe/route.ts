@@ -53,56 +53,17 @@ export async function POST(request: NextRequest) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.user_id;
-        const planType = session.metadata?.plan_type;
         const qrCodeId = session.metadata?.qr_code_id;
         const customerEmail = session.customer_email;
 
         console.log(`Processing checkout.session.completed:`, {
           userId,
-          planType,
           qrCodeId,
           customerEmail,
         });
 
-        if (userId) {
-          // Update user's plan in profiles table
-          const { error: profileError } = await supabase
-            .from("profiles")
-            .update({
-              plan_type: planType,
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", userId);
-
-          if (profileError) {
-            console.error("Error updating profile:", profileError);
-          } else {
-            console.log(`User ${userId} profile updated to plan: ${planType}`);
-          }
-
-          // For unlimited plan, mark ALL user's QR codes as editable
-          if (planType === "unlimited") {
-            const { data: updatedQrs, error: qrError } = await supabase
-              .from("qr_codes")
-              .update({
-                is_editable: true,
-                updated_at: new Date().toISOString(),
-              })
-              .eq("user_id", userId)
-              .select("id");
-
-            if (qrError) {
-              console.error("Error updating QR codes for unlimited plan:", qrError);
-            } else {
-              console.log(
-                `Marked ${updatedQrs?.length || 0} QR codes as editable for user ${userId} (unlimited plan)`
-              );
-            }
-          }
-        }
-
-        // For single plan OR if no userId but qrCodeId exists, mark the specific QR code as editable
-        if (qrCodeId && planType === "single") {
+        // Mark the specific QR code as editable
+        if (qrCodeId) {
           const { error: qrError } = await supabase
             .from("qr_codes")
             .update({
@@ -114,7 +75,7 @@ export async function POST(request: NextRequest) {
           if (qrError) {
             console.error("Error updating QR code:", qrError);
           } else {
-            console.log(`QR code ${qrCodeId} marked as editable (single plan)`);
+            console.log(`QR code ${qrCodeId} marked as editable`);
           }
         }
 
@@ -125,7 +86,6 @@ export async function POST(request: NextRequest) {
           stripe_payment_intent_id: session.payment_intent as string,
           amount_total: session.amount_total,
           currency: session.currency,
-          plan_type: planType,
           qr_code_id: qrCodeId || null,
           customer_email: customerEmail,
           status: "completed",
@@ -137,7 +97,7 @@ export async function POST(request: NextRequest) {
         }
 
         console.log(
-          `Payment completed for user ${userId || customerEmail}, plan: ${planType}`
+          `Payment completed for user ${userId || customerEmail}, QR code: ${qrCodeId}`
         );
         break;
       }
@@ -176,27 +136,27 @@ export async function POST(request: NextRequest) {
         const charge = event.data.object as Stripe.Charge;
         const paymentIntentId = charge.payment_intent as string;
 
-        // Find the payment record and downgrade the user
+        // Find the payment record and revert the QR code
         const { data: paymentRecord, error: fetchError } = await supabase
           .from("payments")
-          .select("user_id")
+          .select("user_id, qr_code_id")
           .eq("stripe_payment_intent_id", paymentIntentId)
           .single();
 
         if (fetchError) {
           console.error("Error finding payment record:", fetchError);
-        } else if (paymentRecord?.user_id) {
-          // Downgrade user to free plan
-          const { error: profileError } = await supabase
-            .from("profiles")
+        } else if (paymentRecord?.qr_code_id) {
+          // Revert QR code to non-editable
+          const { error: qrError } = await supabase
+            .from("qr_codes")
             .update({
-              plan_type: "free",
+              is_editable: false,
               updated_at: new Date().toISOString(),
             })
-            .eq("id", paymentRecord.user_id);
+            .eq("id", paymentRecord.qr_code_id);
 
-          if (profileError) {
-            console.error("Error downgrading user:", profileError);
+          if (qrError) {
+            console.error("Error reverting QR code:", qrError);
           }
 
           // Update payment record status
@@ -209,7 +169,9 @@ export async function POST(request: NextRequest) {
             console.error("Error updating payment status:", updateError);
           }
 
-          console.log(`User ${paymentRecord.user_id} downgraded due to refund`);
+          console.log(
+            `QR code ${paymentRecord.qr_code_id} reverted to non-editable due to refund`
+          );
         }
         break;
       }
