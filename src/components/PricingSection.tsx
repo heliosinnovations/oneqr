@@ -7,9 +7,19 @@ interface PricingPlan {
   price: string;
   priceId: string;
   description: string;
-  features: string[];
+  features: { text: string; included: boolean }[];
   popular?: boolean;
+  inheritsFree?: boolean;
 }
+
+const freePlanFeatures: { text: string; included: boolean }[] = [
+  { text: "Create unlimited QR codes", included: true },
+  { text: "High resolution export (PNG, SVG, PDF, EPS)", included: true },
+  { text: "Customize colors and styles", included: true },
+  { text: "Multiple format support", included: true },
+  { text: "Change where the QR points to", included: false },
+  { text: "Analytics", included: false },
+];
 
 const pricingPlans: PricingPlan[] = [
   {
@@ -18,13 +28,10 @@ const pricingPlans: PricingPlan[] = [
     priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_SINGLE || "",
     description: "Unlock editing for one QR code (one-time payment)",
     features: [
-      "1 editable QR code",
-      "All design customizations",
-      "High-resolution export (up to 4K)",
-      "All file formats (PNG, SVG, PDF)",
-      "Edit your QR code forever",
-      "No expiration, no recurring fees",
+      { text: "Change where the QR points to (1 QR code)", included: true },
+      { text: "Analytics (1 QR code)", included: true },
     ],
+    inheritsFree: true,
   },
   {
     name: "Unlimited QR",
@@ -32,15 +39,11 @@ const pricingPlans: PricingPlan[] = [
     priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_UNLIMITED || "",
     description: "Unlock editing for all QR codes (one-time payment)",
     features: [
-      "Unlimited editable QR codes",
-      "All design customizations",
-      "High-resolution export (up to 4K)",
-      "All file formats (PNG, SVG, PDF)",
-      "Edit all your QR codes forever",
-      "Bulk creation tools",
-      "No recurring fees, ever",
+      { text: "Change where the QR points to (unlimited)", included: true },
+      { text: "Analytics (unlimited)", included: true },
     ],
     popular: true,
+    inheritsFree: true,
   },
 ];
 
@@ -104,31 +107,74 @@ export default function PricingSection() {
           </p>
         </header>
 
-        {/* Free Tier Highlight */}
-        <div className="mb-12 rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-semibold text-white">
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            FREE
+        {/* Free Tier Card */}
+        <div className="mb-12 rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-8">
+          <div className="flex flex-col items-center text-center md:flex-row md:items-start md:text-left">
+            <div className="md:flex-1">
+              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-semibold text-white">
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                FREE
+              </div>
+              <h3 className="mt-4 font-serif text-2xl text-fg">
+                Everything you need to create QR codes
+              </h3>
+              <p className="mt-2 text-muted">
+                All pro features free. Pay only to edit content and view analytics.
+              </p>
+            </div>
           </div>
-          <h3 className="mt-4 font-serif text-2xl text-fg">
-            Create and save unlimited QR codes
-          </h3>
-          <p className="mt-2 text-muted">
-            Generate, download, and save as many QR codes as you want — completely free.
-            No account required. No credit card. No limits.
-          </p>
+
+          {/* Free tier features grid */}
+          <ul className="mt-6 grid gap-3 sm:grid-cols-2" role="list">
+            {freePlanFeatures.map((feature, index) => (
+              <li key={index} className="flex items-start gap-3">
+                {feature.included ? (
+                  <svg
+                    className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="mt-0.5 h-5 w-5 flex-shrink-0 text-muted"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
+                )}
+                <span className={`text-sm ${feature.included ? "text-fg" : "text-muted"}`}>
+                  {feature.text}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Pricing Cards */}
@@ -163,6 +209,11 @@ export default function PricingSection() {
 
               {/* Features */}
               <ul className="mb-8 space-y-4" role="list">
+                {plan.inheritsFree && (
+                  <li className="flex items-start gap-3 border-b border-border pb-4 mb-4">
+                    <span className="text-sm font-medium text-fg">Everything in Free, plus:</span>
+                  </li>
+                )}
                 {plan.features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <svg
@@ -178,7 +229,7 @@ export default function PricingSection() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span className="text-sm text-fg">{feature}</span>
+                    <span className="text-sm text-fg">{feature.text}</span>
                   </li>
                 ))}
               </ul>

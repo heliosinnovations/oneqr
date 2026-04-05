@@ -68,7 +68,7 @@ function PricingBadge({
     case "one-time":
       return (
         <span className={`${baseClasses} bg-emerald-500 text-white`}>
-          No Subscription
+          One-Time
         </span>
       );
     case "paid":
