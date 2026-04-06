@@ -311,19 +311,25 @@ export default function EditModal({
 
   // Content Tab - Locked State (single $1.99 paywall)
   const renderLockedContent = () => (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* QR Info Row */}
-      <div className="mb-6 flex items-center gap-4 rounded-xl bg-[var(--surface)] p-4">
-        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white">
+      <div className="mb-4 flex items-center gap-3 rounded-xl bg-[var(--surface)] p-3 sm:mb-6 sm:gap-4 sm:p-4">
+        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white sm:h-14 sm:w-14">
           {qrPreview ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={qrPreview} alt="QR preview" className="h-11 w-11" />
+            <img
+              src={qrPreview}
+              alt="QR preview"
+              className="h-9 w-9 sm:h-11 sm:w-11"
+            />
           ) : (
-            <div className="h-11 w-11 animate-pulse rounded bg-[var(--border)]" />
+            <div className="h-9 w-9 animate-pulse rounded bg-[var(--border)] sm:h-11 sm:w-11" />
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="font-semibold text-[var(--fg)]">{qrCode.title}</div>
+          <div className="text-sm font-semibold text-[var(--fg)] sm:text-base">
+            {qrCode.title}
+          </div>
           <div className="truncate text-xs text-[var(--muted)]">
             theqrspot.com/r/{qrCode.short_code}
           </div>
@@ -331,7 +337,7 @@ export default function EditModal({
       </div>
 
       {/* Lock Message */}
-      <div className="mb-6 rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--surface)] p-8 text-center">
+      <div className="mb-4 rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--surface)] p-5 text-center sm:mb-6 sm:p-8">
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent-light)]">
           <svg
             fill="none"
@@ -347,16 +353,16 @@ export default function EditModal({
             />
           </svg>
         </div>
-        <h3 className="mb-2 font-serif text-xl text-[var(--fg)]">
+        <h3 className="mb-2 font-serif text-lg text-[var(--fg)] sm:text-xl">
           Unlock Editing and Analytics
         </h3>
-        <p className="mb-4 text-sm text-[var(--muted)]">
+        <p className="mb-3 text-sm text-[var(--muted)] sm:mb-4">
           Change where this QR code redirects and view scan analytics.
         </p>
 
         {/* Current URL */}
-        <div className="mb-6 rounded-lg bg-white p-3 text-left">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+        <div className="rounded-lg bg-white p-3 text-left">
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)] sm:text-[11px]">
             Current destination
           </div>
           <div className="mt-1 break-all text-sm text-[var(--fg)]">
@@ -366,8 +372,10 @@ export default function EditModal({
       </div>
 
       {/* Single $1.99 Pricing */}
-      <div className="mb-6 rounded-xl border-2 border-[var(--accent)] bg-[var(--accent-light)] p-6 text-center">
-        <div className="font-serif text-4xl text-[var(--fg)]">$1.99</div>
+      <div className="mb-4 rounded-xl border-2 border-[var(--accent)] bg-[var(--accent-light)] p-4 text-center sm:mb-6 sm:p-6">
+        <div className="font-serif text-3xl text-[var(--fg)] sm:text-4xl">
+          $1.99
+        </div>
         <div className="mt-1 text-sm font-semibold text-[var(--fg)]">
           One-time payment
         </div>
@@ -376,7 +384,9 @@ export default function EditModal({
         </div>
       </div>
 
-      {error && <p className="mb-4 text-center text-sm text-red-500">{error}</p>}
+      {error && (
+        <p className="mb-4 text-center text-sm text-red-500">{error}</p>
+      )}
 
       {/* Unlock Button */}
       <button
@@ -429,7 +439,7 @@ export default function EditModal({
   const renderEditableContent = () => {
     if (success) {
       return (
-        <div className="p-8 text-center">
+        <div className="p-6 text-center sm:p-8">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#d1e7dd]">
             <svg
               fill="none"
@@ -456,19 +466,25 @@ export default function EditModal({
     }
 
     return (
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {/* QR Info Row */}
-        <div className="mb-6 flex items-center gap-4 rounded-xl bg-[var(--surface)] p-4">
-          <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white">
+        <div className="mb-4 flex items-center gap-3 rounded-xl bg-[var(--surface)] p-3 sm:mb-6 sm:gap-4 sm:p-4">
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white sm:h-14 sm:w-14">
             {qrPreview ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={qrPreview} alt="QR preview" className="h-11 w-11" />
+              <img
+                src={qrPreview}
+                alt="QR preview"
+                className="h-9 w-9 sm:h-11 sm:w-11"
+              />
             ) : (
-              <div className="h-11 w-11 animate-pulse rounded bg-[var(--border)]" />
+              <div className="h-9 w-9 animate-pulse rounded bg-[var(--border)] sm:h-11 sm:w-11" />
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-semibold text-[var(--fg)]">{qrCode.title}</div>
+            <div className="text-sm font-semibold text-[var(--fg)] sm:text-base">
+              {qrCode.title}
+            </div>
             <div className="truncate text-xs text-[var(--muted)]">
               theqrspot.com/r/{qrCode.short_code}
             </div>
@@ -477,7 +493,7 @@ export default function EditModal({
 
         {/* Current URL */}
         <div className="mb-4 rounded-lg bg-[var(--surface)] p-3">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)] sm:text-[11px]">
             Current destination
           </div>
           <div className="mt-1 break-all text-sm text-[var(--fg)]">
@@ -502,7 +518,7 @@ export default function EditModal({
               setError("");
             }}
             placeholder="https://example.com/new-page"
-            className={`w-full rounded-xl border bg-white px-4 py-3.5 text-[15px] transition-all focus:outline-none ${
+            className={`w-full rounded-xl border bg-white px-4 py-4 text-base transition-all focus:outline-none sm:py-3.5 sm:text-[15px] ${
               error
                 ? "border-red-500 focus:border-red-500 focus:ring-red-100"
                 : "border-[var(--border)] focus:border-[var(--accent)] focus:ring-[var(--accent-light)]"
@@ -539,17 +555,17 @@ export default function EditModal({
         </div>
 
         {/* Save Button */}
-        <div className="mt-6 flex gap-3">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <button
             onClick={onClose}
-            className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-6 py-3.5 text-[15px] font-semibold text-[var(--fg)] transition-colors hover:bg-[var(--border)]"
+            className="order-2 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-6 py-4 text-base font-semibold text-[var(--fg)] transition-colors hover:bg-[var(--border)] sm:order-1 sm:py-3.5 sm:text-[15px]"
           >
             Cancel
           </button>
           <button
             onClick={handleSaveContent}
             disabled={saving || !newUrl.trim()}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3.5 text-[15px] font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] disabled:translate-y-0 disabled:bg-[var(--muted)] disabled:opacity-70"
+            className="order-1 flex flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] disabled:translate-y-0 disabled:bg-[var(--muted)] disabled:opacity-70 sm:order-2 sm:py-3.5 sm:text-[15px]"
           >
             {saving ? (
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -579,7 +595,7 @@ export default function EditModal({
 
   // Style Tab
   const renderStyleTab = () => (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* QR Preview */}
       <div className="mb-6 flex justify-center">
         <div
@@ -658,7 +674,9 @@ export default function EditModal({
         </div>
       </div>
 
-      {error && <p className="mb-4 text-center text-sm text-red-500">{error}</p>}
+      {error && (
+        <p className="mb-4 text-center text-sm text-red-500">{error}</p>
+      )}
 
       {success && (
         <div className="mb-4 flex items-center justify-center gap-2 rounded-lg bg-[#d1e7dd] p-3 text-sm text-[#198754]">
@@ -683,7 +701,7 @@ export default function EditModal({
       <button
         onClick={handleSaveStyle}
         disabled={saving}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3.5 text-[15px] font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] disabled:translate-y-0 disabled:opacity-70"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] disabled:translate-y-0 disabled:opacity-70 sm:py-3.5 sm:text-[15px]"
       >
         {saving ? (
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -696,7 +714,7 @@ export default function EditModal({
 
   // Format Tab
   const renderFormatTab = () => (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Size Selection */}
       <div className="mb-6">
         <label className="mb-2 block text-sm font-semibold text-[var(--fg)]">
@@ -777,7 +795,9 @@ export default function EditModal({
         </p>
       </div>
 
-      {error && <p className="mb-4 text-center text-sm text-red-500">{error}</p>}
+      {error && (
+        <p className="mb-4 text-center text-sm text-red-500">{error}</p>
+      )}
 
       {success && (
         <div className="mb-4 flex items-center justify-center gap-2 rounded-lg bg-[#d1e7dd] p-3 text-sm text-[#198754]">
@@ -802,7 +822,7 @@ export default function EditModal({
       <button
         onClick={handleSaveFormat}
         disabled={saving}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3.5 text-[15px] font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] disabled:translate-y-0 disabled:opacity-70"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] disabled:translate-y-0 disabled:opacity-70 sm:py-3.5 sm:text-[15px]"
       >
         {saving ? (
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -815,19 +835,25 @@ export default function EditModal({
 
   // Analytics Tab - Locked State (single $1.99 paywall)
   const renderLockedAnalytics = () => (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* QR Info Row */}
-      <div className="mb-6 flex items-center gap-4 rounded-xl bg-[var(--surface)] p-4">
-        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white">
+      <div className="mb-4 flex items-center gap-3 rounded-xl bg-[var(--surface)] p-3 sm:mb-6 sm:gap-4 sm:p-4">
+        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white sm:h-14 sm:w-14">
           {qrPreview ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={qrPreview} alt="QR preview" className="h-11 w-11" />
+            <img
+              src={qrPreview}
+              alt="QR preview"
+              className="h-9 w-9 sm:h-11 sm:w-11"
+            />
           ) : (
-            <div className="h-11 w-11 animate-pulse rounded bg-[var(--border)]" />
+            <div className="h-9 w-9 animate-pulse rounded bg-[var(--border)] sm:h-11 sm:w-11" />
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="font-semibold text-[var(--fg)]">{qrCode.title}</div>
+          <div className="text-sm font-semibold text-[var(--fg)] sm:text-base">
+            {qrCode.title}
+          </div>
           <div className="truncate text-xs text-[var(--muted)]">
             theqrspot.com/r/{qrCode.short_code}
           </div>
@@ -835,7 +861,7 @@ export default function EditModal({
       </div>
 
       {/* Lock Message */}
-      <div className="mb-6 rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--surface)] p-8 text-center">
+      <div className="mb-4 rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--surface)] p-5 text-center sm:mb-6 sm:p-8">
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent-light)]">
           <svg
             fill="none"
@@ -851,17 +877,20 @@ export default function EditModal({
             />
           </svg>
         </div>
-        <h3 className="mb-2 font-serif text-xl text-[var(--fg)]">
+        <h3 className="mb-2 font-serif text-lg text-[var(--fg)] sm:text-xl">
           Unlock Editing and Analytics
         </h3>
-        <p className="mb-4 text-sm text-[var(--muted)]">
-          View detailed scan analytics including total scans, weekly trends, and more.
+        <p className="mb-3 text-sm text-[var(--muted)] sm:mb-4">
+          View detailed scan analytics including total scans, weekly trends, and
+          more.
         </p>
       </div>
 
       {/* Single $1.99 Pricing */}
-      <div className="mb-6 rounded-xl border-2 border-[var(--accent)] bg-[var(--accent-light)] p-6 text-center">
-        <div className="font-serif text-4xl text-[var(--fg)]">$1.99</div>
+      <div className="mb-4 rounded-xl border-2 border-[var(--accent)] bg-[var(--accent-light)] p-4 text-center sm:mb-6 sm:p-6">
+        <div className="font-serif text-3xl text-[var(--fg)] sm:text-4xl">
+          $1.99
+        </div>
         <div className="mt-1 text-sm font-semibold text-[var(--fg)]">
           One-time payment
         </div>
@@ -870,7 +899,9 @@ export default function EditModal({
         </div>
       </div>
 
-      {error && <p className="mb-4 text-center text-sm text-red-500">{error}</p>}
+      {error && (
+        <p className="mb-4 text-center text-sm text-red-500">{error}</p>
+      )}
 
       {/* Unlock Button */}
       <button
@@ -921,7 +952,7 @@ export default function EditModal({
 
   // Analytics Tab - Unlocked State (for paid users)
   const renderAnalyticsTab = () => (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Coming Soon / Basic Stats */}
       <div className="text-center">
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--surface)]">
@@ -1001,29 +1032,32 @@ export default function EditModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-[rgba(26,26,26,0.6)] backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal */}
-      <div className="animate-in fade-in zoom-in-95 relative flex max-h-[90vh] w-full max-w-[520px] flex-col overflow-hidden rounded-[20px] bg-[var(--bg)] shadow-2xl duration-200">
+      {/* Modal - Full height on mobile, centered on desktop */}
+      <div className="animate-in fade-in slide-in-from-bottom-4 sm:zoom-in-95 relative flex h-[95vh] w-full flex-col overflow-hidden rounded-t-[20px] bg-[var(--bg)] shadow-2xl duration-200 sm:h-auto sm:max-h-[90vh] sm:max-w-[520px] sm:rounded-[20px]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
-          <h2 className="font-serif text-xl text-[var(--fg)]">
+        <div className="flex flex-shrink-0 items-center justify-between border-b border-[var(--border)] px-4 py-3 sm:px-6 sm:py-4">
+          {/* Mobile drag indicator */}
+          <div className="absolute left-1/2 top-2 h-1 w-10 -translate-x-1/2 rounded-full bg-[var(--border)] sm:hidden" />
+          <h2 className="font-serif text-lg text-[var(--fg)] sm:text-xl">
             Edit QR Code
           </h2>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface)] transition-colors hover:bg-[var(--border)]"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface)] transition-colors hover:bg-[var(--border)] sm:h-8 sm:w-8"
+            aria-label="Close modal"
           >
             <svg
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              className="h-[18px] w-[18px] text-[var(--muted)]"
+              className="h-5 w-5 text-[var(--muted)] sm:h-[18px] sm:w-[18px]"
             >
               <path
                 strokeLinecap="round"
@@ -1035,26 +1069,28 @@ export default function EditModal({
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-[var(--border)]">
+        {/* Tabs - Improved mobile touch targets */}
+        <div className="flex flex-shrink-0 border-b border-[var(--border)]">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-all ${
+              className={`flex flex-1 flex-col items-center justify-center gap-1 px-2 py-3 text-xs font-medium transition-all sm:flex-row sm:gap-2 sm:px-4 sm:text-sm ${
                 activeTab === tab.id
                   ? "border-b-2 border-[var(--accent)] text-[var(--accent)]"
                   : "text-[var(--muted)] hover:text-[var(--fg)]"
               }`}
             >
               {tab.icon}
-              <span className="hidden sm:inline">{tab.label}</span>
+              <span>{tab.label}</span>
             </button>
           ))}
         </div>
 
-        {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto">{renderTabContent()}</div>
+        {/* Tab Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto overscroll-contain">
+          {renderTabContent()}
+        </div>
       </div>
     </div>
   );
