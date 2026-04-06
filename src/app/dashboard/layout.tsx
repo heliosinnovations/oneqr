@@ -47,9 +47,9 @@ export default function DashboardLayout({
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4">
           <Link
             href="/"
-            className="font-serif text-2xl text-[var(--fg)] no-underline"
+            className="font-serif text-2xl italic text-[var(--fg)] no-underline"
           >
-            The<span className="text-[var(--accent)]">QR</span>Spot
+            The QR <span className="text-[var(--accent)]">Spot</span>
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex">
