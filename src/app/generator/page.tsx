@@ -1706,55 +1706,44 @@ showpage
 
   return (
     <div className="min-h-screen bg-[var(--pro-bg)]">
-      {/* Header */}
-      <header className="border-b border-[var(--pro-border)] bg-[var(--pro-surface)]">
-        <div className="flex h-14 items-center justify-between px-4 sm:h-16 sm:px-6">
-          <div className="flex items-center gap-2 sm:gap-4">
+      {/* Navigation */}
+      <header>
+        <nav
+          className="fixed left-0 right-0 top-0 z-50 border-b border-border bg-bg"
+          role="navigation"
+          aria-label="Main navigation"
+        >
+          <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6 lg:px-12">
+            {/* Logo */}
             <Link
               href="/"
-              className="font-serif text-xl text-[var(--pro-fg)] sm:text-2xl"
+              className="font-serif text-[28px] italic text-fg"
+              aria-label="The QR Spot - Home"
             >
-              QR<span className="text-[var(--pro-accent)]">Spot</span>
+              The QR <span className="text-accent">Spot</span>
             </Link>
-            <nav className="hidden items-center gap-2 text-sm text-[var(--pro-muted)] sm:flex">
-              <Icon name="chevron-right" className="h-3.5 w-3.5" />
-              <span className="font-medium text-[var(--pro-fg)]">
-                QR Generator
-              </span>
-            </nav>
+
+            {/* Navigation Links */}
+            <div className="flex items-center gap-6">
+              <Link
+                href="/generator"
+                className="text-sm font-medium text-fg transition-colors hover:text-accent"
+              >
+                Advanced Generator
+              </Link>
+              <Link
+                href="/bulk"
+                className="text-sm font-medium text-muted transition-colors hover:text-fg"
+              >
+                Bulk Creation
+              </Link>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <Link
-              href="/bulk"
-              className="hidden items-center gap-2 rounded-md border border-[var(--pro-border)] bg-[var(--pro-surface)] px-3 py-1.5 text-sm font-medium transition-colors hover:bg-[var(--pro-surface-hover)] sm:flex sm:px-4 sm:py-2"
-            >
-              <Icon name="layers" />
-              <span className="hidden sm:inline">Bulk Creation</span>
-            </Link>
-            <button
-              onClick={() => {
-                const exportTab = document.querySelector(
-                  '[role="tab"][aria-controls="export-panel"]'
-                );
-                if (exportTab instanceof HTMLElement) {
-                  exportTab.click();
-                  exportTab.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center",
-                  });
-                }
-              }}
-              className="flex items-center gap-1.5 rounded-md bg-[var(--pro-accent)] px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-[var(--pro-accent-hover)] sm:gap-2 sm:px-4 sm:py-2"
-            >
-              <Icon name="upload" />
-              <span className="xs:inline hidden">Export</span>
-            </button>
-          </div>
-        </div>
+        </nav>
       </header>
 
       {/* Main Container */}
-      <main className="mx-auto max-w-[1400px] px-4 py-4 sm:p-6">
+      <main className="mx-auto max-w-[1400px] px-4 pb-4 pt-[88px] sm:px-6 sm:pb-6 sm:pt-[96px]">
         <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_380px] lg:items-start lg:gap-6 xl:grid-cols-[1fr_420px]">
           {/* Configuration Panel */}
           <div className="order-2 flex flex-col gap-4 lg:order-1">
