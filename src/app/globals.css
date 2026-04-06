@@ -129,16 +129,7 @@ body {
   animation: slideIn 0.3s ease-out forwards;
 }
 
-/* Hero Animation Option 1: Scale + Glow */
-@keyframes subtleScale {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
+/* Hero Animation Option 1: Glow Only */
 @keyframes gentleGlow {
   0%, 100% {
     text-shadow: 0 0 0px var(--accent);
@@ -149,11 +140,11 @@ body {
 }
 
 .animate-scale-glow {
-  animation: subtleScale 3s ease-in-out infinite, gentleGlow 3s ease-in-out infinite;
+  animation: gentleGlow 3s ease-in-out infinite;
   display: inline-block;
 }
 
-/* Hero Animation Option 2: Scale + Color Shift */
+/* Hero Animation Option 2: Color Shift Only */
 @keyframes colorShift {
   0%, 100% {
     color: #ff4d00;
@@ -164,7 +155,7 @@ body {
 }
 
 .animate-scale-color {
-  animation: subtleScale 3s ease-in-out infinite, colorShift 3s ease-in-out infinite;
+  animation: colorShift 3s ease-in-out infinite;
   display: inline-block;
 }
 
