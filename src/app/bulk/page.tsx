@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import BulkQRCreator from "@/components/BulkQRCreator";
+import Footer from "@/components/Footer";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -77,6 +78,8 @@ export default function BulkPage() {
         </div>
         <BulkQRCreator />
       </main>
+
+      <Footer />
     </>
   );
 }

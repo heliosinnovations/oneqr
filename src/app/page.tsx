@@ -2,6 +2,7 @@ import SimpleQRGenerator from "@/components/SimpleQRGenerator";
 import ComparisonSection from "@/components/ComparisonSection";
 import PricingSection from "@/components/PricingSection";
 import UserMenu from "@/components/UserMenu";
+import Footer from "@/components/Footer";
 import Link from "next/link";
 
 export default function Home() {
@@ -381,67 +382,7 @@ export default function Home() {
         <ComparisonSection />
       </main>
 
-      {/* Footer */}
-      <footer
-        className="border-t border-border bg-bg px-6 py-12 lg:px-12"
-        role="contentinfo"
-      >
-        <div className="mx-auto grid max-w-7xl items-center gap-6 md:grid-cols-3">
-          {/* Logo */}
-          <div>
-            <div className="font-serif text-2xl italic text-fg">
-              The QR <span className="text-accent">Spot</span>
-            </div>
-            <p className="mt-1 text-xs text-muted">Pay once, own forever.</p>
-          </div>
-
-          {/* Links */}
-          <nav aria-label="Footer navigation">
-            <ul className="flex flex-wrap justify-center gap-8 md:gap-10">
-              <li>
-                <a
-                  href="/privacy"
-                  className="text-sm text-muted transition-colors hover:text-fg focus:outline-none focus:ring-2 focus:ring-accent"
-                >
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/terms"
-                  className="text-sm text-muted transition-colors hover:text-fg focus:outline-none focus:ring-2 focus:ring-accent"
-                >
-                  Terms of Service
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/faq"
-                  className="text-sm text-muted transition-colors hover:text-fg focus:outline-none focus:ring-2 focus:ring-accent"
-                >
-                  Support
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://x.com/theqrspot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted transition-colors hover:text-fg focus:outline-none focus:ring-2 focus:ring-accent"
-                  aria-label="Follow us on Twitter"
-                >
-                  Twitter
-                </a>
-              </li>
-            </ul>
-          </nav>
-
-          {/* Copyright */}
-          <p className="text-center text-[13px] text-muted md:text-right">
-            &copy; 2026 Helios Innovations
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }
