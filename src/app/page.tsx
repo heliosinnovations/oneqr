@@ -58,14 +58,11 @@ export default function Home() {
               id="hero-heading"
               className="font-serif text-4xl leading-[1.1] tracking-tight text-fg md:text-5xl lg:text-6xl"
             >
-              Create unlimited QR codes{" "}
-              <span className="italic text-accent">free</span>.
-              <br />
-              <span className="text-accent">$1.99 to unlock editing.</span>
+              Create QR codes <span className="italic text-accent">free</span>.{" "}
+              <span className="text-accent">$1.99 to edit.</span>
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
-              No subscriptions. Pay once per QR code to unlock editing and
-              analytics.
+              No subscriptions.
             </p>
           </header>
 
@@ -97,8 +94,8 @@ export default function Home() {
                 $1.99 to edit.
               </h2>
               <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/60">
-                Create unlimited QR codes free. Pay $1.99 per QR to unlock
-                editing and analytics.
+                Create unlimited QR codes free. $1.99 per QR to unlock editing
+                and analytics.
               </p>
             </header>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 
 const freePlanFeatures: {
   text: string;
@@ -21,42 +21,6 @@ const paidFeatures: string[] = [
 ];
 
 export default function PricingSection() {
-  const [loading, setLoading] = useState(false);
-
-  const handlePurchase = async () => {
-    const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SINGLE || "";
-
-    if (!priceId) {
-      console.error("Price ID is not configured");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ priceId }),
-      });
-
-      const data = await response.json();
-
-      if (data.url) {
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
-      } else {
-        console.error("Failed to create checkout session:", data.error);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      setLoading(false);
-    }
-  };
-
   return (
     <section
       id="pricing"
@@ -195,39 +159,13 @@ export default function PricingSection() {
             </ul>
 
             {/* CTA Button */}
-            <button
-              onClick={handlePurchase}
-              disabled={loading}
-              className="disabled:bg-accent/50 mt-8 w-full rounded-lg bg-accent py-4 text-center font-semibold text-white transition-all duration-200 hover:bg-fg"
-              aria-label="Unlock editing and analytics for $1.99"
+            <Link
+              href="/generator"
+              className="mt-8 block w-full rounded-lg bg-accent py-4 text-center font-semibold text-white transition-all duration-200 hover:bg-fg"
+              aria-label="Get started creating QR codes"
             >
-              {loading ? (
-                <span className="inline-flex items-center gap-2">
-                  <svg
-                    className="h-5 w-5 animate-spin"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  Processing...
-                </span>
-              ) : (
-                "Unlock for $1.99"
-              )}
-            </button>
+              Get Started
+            </Link>
           </div>
         </div>
 
