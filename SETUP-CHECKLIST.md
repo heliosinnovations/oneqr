@@ -28,9 +28,8 @@
 - [ ] Get secret key (starts with `sk_test_...`)
 - [ ] Set up webhook endpoint: `https://theqrspot.com/api/webhooks/stripe`
 - [ ] Get webhook signing secret (starts with `whsec_...`)
-- [ ] Add product prices:
-  - $3.99 - Single Editable QR Code
-  - $9.99 - Unlimited Editable QR Codes (one-time payment)
+- [x] Add product price:
+  - $1.99 - Unlock QR editing and analytics (price_1TIyNH0qJOgvMb5j3MdHXZh9)
 
 **Webhook events to listen for:**
 - `payment_intent.succeeded`
@@ -92,7 +91,7 @@ Once Stripe is set up:
    - Paid tier: Editable QR codes with short URLs
 
 3. **Payment Flow**
-   - Stripe Checkout for $3.99 or $9.99
+   - Stripe Checkout for $1.99 (one-time payment)
    - Webhook handling for payment confirmation
    - Update user plan in Supabase
 
