@@ -129,7 +129,16 @@ body {
   animation: slideIn 0.3s ease-out forwards;
 }
 
-/* Subtle fade-in animation for hero QR code */
+/* Subtle floating animation for hero QR code */
+@keyframes gentleFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -140,7 +149,7 @@ body {
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
+  animation: fadeIn 0.6s ease-out forwards, gentleFloat 3s ease-in-out infinite;
 }
 
 @layer base {
