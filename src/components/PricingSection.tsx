@@ -2,11 +2,17 @@
 
 import { useState } from "react";
 
-const freePlanFeatures: { text: string; included: boolean }[] = [
+const freePlanFeatures: {
+  text: string;
+  included: boolean;
+  locked?: boolean;
+}[] = [
   { text: "Create unlimited QR codes", included: true },
   { text: "High resolution export (PNG, SVG, PDF, EPS)", included: true },
   { text: "Customize colors and styles", included: true },
   { text: "Multiple format support", included: true },
+  { text: "Change where the QR points to", included: false, locked: true },
+  { text: "View scan analytics", included: false, locked: true },
 ];
 
 const paidFeatures: string[] = [
@@ -71,7 +77,8 @@ export default function PricingSection() {
             <span className="italic text-accent">No Subscriptions.</span>
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted">
-            Create unlimited QR codes for free. $1.99 to unlock editing and analytics per QR code.
+            Create unlimited QR codes for free. $1.99 to unlock editing and
+            analytics per QR code.
           </p>
         </header>
 
@@ -106,27 +113,52 @@ export default function PricingSection() {
             <ul className="mt-6 space-y-3" role="list">
               {freePlanFeatures.map((feature, index) => (
                 <li key={index} className="flex items-start gap-3">
-                  <svg
-                    className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
+                  {feature.locked ? (
+                    <svg
+                      className="mt-0.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  )}
+                  <span
+                    className={`text-sm ${feature.locked ? "text-gray-500" : "text-fg"}`}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <span className="text-sm text-fg">{feature.text}</span>
+                    {feature.text}
+                    {feature.locked && (
+                      <span className="ml-2 text-xs text-gray-400">
+                        ($1.99)
+                      </span>
+                    )}
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* $1.99 Unlock Card */}
-          <div className="relative overflow-hidden rounded-2xl border-2 border-accent bg-bg p-8 shadow-lg shadow-accent/10">
+          <div className="shadow-accent/10 relative overflow-hidden rounded-2xl border-2 border-accent bg-bg p-8 shadow-lg">
             {/* Price Badge */}
             <div className="mb-4">
               <span className="font-serif text-5xl text-fg">$1.99</span>
@@ -166,7 +198,7 @@ export default function PricingSection() {
             <button
               onClick={handlePurchase}
               disabled={loading}
-              className="mt-8 w-full rounded-lg bg-accent py-4 text-center font-semibold text-white transition-all duration-200 hover:bg-fg disabled:bg-accent/50"
+              className="disabled:bg-accent/50 mt-8 w-full rounded-lg bg-accent py-4 text-center font-semibold text-white transition-all duration-200 hover:bg-fg"
               aria-label="Unlock editing and analytics for $1.99"
             >
               {loading ? (
