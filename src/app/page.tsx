@@ -64,7 +64,8 @@ export default function Home() {
               <span className="text-accent">$1.99 to unlock editing.</span>
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
-              No subscriptions. Pay once per QR code to unlock editing and analytics.
+              No subscriptions. Pay once per QR code to unlock editing and
+              analytics.
             </p>
           </header>
 
@@ -127,11 +128,12 @@ export default function Home() {
               >
                 Professional QR codes.
                 <br />
-                <span className="italic text-accent">Free to create.</span> $1.99
-                to edit.
+                <span className="italic text-accent">Free to create.</span>{" "}
+                $1.99 to edit.
               </h2>
               <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/60">
-                Create unlimited QR codes free. Pay $1.99 per QR to unlock editing and analytics.
+                Create unlimited QR codes free. Pay $1.99 per QR to unlock
+                editing and analytics.
               </p>
             </header>
 
@@ -162,7 +164,12 @@ export default function Home() {
                       <rect x="13" y="25" width="2" height="2" />
                       <rect x="9" y="29" width="2" height="2" />
                       {/* Expanding arrows */}
-                      <path d="M18 14 L22 14 L22 10 M22 14 L22 18 L26 18" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                      <path
+                        d="M18 14 L22 14 L22 10 M22 14 L22 18 L26 18"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        fill="none"
+                      />
                     </svg>
                   </div>
                   <h3 className="font-serif text-2xl tracking-tight">
@@ -171,7 +178,8 @@ export default function Home() {
                 </div>
                 <p className="text-base leading-relaxed text-white/60">
                   Export from 512px up to 4096px. Perfect for billboards,
-                  posters, and large format printing. Print-ready quality at any size.
+                  posters, and large format printing. Print-ready quality at any
+                  size.
                 </p>
               </li>
 
@@ -236,13 +244,55 @@ export default function Home() {
                       <rect x="8" y="20" width="1.5" height="1.5" />
                       <rect x="12" y="20" width="1.5" height="1.5" />
                       {/* Print measurement lines */}
-                      <line x1="26" y1="8" x2="30" y2="8" stroke="currentColor" strokeWidth="1.5" />
-                      <line x1="26" y1="24" x2="30" y2="24" stroke="currentColor" strokeWidth="1.5" />
-                      <line x1="28" y1="8" x2="28" y2="24" stroke="currentColor" strokeWidth="1.5" />
+                      <line
+                        x1="26"
+                        y1="8"
+                        x2="30"
+                        y2="8"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      />
+                      <line
+                        x1="26"
+                        y1="24"
+                        x2="30"
+                        y2="24"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      />
+                      <line
+                        x1="28"
+                        y1="8"
+                        x2="28"
+                        y2="24"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      />
                       {/* Tick marks */}
-                      <line x1="27" y1="12" x2="29" y2="12" stroke="currentColor" strokeWidth="1" />
-                      <line x1="27" y1="16" x2="29" y2="16" stroke="currentColor" strokeWidth="1" />
-                      <line x1="27" y1="20" x2="29" y2="20" stroke="currentColor" strokeWidth="1" />
+                      <line
+                        x1="27"
+                        y1="12"
+                        x2="29"
+                        y2="12"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                      />
+                      <line
+                        x1="27"
+                        y1="16"
+                        x2="29"
+                        y2="16"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                      />
+                      <line
+                        x1="27"
+                        y1="20"
+                        x2="29"
+                        y2="20"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                      />
                     </svg>
                   </div>
                   <h3 className="font-serif text-2xl tracking-tight">
@@ -251,7 +301,8 @@ export default function Home() {
                 </div>
                 <p className="text-base leading-relaxed text-white/60">
                   Set DPI from 72 to 600 with a built-in size calculator. Know
-                  exactly how your QR will print. Professional output every time.
+                  exactly how your QR will print. Professional output every
+                  time.
                 </p>
               </li>
 
@@ -265,15 +316,50 @@ export default function Home() {
                     >
                       {/* QR code with gradient/style variation */}
                       <defs>
-                        <linearGradient id="qr-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="currentColor" stopOpacity="1" />
-                          <stop offset="100%" stopColor="currentColor" stopOpacity="0.4" />
+                        <linearGradient
+                          id="qr-gradient"
+                          x1="0%"
+                          y1="0%"
+                          x2="100%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="currentColor"
+                            stopOpacity="1"
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="currentColor"
+                            stopOpacity="0.4"
+                          />
                         </linearGradient>
                       </defs>
                       {/* Corner blocks with rounded edges */}
-                      <rect x="2" y="2" width="5" height="5" rx="1" fill="url(#qr-gradient)" />
-                      <rect x="2" y="25" width="5" height="5" rx="1" fill="url(#qr-gradient)" />
-                      <rect x="25" y="2" width="5" height="5" rx="1" fill="url(#qr-gradient)" />
+                      <rect
+                        x="2"
+                        y="2"
+                        width="5"
+                        height="5"
+                        rx="1"
+                        fill="url(#qr-gradient)"
+                      />
+                      <rect
+                        x="2"
+                        y="25"
+                        width="5"
+                        height="5"
+                        rx="1"
+                        fill="url(#qr-gradient)"
+                      />
+                      <rect
+                        x="25"
+                        y="2"
+                        width="5"
+                        height="5"
+                        rx="1"
+                        fill="url(#qr-gradient)"
+                      />
                       {/* Styled data modules */}
                       <circle cx="10" cy="3" r="1" opacity="0.8" />
                       <circle cx="14" cy="3" r="1" opacity="0.6" />
@@ -341,9 +427,7 @@ export default function Home() {
             <div className="font-serif text-2xl italic text-fg">
               The QR <span className="text-accent">Spot</span>
             </div>
-            <p className="mt-1 text-xs text-muted">
-              Pay once, own forever.
-            </p>
+            <p className="mt-1 text-xs text-muted">Pay once, own forever.</p>
           </div>
 
           {/* Links */}
@@ -351,7 +435,7 @@ export default function Home() {
             <ul className="flex flex-wrap justify-center gap-8 md:gap-10">
               <li>
                 <a
-                  href="#"
+                  href="/privacy"
                   className="text-sm text-muted transition-colors hover:text-fg focus:outline-none focus:ring-2 focus:ring-accent"
                 >
                   Privacy Policy
@@ -359,7 +443,7 @@ export default function Home() {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/terms"
                   className="text-sm text-muted transition-colors hover:text-fg focus:outline-none focus:ring-2 focus:ring-accent"
                 >
                   Terms of Service
@@ -367,7 +451,7 @@ export default function Home() {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/faq"
                   className="text-sm text-muted transition-colors hover:text-fg focus:outline-none focus:ring-2 focus:ring-accent"
                 >
                   Support
@@ -375,7 +459,9 @@ export default function Home() {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="https://x.com/theqrspot"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-sm text-muted transition-colors hover:text-fg focus:outline-none focus:ring-2 focus:ring-accent"
                   aria-label="Follow us on Twitter"
                 >
