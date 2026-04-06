@@ -6,6 +6,16 @@ import QRCode from "qrcode";
 import Link from "next/link";
 import { jsPDF } from "jspdf";
 import Footer from "@/components/Footer";
+import {
+  WiFiForm,
+  ContactForm,
+  WiFiFormData,
+  ContactFormData,
+  initialWiFiData,
+  initialContactData,
+  generateWiFiString,
+  generateVCardString,
+} from "@/components/ContentTypeForms";
 
 type TabType = "content" | "labels" | "colors" | "style" | "export";
 type ToastType = { message: string; type: "success" | "error"; id: number };
@@ -674,6 +684,14 @@ function GeneratorContent() {
   const [activeTab, setActiveTab] = useState<TabType>("content");
   const [zoomLevel, setZoomLevel] = useState(100);
 
+  // Content type state for WiFi and Contact forms
+  const [selectedContentType, setSelectedContentType] = useState<
+    "url" | "wifi" | "vcard" | null
+  >(null);
+  const [wifiData, setWifiData] = useState<WiFiFormData>(initialWiFiData);
+  const [contactData, setContactData] =
+    useState<ContactFormData>(initialContactData);
+
   // Customization options
   const [fgColor, setFgColor] = useState("#1a1a1a");
   const [bgColor, setBgColor] = useState("#ffffff");
@@ -857,11 +875,70 @@ function GeneratorContent() {
 
   // Handle template selection
   const setTemplate = (templateId: string) => {
+    // For WiFi and Contact (vcard), switch to form mode instead of raw template
+    if (templateId === "wifi") {
+      setSelectedContentType("wifi");
+      // Reset WiFi form data
+      setWifiData(initialWiFiData);
+      // Clear the URL field
+      setUrl("");
+      setUrlValid(false);
+      return;
+    }
+
+    if (templateId === "vcard") {
+      setSelectedContentType("vcard");
+      // Reset Contact form data
+      setContactData(initialContactData);
+      // Clear the URL field
+      setUrl("");
+      setUrlValid(false);
+      return;
+    }
+
+    // For other templates, use the original behavior
+    setSelectedContentType("url");
     const template = QUICK_ACTIONS.find((a) => a.id === templateId);
     if (template) {
       setUrl(template.template);
       validateURL(template.template);
     }
+  };
+
+  // Handle WiFi form changes - generate string and update QR
+  const handleWifiChange = useCallback((data: WiFiFormData) => {
+    setWifiData(data);
+    const wifiString = generateWiFiString(data);
+    if (wifiString) {
+      setUrl(wifiString);
+      setUrlValid(true);
+    } else {
+      setUrl("");
+      setUrlValid(false);
+    }
+  }, []);
+
+  // Handle Contact form changes - generate string and update QR
+  const handleContactChange = useCallback((data: ContactFormData) => {
+    setContactData(data);
+    const vcardString = generateVCardString(data);
+    // Check if the vCard has meaningful content
+    const hasContent =
+      data.firstName || data.lastName || data.phone || data.email;
+    if (hasContent) {
+      setUrl(vcardString);
+      setUrlValid(true);
+    } else {
+      setUrl("");
+      setUrlValid(false);
+    }
+  }, []);
+
+  // Reset to URL mode (back to default input)
+  const resetToUrlMode = () => {
+    setSelectedContentType(null);
+    setUrl("");
+    setUrlValid(false);
   };
 
   // Handle color preset selection
@@ -1781,73 +1858,127 @@ showpage
                 {/* Content Tab */}
                 {activeTab === "content" && (
                   <div className="p-4 sm:p-5">
-                    <div className="mb-4 sm:mb-5">
-                      <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-[var(--pro-fg)]">
-                        URL or Text{" "}
-                        <span className="text-[var(--pro-error)]">*</span>
-                      </label>
-                      <div className="relative">
-                        <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pro-muted)]">
-                          <Icon
-                            name="globe"
-                            className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
-                          />
-                        </div>
-                        <input
-                          type="url"
-                          id="contentInput"
-                          value={url}
-                          onChange={(e) => {
-                            setUrl(e.target.value);
-                            validateURL(e.target.value);
-                          }}
-                          placeholder="https://example.com"
-                          className={`w-full rounded-md border py-2.5 pl-9 pr-16 text-sm outline-none transition-all sm:pl-10 sm:pr-20 ${
-                            urlValid
-                              ? "border-[var(--pro-success)] shadow-[0_0_0_3px_var(--pro-success-light)]"
-                              : url
-                                ? "border-[var(--pro-error)] shadow-[0_0_0_3px_var(--pro-error-light)]"
-                                : "border-[var(--pro-border)] focus:border-[var(--pro-accent)] focus:shadow-[0_0_0_3px_var(--pro-accent-light)]"
-                          }`}
-                        />
-                        <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1 sm:right-3 sm:gap-2">
-                          {url && (
-                            <span
-                              className={`flex items-center gap-0.5 text-[10px] font-semibold sm:gap-1 sm:text-xs ${
-                                urlValid
-                                  ? "text-[var(--pro-success)]"
-                                  : "text-[var(--pro-error)]"
-                              }`}
-                            >
-                              <Icon
-                                name={urlValid ? "check" : "x"}
-                                className="h-3 w-3 sm:h-3.5 sm:w-3.5"
-                              />
-                              <span className="xs:inline hidden">
-                                {urlValid ? "Valid" : "Invalid"}
-                              </span>
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <p className="mt-1.5 text-[10px] text-[var(--pro-muted)] sm:text-xs">
-                        Enter a URL, text, or use one of the quick actions below
-                      </p>
-                    </div>
-
-                    {/* Quick Actions */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {QUICK_ACTIONS.map((action) => (
+                    {/* WiFi Form */}
+                    {selectedContentType === "wifi" && (
+                      <div>
                         <button
-                          key={action.id}
-                          onClick={() => setTemplate(action.id)}
-                          className="flex items-center gap-1 rounded border border-[var(--pro-border)] bg-[var(--pro-surface-hover)] px-2 py-1 text-[10px] font-medium transition-all hover:border-[var(--pro-accent)] hover:bg-[var(--pro-accent-light)] hover:text-[var(--pro-accent)] sm:px-2.5 sm:py-1.5 sm:text-xs"
+                          onClick={resetToUrlMode}
+                          className="mb-4 flex items-center gap-1.5 text-xs text-[var(--pro-muted)] transition-colors hover:text-[var(--pro-accent)]"
                         >
-                          <Icon name={action.icon} className="h-3 w-3" />
-                          {action.label}
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className="h-3.5 w-3.5"
+                          >
+                            <path d="M19 12H5M12 19l-7-7 7-7" />
+                          </svg>
+                          Back to URL input
                         </button>
-                      ))}
-                    </div>
+                        <WiFiForm data={wifiData} onChange={handleWifiChange} />
+                      </div>
+                    )}
+
+                    {/* Contact/vCard Form */}
+                    {selectedContentType === "vcard" && (
+                      <div>
+                        <button
+                          onClick={resetToUrlMode}
+                          className="mb-4 flex items-center gap-1.5 text-xs text-[var(--pro-muted)] transition-colors hover:text-[var(--pro-accent)]"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className="h-3.5 w-3.5"
+                          >
+                            <path d="M19 12H5M12 19l-7-7 7-7" />
+                          </svg>
+                          Back to URL input
+                        </button>
+                        <ContactForm
+                          data={contactData}
+                          onChange={handleContactChange}
+                        />
+                      </div>
+                    )}
+
+                    {/* Default URL/Text Input */}
+                    {selectedContentType !== "wifi" &&
+                      selectedContentType !== "vcard" && (
+                        <>
+                          <div className="mb-4 sm:mb-5">
+                            <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-[var(--pro-fg)]">
+                              URL or Text{" "}
+                              <span className="text-[var(--pro-error)]">*</span>
+                            </label>
+                            <div className="relative">
+                              <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pro-muted)]">
+                                <Icon
+                                  name="globe"
+                                  className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                                />
+                              </div>
+                              <input
+                                type="url"
+                                id="contentInput"
+                                value={url}
+                                onChange={(e) => {
+                                  setUrl(e.target.value);
+                                  validateURL(e.target.value);
+                                }}
+                                placeholder="https://example.com"
+                                className={`w-full rounded-md border py-2.5 pl-9 pr-16 text-sm outline-none transition-all sm:pl-10 sm:pr-20 ${
+                                  urlValid
+                                    ? "border-[var(--pro-success)] shadow-[0_0_0_3px_var(--pro-success-light)]"
+                                    : url
+                                      ? "border-[var(--pro-error)] shadow-[0_0_0_3px_var(--pro-error-light)]"
+                                      : "border-[var(--pro-border)] focus:border-[var(--pro-accent)] focus:shadow-[0_0_0_3px_var(--pro-accent-light)]"
+                                }`}
+                              />
+                              <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1 sm:right-3 sm:gap-2">
+                                {url && (
+                                  <span
+                                    className={`flex items-center gap-0.5 text-[10px] font-semibold sm:gap-1 sm:text-xs ${
+                                      urlValid
+                                        ? "text-[var(--pro-success)]"
+                                        : "text-[var(--pro-error)]"
+                                    }`}
+                                  >
+                                    <Icon
+                                      name={urlValid ? "check" : "x"}
+                                      className="h-3 w-3 sm:h-3.5 sm:w-3.5"
+                                    />
+                                    <span className="xs:inline hidden">
+                                      {urlValid ? "Valid" : "Invalid"}
+                                    </span>
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <p className="mt-1.5 text-[10px] text-[var(--pro-muted)] sm:text-xs">
+                              Enter a URL, text, or use one of the quick actions
+                              below
+                            </p>
+                          </div>
+
+                          {/* Quick Actions */}
+                          <div className="flex flex-wrap gap-1.5">
+                            {QUICK_ACTIONS.map((action) => (
+                              <button
+                                key={action.id}
+                                onClick={() => setTemplate(action.id)}
+                                className="flex items-center gap-1 rounded border border-[var(--pro-border)] bg-[var(--pro-surface-hover)] px-2 py-1 text-[10px] font-medium transition-all hover:border-[var(--pro-accent)] hover:bg-[var(--pro-accent-light)] hover:text-[var(--pro-accent)] sm:px-2.5 sm:py-1.5 sm:text-xs"
+                              >
+                                <Icon name={action.icon} className="h-3 w-3" />
+                                {action.label}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
                   </div>
                 )}
 
