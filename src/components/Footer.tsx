@@ -6,9 +6,9 @@ export default function Footer() {
       className="border-t border-border bg-bg px-6 py-12 lg:px-12"
       role="contentinfo"
     >
-      <div className="mx-auto grid max-w-7xl items-center gap-6 md:grid-cols-3">
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 md:flex-row md:justify-between">
         {/* Logo */}
-        <div>
+        <div className="text-center md:text-left">
           <Link
             href="/"
             className="font-serif text-2xl italic text-fg no-underline"
@@ -20,7 +20,7 @@ export default function Footer() {
 
         {/* Links */}
         <nav aria-label="Footer navigation">
-          <ul className="flex flex-wrap justify-center gap-8 md:gap-10">
+          <ul className="flex flex-wrap justify-center gap-6 md:gap-8">
             <li>
               <Link
                 href="/privacy"
@@ -44,17 +44,6 @@ export default function Footer() {
               >
                 Support
               </Link>
-            </li>
-            <li>
-              <a
-                href="https://x.com/theqrspot"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-muted transition-colors hover:text-fg focus:outline-none focus:ring-2 focus:ring-accent"
-                aria-label="Follow us on Twitter"
-              >
-                Twitter
-              </a>
             </li>
           </ul>
         </nav>
