@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TheQRSpot Favicon Designs - Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #1a1a1a;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: #666;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .brand-colors {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    .color-swatch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .color-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .variations {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 32px;
+      margin-bottom: 60px;
+    }
+
+    .variation-card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .variation-header {
+      margin-bottom: 24px;
+    }
+
+    .variation-number {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #ff4d00;
+      margin-bottom: 8px;
+    }
+
+    .variation-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .variation-description {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .preview-section {
+      margin-top: 24px;
+    }
+
+    .preview-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+
+    .preview-large {
+      width: 128px;
+      height: 128px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .preview-sizes {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+    }
+
+    .size-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .size-preview img {
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .size-label {
+      font-size: 0.7rem;
+      color: #999;
+      font-weight: 500;
+    }
+
+    .context-previews {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #eee;
+    }
+
+    .context-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    .browser-tabs {
+      display: flex;
+      gap: 12px;
+    }
+
+    .browser-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: #f0f0f0;
+      border-radius: 8px 8px 0 0;
+      font-size: 0.8rem;
+    }
+
+    .browser-tab.dark {
+      background: #2a2a2a;
+      color: white;
+    }
+
+    .browser-tab img {
+      width: 16px;
+      height: 16px;
+      border-radius: 2px;
+    }
+
+    .notes {
+      background: #fffef9;
+      border: 2px solid #ff4d00;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 40px;
+    }
+
+    .notes h3 {
+      color: #ff4d00;
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+    }
+
+    .notes ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .notes li {
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+      color: #444;
+    }
+
+    .notes li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #ff4d00;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      color: #999;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>TheQRSpot Favicon Designs</h1>
+      <p class="subtitle">Three unique design variations for the favicon. Each offers a different visual approach while maintaining brand identity.</p>
+
+      <div class="brand-colors">
+        <div class="color-swatch">
+          <div class="swatch" style="background: #ff4d00;"></div>
+          <span class="color-label">Primary Orange #ff4d00</span>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch" style="background: #fffef9;"></div>
+          <span class="color-label">Background #fffef9</span>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch" style="background: #1a1a1a;"></div>
+          <span class="color-label">Dark #1a1a1a</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="variations">
+      <!-- Variation 1 -->
+      <div class="variation-card">
+        <div class="variation-header">
+          <div class="variation-number">Variation 1</div>
+          <h2 class="variation-title">Minimal Abstract</h2>
+          <p class="variation-description">Clean, simple design with the three iconic QR finder patterns on an orange background. Maximum clarity at small sizes.</p>
+        </div>
+
+        <div class="preview-section">
+          <div class="preview-row">
+            <img src="variation-1-minimal.svg" alt="Variation 1" class="preview-large">
+            <div class="preview-sizes">
+              <div class="size-preview">
+                <img src="variation-1-minimal.svg" width="48" height="48" alt="48px">
+                <span class="size-label">48px</span>
+              </div>
+              <div class="size-preview">
+                <img src="variation-1-minimal.svg" width="32" height="32" alt="32px">
+                <span class="size-label">32px</span>
+              </div>
+              <div class="size-preview">
+                <img src="variation-1-minimal.svg" width="16" height="16" alt="16px">
+                <span class="size-label">16px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="context-previews">
+            <div class="context-title">Browser Tab Context</div>
+            <div class="browser-tabs">
+              <div class="browser-tab">
+                <img src="variation-1-minimal.svg" alt="favicon">
+                <span>TheQRSpot</span>
+              </div>
+              <div class="browser-tab dark">
+                <img src="variation-1-minimal.svg" alt="favicon">
+                <span>TheQRSpot</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variation 2 -->
+      <div class="variation-card">
+        <div class="variation-header">
+          <div class="variation-number">Variation 2</div>
+          <h2 class="variation-title">Bold QR Pattern</h2>
+          <p class="variation-description">Detailed QR aesthetic with prominent finder patterns and data modules. Orange on cream background for brand warmth.</p>
+        </div>
+
+        <div class="preview-section">
+          <div class="preview-row">
+            <img src="variation-2-bold.svg" alt="Variation 2" class="preview-large">
+            <div class="preview-sizes">
+              <div class="size-preview">
+                <img src="variation-2-bold.svg" width="48" height="48" alt="48px">
+                <span class="size-label">48px</span>
+              </div>
+              <div class="size-preview">
+                <img src="variation-2-bold.svg" width="32" height="32" alt="32px">
+                <span class="size-label">32px</span>
+              </div>
+              <div class="size-preview">
+                <img src="variation-2-bold.svg" width="16" height="16" alt="16px">
+                <span class="size-label">16px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="context-previews">
+            <div class="context-title">Browser Tab Context</div>
+            <div class="browser-tabs">
+              <div class="browser-tab">
+                <img src="variation-2-bold.svg" alt="favicon">
+                <span>TheQRSpot</span>
+              </div>
+              <div class="browser-tab dark">
+                <img src="variation-2-bold.svg" alt="favicon">
+                <span>TheQRSpot</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variation 3 -->
+      <div class="variation-card">
+        <div class="variation-header">
+          <div class="variation-number">Variation 3</div>
+          <h2 class="variation-title">Modern Stylized</h2>
+          <p class="variation-description">Contemporary design with gradient orange background, rounded shapes, and a centered focal point. Premium, app-like aesthetic.</p>
+        </div>
+
+        <div class="preview-section">
+          <div class="preview-row">
+            <img src="variation-3-modern.svg" alt="Variation 3" class="preview-large">
+            <div class="preview-sizes">
+              <div class="size-preview">
+                <img src="variation-3-modern.svg" width="48" height="48" alt="48px">
+                <span class="size-label">48px</span>
+              </div>
+              <div class="size-preview">
+                <img src="variation-3-modern.svg" width="32" height="32" alt="32px">
+                <span class="size-label">32px</span>
+              </div>
+              <div class="size-preview">
+                <img src="variation-3-modern.svg" width="16" height="16" alt="16px">
+                <span class="size-label">16px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="context-previews">
+            <div class="context-title">Browser Tab Context</div>
+            <div class="browser-tabs">
+              <div class="browser-tab">
+                <img src="variation-3-modern.svg" alt="favicon">
+                <span>TheQRSpot</span>
+              </div>
+              <div class="browser-tab dark">
+                <img src="variation-3-modern.svg" alt="favicon">
+                <span>TheQRSpot</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h3>Design Notes</h3>
+      <ul>
+        <li>All designs use brand colors: Orange #ff4d00, Background #fffef9, Dark #1a1a1a</li>
+        <li>SVG format allows perfect scaling at any size</li>
+        <li>Three finder patterns (corners) are the universal QR code identifier</li>
+        <li>Each variation tested at 16px, 32px, and 128px for clarity</li>
+        <li>Works on both light and dark browser themes</li>
+        <li>Rounded corners match modern app icon aesthetics</li>
+      </ul>
+    </div>
+
+    <footer>
+      <p>TheQRSpot Favicon Designs • Created by Jony (Design Agent)</p>
+    </footer>
+  </div>
+</body>
+</html>
