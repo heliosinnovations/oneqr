@@ -60,12 +60,12 @@ export default function Home() {
               className="font-serif text-4xl leading-[1.1] tracking-tight text-fg md:text-5xl lg:text-6xl"
             >
               Create unlimited QR codes{" "}
-              <span className="italic text-accent">free</span>.
+              <span className="animate-gentle-pulse italic text-accent">free</span>.
               <br />
               <span className="text-accent">$1.99 to unlock editing.</span>
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
-              No subscriptions. Pay once per QR code to unlock editing and
+              <span className="animate-gentle-pulse">No subscriptions</span>. Pay once per QR code to unlock editing and
               analytics.
             </p>
           </header>

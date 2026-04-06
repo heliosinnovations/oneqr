@@ -314,7 +314,7 @@ export default function SimpleQRGenerator() {
         }`}
       >
         {qrDataUrl ? (
-          <div className="h-[180px] w-[180px] animate-fade-in">
+          <div className="h-[180px] w-[180px]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={qrDataUrl}
