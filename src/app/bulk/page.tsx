@@ -57,6 +57,24 @@ export default function BulkPage() {
       </header>
 
       <main id="main-content" className="min-h-screen bg-bg pt-[72px]">
+        {/* Breadcrumb */}
+        <div className="mx-auto max-w-7xl px-6 lg:px-12">
+          <nav
+            className="flex items-center gap-2 pb-4 pt-6 text-sm"
+            aria-label="Breadcrumb"
+          >
+            <Link
+              href="/"
+              className="text-[var(--muted)] no-underline transition-colors hover:text-[var(--accent)]"
+            >
+              Home
+            </Link>
+            <span className="text-[var(--muted)]" aria-hidden="true">
+              /
+            </span>
+            <span className="font-medium text-[var(--fg)]">Bulk Creation</span>
+          </nav>
+        </div>
         <BulkQRCreator />
       </main>
     </>
