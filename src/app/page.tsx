@@ -73,41 +73,6 @@ export default function Home() {
           <div id="qr-generator" className="mx-auto max-w-lg scroll-mt-24">
             <SimpleQRGenerator />
           </div>
-
-          {/* Stats - Below generator */}
-          <div
-            className="mx-auto mt-16 flex max-w-3xl justify-center gap-12 border-t border-border pt-10 md:gap-20"
-            role="list"
-            aria-label="Key statistics"
-          >
-            <div className="text-center" role="listitem">
-              <div
-                className="font-serif text-5xl leading-none text-accent"
-                aria-hidden="true"
-              >
-                &infin;
-              </div>
-              <div className="mt-2 text-[13px] uppercase tracking-wider text-muted">
-                <span className="sr-only">Unlimited</span> QR codes
-              </div>
-            </div>
-            <div className="text-center" role="listitem">
-              <div className="font-serif text-5xl leading-none text-accent">
-                $0
-              </div>
-              <div className="mt-2 text-[13px] uppercase tracking-wider text-muted">
-                Forever
-              </div>
-            </div>
-            <div className="text-center" role="listitem">
-              <div className="font-serif text-5xl leading-none text-accent">
-                0
-              </div>
-              <div className="mt-2 text-[13px] uppercase tracking-wider text-muted">
-                Accounts
-              </div>
-            </div>
-          </div>
         </section>
 
         {/* Features Section */}
