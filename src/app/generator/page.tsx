@@ -810,9 +810,11 @@ function GeneratorContent() {
       !processedUrl.startsWith("http://") &&
       !processedUrl.startsWith("https://") &&
       !processedUrl.startsWith("WIFI:") &&
+      !processedUrl.startsWith("wifi:") &&
       !processedUrl.startsWith("BEGIN:") &&
       !processedUrl.startsWith("mailto:") &&
       !processedUrl.startsWith("sms:") &&
+      !processedUrl.startsWith("tel:") &&
       !processedUrl.startsWith("geo:")
     ) {
       processedUrl = "https://" + processedUrl;
@@ -1364,6 +1366,20 @@ showpage
     generateQR();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Auto-regenerate QR when URL/content input changes (debounced)
+  useEffect(() => {
+    // Skip if URL is empty or invalid
+    if (!url.trim() || !urlValid) return;
+
+    // Debounce the regeneration to avoid excessive calls while typing
+    const timer = setTimeout(() => {
+      generateQR();
+    }, 300);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url, urlValid]);
 
   // Keyboard shortcuts
   useEffect(() => {
