@@ -129,18 +129,43 @@ body {
   animation: slideIn 0.3s ease-out forwards;
 }
 
-/* Subtle pulse animation for hero text */
-@keyframes gentlePulse {
+/* Hero Animation Option 1: Scale + Glow */
+@keyframes subtleScale {
   0%, 100% {
-    opacity: 1;
+    transform: scale(1);
   }
   50% {
-    opacity: 0.7;
+    transform: scale(1.05);
   }
 }
 
-.animate-gentle-pulse {
-  animation: gentlePulse 3s ease-in-out infinite;
+@keyframes gentleGlow {
+  0%, 100% {
+    text-shadow: 0 0 0px var(--accent);
+  }
+  50% {
+    text-shadow: 0 0 8px var(--accent);
+  }
+}
+
+.animate-scale-glow {
+  animation: subtleScale 3s ease-in-out infinite, gentleGlow 3s ease-in-out infinite;
+  display: inline-block;
+}
+
+/* Hero Animation Option 2: Scale + Color Shift */
+@keyframes colorShift {
+  0%, 100% {
+    color: #ff4d00;
+  }
+  50% {
+    color: #ff6a2e;
+  }
+}
+
+.animate-scale-color {
+  animation: subtleScale 3s ease-in-out infinite, colorShift 3s ease-in-out infinite;
+  display: inline-block;
 }
 
 @layer base {
