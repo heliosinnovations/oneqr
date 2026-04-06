@@ -1874,7 +1874,7 @@ showpage
                           >
                             <path d="M19 12H5M12 19l-7-7 7-7" />
                           </svg>
-                          Back to URL input
+                          Back to content selection
                         </button>
                         <WiFiForm data={wifiData} onChange={handleWifiChange} />
                       </div>
@@ -1896,7 +1896,7 @@ showpage
                           >
                             <path d="M19 12H5M12 19l-7-7 7-7" />
                           </svg>
-                          Back to URL input
+                          Back to content selection
                         </button>
                         <ContactForm
                           data={contactData}
