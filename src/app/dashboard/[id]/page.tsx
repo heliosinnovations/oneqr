@@ -332,6 +332,24 @@ export default function QRDetailPage({
             </button>
           </div>
 
+          {/* Print Button */}
+          <Link
+            href={`/print/${id}`}
+            className="mb-4 flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--fg)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+          >
+            <svg
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+            >
+              <polyline points="6 9 6 2 18 2 18 9" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+              <rect x="6" y="14" width="12" height="8" />
+            </svg>
+            Print QR Code
+          </Link>
+
           {/* Edit Button - Always shown */}
           <button
             onClick={() => setShowEditModal(true)}
