@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, isEditable: false });
     }
 
-    // Update the QR code with server-side permissions (bypasses RLS)
-    const supabase = await createClient();
+    // Update the QR code with admin permissions (bypasses RLS)
+    const supabase = createAdminClient();
     const { error } = await supabase
       .from("qr_codes")
       .update({
