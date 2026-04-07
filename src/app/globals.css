@@ -147,15 +147,15 @@ body {
 /* Hero Animation Option 2: Color Shift Only */
 @keyframes colorShift {
   0%, 100% {
-    color: #ff4d00;
+    color: #1a1a1a;
   }
   50% {
-    color: #ff8c42;
+    color: #ff4d00;
   }
 }
 
 .animate-scale-color {
-  animation: colorShift 3s ease-in-out infinite;
+  animation: colorShift 5s ease-in-out infinite;
   display: inline-block;
 }
 
