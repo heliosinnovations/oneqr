@@ -65,44 +65,22 @@ export default function EditModal({
   const canEditContent = isEditable;
 
   // Fetch QR code editable status (in case it was updated via payment)
-  // When forceRefresh is true (after payment redirect), retry up to 5 times
-  // to allow time for the Stripe webhook to update the database
+  // Payment success page updates is_editable immediately, so no polling needed
   useEffect(() => {
     async function fetchQRStatus() {
       setLoadingProfile(true);
 
-      const maxAttempts = forceRefresh ? 5 : 1; // Only retry if coming from payment redirect
-      const retryDelay = 2000; // 2 seconds between retries
-      let attempts = 0;
-      let latestQrData: { is_editable: boolean } | null = null;
+      // Re-fetch the QR code to check if it's editable
+      const { data: qrData } = await supabase
+        .from("qr_codes")
+        .select("is_editable")
+        .eq("id", qrCode.id)
+        .single();
 
-      while (attempts < maxAttempts) {
-        // Re-fetch the QR code to check if it's editable
-        const { data: qrData } = await supabase
-          .from("qr_codes")
-          .select("is_editable")
-          .eq("id", qrCode.id)
-          .single();
-
-        latestQrData = qrData;
-
-        if (qrData?.is_editable) {
-          setIsEditable(true);
-          setLoadingProfile(false);
-          return; // Success! Stop retrying
-        }
-
-        attempts++;
-        if (attempts < maxAttempts) {
-          // Wait before next retry
-          await new Promise((resolve) => setTimeout(resolve, retryDelay));
-        }
+      if (qrData) {
+        setIsEditable(qrData.is_editable);
       }
 
-      // After all retries, accept whatever state we have
-      if (latestQrData) {
-        setIsEditable(latestQrData.is_editable);
-      }
       setLoadingProfile(false);
     }
 

@@ -4,33 +4,60 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import { createClient } from "@/lib/supabase/client";
 
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [countdown, setCountdown] = useState(5);
+  const [updating, setUpdating] = useState(true);
   const sessionId = searchParams.get("session_id");
   const qrId = searchParams.get("qr_id");
 
   // Determine redirect destination based on whether a QR code was upgraded
-  // Add refresh=true to force data refetch after payment (clears stale cache)
   const redirectUrl = qrId
-    ? `/dashboard/${qrId}?edit=true&refresh=true`
-    : "/dashboard?refresh=true";
+    ? `/dashboard/${qrId}?edit=true`
+    : "/dashboard";
   const redirectLabel = qrId ? "your QR code" : "dashboard";
 
+  // Optimistically update is_editable immediately on payment success
+  // Webhook will verify and reconcile later, but UI gets instant access
   useEffect(() => {
+    async function updateQRStatus() {
+      if (!qrId) {
+        setUpdating(false);
+        return;
+      }
+
+      const supabase = createClient();
+
+      // Update is_editable immediately since Stripe confirmed payment
+      const { error } = await supabase
+        .from("qr_codes")
+        .update({ is_editable: true, updated_at: new Date().toISOString() })
+        .eq("id", qrId);
+
+      if (error) {
+        console.error("Error updating QR status:", error);
+        // Continue anyway - webhook will handle it
+      }
+
+      setUpdating(false);
+    }
+
+    updateQRStatus();
+  }, [qrId]);
+
+  useEffect(() => {
+    // Don't start countdown until update completes
+    if (updating) return;
+
     // Countdown timer for redirect
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          // Force Next.js to invalidate cached data before redirect
-          router.refresh();
-          // Small delay to allow cache invalidation, then redirect
-          setTimeout(() => {
-            router.push(redirectUrl);
-          }, 100);
+          router.push(redirectUrl);
           return 0;
         }
         return prev - 1;
@@ -38,7 +65,7 @@ function PaymentSuccessContent() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [router, redirectUrl]);
+  }, [router, redirectUrl, updating]);
 
   return (
     <>
