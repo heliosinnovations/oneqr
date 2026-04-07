@@ -4,7 +4,6 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Footer from "@/components/Footer";
-import { createClient } from "@/lib/supabase/client";
 
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
@@ -20,33 +19,39 @@ function PaymentSuccessContent() {
     : "/dashboard";
   const redirectLabel = qrId ? "your QR code" : "dashboard";
 
-  // Optimistically update is_editable immediately on payment success
-  // Webhook will verify and reconcile later, but UI gets instant access
+  // Verify payment with Stripe and update is_editable via server API
+  // This uses server-side permissions to bypass RLS policies
   useEffect(() => {
-    async function updateQRStatus() {
-      if (!qrId) {
+    async function verifyAndUpdatePayment() {
+      if (!sessionId) {
         setUpdating(false);
         return;
       }
 
-      const supabase = createClient();
+      try {
+        // Call server API to verify Stripe session and update database
+        const response = await fetch("/api/verify-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId }),
+        });
 
-      // Update is_editable immediately since Stripe confirmed payment
-      const { error } = await supabase
-        .from("qr_codes")
-        .update({ is_editable: true, updated_at: new Date().toISOString() })
-        .eq("id", qrId);
+        const data = await response.json();
 
-      if (error) {
-        console.error("Error updating QR status:", error);
-        // Continue anyway - webhook will handle it
+        if (!response.ok) {
+          console.error("Payment verification failed:", data.error);
+          // Continue anyway - user already paid, webhook will handle it
+        }
+      } catch (error) {
+        console.error("Error verifying payment:", error);
+        // Continue anyway - webhook will handle it as backup
       }
 
       setUpdating(false);
     }
 
-    updateQRStatus();
-  }, [qrId]);
+    verifyAndUpdatePayment();
+  }, [sessionId]);
 
   useEffect(() => {
     // Don't start countdown until update completes
