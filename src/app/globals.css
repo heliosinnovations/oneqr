@@ -142,8 +142,6 @@ body {
 .animate-scale-color {
   animation: colorShift 5s ease-in-out infinite;
   display: inline-block;
-  /* Force initial color to override parent styles */
-  color: #1a1a1a !important;
 }
 
 @layer base {

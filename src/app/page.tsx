@@ -57,16 +57,17 @@ export default function Home() {
           <header className="mb-12 text-center">
             <h1
               id="hero-heading"
-              className="font-serif text-4xl leading-[1.1] tracking-tight text-fg md:text-5xl lg:text-6xl"
+              className="font-serif text-4xl leading-[1.1] tracking-tight md:text-5xl lg:text-6xl"
             >
-              Create unlimited QR codes{" "}
+              <span className="text-fg">Create unlimited QR codes{" "}</span>
               <span className="animate-scale-color italic">free</span>.
               <br />
               <span className="text-accent">$1.99 to unlock editing.</span>
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
-              <span className="animate-scale-color">No subscriptions</span>. Pay once per QR code to unlock editing and
-              analytics.
+            <p className="mx-auto mt-4 max-w-2xl text-lg">
+              <span className="animate-scale-color">No subscriptions</span>
+              <span className="text-muted">. Pay once per QR code to unlock editing and
+              analytics.</span>
             </p>
           </header>
 
