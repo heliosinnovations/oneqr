@@ -4,8 +4,6 @@ import { useState, useRef, useCallback, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
 import { jsPDF } from "jspdf";
-import Footer from "@/components/Footer";
-import Navigation from "@/components/Navigation";
 import {
   WiFiForm,
   ContactForm,
@@ -1783,11 +1781,8 @@ showpage
   };
 
   return (
-    <>
-      <div className="min-h-screen bg-[var(--pro-bg)]">
-        <Navigation />
-
-        {/* Main Container */}
+    <div className="min-h-screen bg-[var(--pro-bg)]">
+      {/* Main Container */}
         <main className="mx-auto max-w-[1400px] px-4 pb-4 pt-[88px] sm:px-6 sm:pb-6 sm:pt-[96px]">
           <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_380px] lg:items-start lg:gap-6 xl:grid-cols-[1fr_420px]">
             {/* Configuration Panel */}
@@ -3439,10 +3434,7 @@ showpage
 
         {/* Hidden canvas for potential future use */}
         <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
-      </div>
-
-      <Footer />
-    </>
+    </div>
   );
 }
 
