@@ -45,6 +45,14 @@ export default function Footer() {
                 Support
               </Link>
             </li>
+            <li>
+              <Link
+                href="/print/demo"
+                className="text-sm text-muted transition-colors hover:text-fg focus:outline-none focus:ring-2 focus:ring-accent"
+              >
+                Print Demo
+              </Link>
+            </li>
           </ul>
         </nav>
 
