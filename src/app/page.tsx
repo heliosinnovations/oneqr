@@ -3,6 +3,7 @@ import ComparisonSection from "@/components/ComparisonSection";
 import PricingSection from "@/components/PricingSection";
 import UserMenu from "@/components/UserMenu";
 import Footer from "@/components/Footer";
+import MobileNav from "@/components/MobileNav";
 import Link from "next/link";
 
 export default function Home() {
@@ -27,11 +28,11 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* Navigation Links */}
-            <div className="flex items-center gap-6">
+            {/* Desktop Navigation Links - hidden on mobile */}
+            <div className="hidden items-center gap-6 sm:flex">
               <Link
                 href="/generator"
-                className="hidden text-sm font-medium text-muted transition-colors hover:text-fg sm:block"
+                className="text-sm font-medium text-muted transition-colors hover:text-fg"
               >
                 Advanced Generator
               </Link>
@@ -42,6 +43,12 @@ export default function Home() {
                 Bulk Creation
               </Link>
               <UserMenu />
+            </div>
+
+            {/* Mobile Navigation - hamburger menu */}
+            <div className="flex items-center gap-3 sm:hidden">
+              <UserMenu />
+              <MobileNav />
             </div>
           </div>
         </nav>
