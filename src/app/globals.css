@@ -129,22 +129,7 @@ body {
   animation: slideIn 0.3s ease-out forwards;
 }
 
-/* Hero Animation Option 1: Glow Only */
-@keyframes gentleGlow {
-  0%, 100% {
-    text-shadow: 0 0 0px var(--accent);
-  }
-  50% {
-    text-shadow: 0 0 8px var(--accent);
-  }
-}
-
-.animate-scale-glow {
-  animation: gentleGlow 3s ease-in-out infinite;
-  display: inline-block;
-}
-
-/* Hero Animation Option 2: Color Shift Only */
+/* Hero Animation: Color Shift */
 @keyframes colorShift {
   0%, 100% {
     color: #1a1a1a;

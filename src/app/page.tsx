@@ -48,49 +48,15 @@ export default function Home() {
       </header>
 
       <main id="main-content" className="min-h-screen bg-bg">
-        {/* Hero Option 1: Scale + Glow */}
-        <section
-          className="mx-auto max-w-7xl border-b-4 border-accent px-6 pb-20 pt-24 lg:px-12 lg:pb-24 lg:pt-28"
-          aria-labelledby="hero-heading-1"
-        >
-          <div className="mb-4 text-center">
-            <span className="inline-block rounded bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-              Option 1: Scale + Glow
-            </span>
-          </div>
-          <header className="mb-12 text-center">
-            <h1
-              id="hero-heading-1"
-              className="font-serif text-4xl leading-[1.1] tracking-tight text-fg md:text-5xl lg:text-6xl"
-            >
-              Create unlimited QR codes{" "}
-              <span className="animate-scale-glow italic text-accent">free</span>.
-              <br />
-              <span className="text-accent">$1.99 to unlock editing.</span>
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
-              <span className="animate-scale-glow text-accent">No subscriptions</span>. Pay once per QR code to unlock editing and
-              analytics.
-            </p>
-          </header>
-          <div id="qr-generator-1" className="mx-auto max-w-lg scroll-mt-24">
-            <SimpleQRGenerator />
-          </div>
-        </section>
-
-        {/* Hero Option 2: Scale + Color Shift */}
+        {/* Hero Section - Full width QR generator */}
         <section
           className="mx-auto max-w-7xl px-6 pb-20 pt-24 lg:px-12 lg:pb-24 lg:pt-28"
-          aria-labelledby="hero-heading-2"
+          aria-labelledby="hero-heading"
         >
-          <div className="mb-4 text-center">
-            <span className="inline-block rounded bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-              Option 2: Scale + Color Shift
-            </span>
-          </div>
+          {/* Minimal heading above the fold */}
           <header className="mb-12 text-center">
             <h1
-              id="hero-heading-2"
+              id="hero-heading"
               className="font-serif text-4xl leading-[1.1] tracking-tight text-fg md:text-5xl lg:text-6xl"
             >
               Create unlimited QR codes{" "}
@@ -103,7 +69,9 @@ export default function Home() {
               analytics.
             </p>
           </header>
-          <div id="qr-generator-2" className="mx-auto max-w-lg scroll-mt-24">
+
+          {/* Full-width QR Generator - Above the fold */}
+          <div id="qr-generator" className="mx-auto max-w-lg scroll-mt-24">
             <SimpleQRGenerator />
           </div>
         </section>
