@@ -65,21 +65,44 @@ export default function EditModal({
   const canEditContent = isEditable;
 
   // Fetch QR code editable status (in case it was updated via payment)
+  // When forceRefresh is true (after payment redirect), retry up to 5 times
+  // to allow time for the Stripe webhook to update the database
   useEffect(() => {
     async function fetchQRStatus() {
       setLoadingProfile(true);
 
-      // Re-fetch the QR code to check if it's editable
-      const { data: qrData } = await supabase
-        .from("qr_codes")
-        .select("is_editable")
-        .eq("id", qrCode.id)
-        .single();
+      const maxAttempts = forceRefresh ? 5 : 1; // Only retry if coming from payment redirect
+      const retryDelay = 2000; // 2 seconds between retries
+      let attempts = 0;
+      let latestQrData: { is_editable: boolean } | null = null;
 
-      if (qrData) {
-        setIsEditable(qrData.is_editable);
+      while (attempts < maxAttempts) {
+        // Re-fetch the QR code to check if it's editable
+        const { data: qrData } = await supabase
+          .from("qr_codes")
+          .select("is_editable")
+          .eq("id", qrCode.id)
+          .single();
+
+        latestQrData = qrData;
+
+        if (qrData?.is_editable) {
+          setIsEditable(true);
+          setLoadingProfile(false);
+          return; // Success! Stop retrying
+        }
+
+        attempts++;
+        if (attempts < maxAttempts) {
+          // Wait before next retry
+          await new Promise((resolve) => setTimeout(resolve, retryDelay));
+        }
       }
 
+      // After all retries, accept whatever state we have
+      if (latestQrData) {
+        setIsEditable(latestQrData.is_editable);
+      }
       setLoadingProfile(false);
     }
 
@@ -1069,20 +1092,20 @@ export default function EditModal({
           </button>
         </div>
 
-        {/* Tabs - Improved mobile touch targets */}
-        <div className="flex flex-shrink-0 border-b border-[var(--border)]">
+        {/* Tabs - Horizontal layout on mobile with smaller icons and text */}
+        <div className="flex flex-shrink-0 border-b border-[var(--border)] overflow-x-auto">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-1 flex-col items-center justify-center gap-1 px-2 py-3 text-xs font-medium transition-all sm:flex-row sm:gap-2 sm:px-4 sm:text-sm ${
+              className={`flex flex-1 min-w-0 flex-row items-center justify-center gap-1.5 px-3 py-3 text-[11px] font-medium transition-all whitespace-nowrap sm:gap-2 sm:px-4 sm:text-sm ${
                 activeTab === tab.id
                   ? "border-b-2 border-[var(--accent)] text-[var(--accent)]"
                   : "text-[var(--muted)] hover:text-[var(--fg)]"
               }`}
             >
               {tab.icon}
-              <span>{tab.label}</span>
+              <span className="truncate">{tab.label}</span>
             </button>
           ))}
         </div>
