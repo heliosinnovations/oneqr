@@ -20,7 +20,7 @@ export default function Home() {
             <div className="flex items-center gap-3">
               <Link
                 href="/"
-                className="font-serif text-[28px] italic text-fg"
+                className="font-serif text-[28px] text-fg"
                 aria-label="The QR Spot - Home"
               >
                 The QR <span className="text-accent">Spot</span>
