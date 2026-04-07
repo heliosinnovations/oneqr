@@ -3,9 +3,9 @@
 import { useState, useRef, useCallback, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
-import Link from "next/link";
 import { jsPDF } from "jspdf";
 import Footer from "@/components/Footer";
+import Navigation from "@/components/Navigation";
 import {
   WiFiForm,
   ContactForm,
@@ -1785,41 +1785,7 @@ showpage
   return (
     <>
       <div className="min-h-screen bg-[var(--pro-bg)]">
-        {/* Navigation */}
-        <header>
-          <nav
-            className="fixed left-0 right-0 top-0 z-50 border-b border-border bg-bg"
-            role="navigation"
-            aria-label="Main navigation"
-          >
-            <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6 lg:px-12">
-              {/* Logo */}
-              <Link
-                href="/"
-                className="font-serif text-[28px] text-fg"
-                aria-label="The QR Spot - Home"
-              >
-                The QR <span className="text-accent">Spot</span>
-              </Link>
-
-              {/* Navigation Links */}
-              <div className="flex items-center gap-6">
-                <Link
-                  href="/generator"
-                  className="text-sm font-medium text-fg transition-colors hover:text-accent"
-                >
-                  Advanced Generator
-                </Link>
-                <Link
-                  href="/bulk"
-                  className="text-sm font-medium text-muted transition-colors hover:text-fg"
-                >
-                  Bulk Creation
-                </Link>
-              </div>
-            </div>
-          </nav>
-        </header>
+        <Navigation />
 
         {/* Main Container */}
         <main className="mx-auto max-w-[1400px] px-4 pb-4 pt-[88px] sm:px-6 sm:pb-6 sm:pt-[96px]">

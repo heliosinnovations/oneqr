@@ -1,58 +1,14 @@
 import SimpleQRGenerator from "@/components/SimpleQRGenerator";
 import ComparisonSection from "@/components/ComparisonSection";
 import PricingSection from "@/components/PricingSection";
-import UserMenu from "@/components/UserMenu";
 import Footer from "@/components/Footer";
-import MobileNav from "@/components/MobileNav";
+import Navigation from "@/components/Navigation";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <>
-      {/* Navigation */}
-      <header>
-        <nav
-          className="fixed left-0 right-0 top-0 z-50 border-b border-border bg-bg"
-          role="navigation"
-          aria-label="Main navigation"
-        >
-          <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6 lg:px-12">
-            {/* Logo */}
-            <div className="flex items-center gap-3">
-              <Link
-                href="/"
-                className="font-serif text-[28px] text-fg"
-                aria-label="The QR Spot - Home"
-              >
-                The QR <span className="text-accent">Spot</span>
-              </Link>
-            </div>
-
-            {/* Desktop Navigation Links - hidden on mobile */}
-            <div className="hidden items-center gap-6 sm:flex">
-              <Link
-                href="/generator"
-                className="text-sm font-medium text-muted transition-colors hover:text-fg"
-              >
-                Advanced Generator
-              </Link>
-              <Link
-                href="/bulk"
-                className="text-sm font-medium text-muted transition-colors hover:text-fg"
-              >
-                Bulk Creation
-              </Link>
-              <UserMenu />
-            </div>
-
-            {/* Mobile Navigation - hamburger menu */}
-            <div className="flex items-center gap-3 sm:hidden">
-              <UserMenu />
-              <MobileNav />
-            </div>
-          </div>
-        </nav>
-      </header>
+      <Navigation />
 
       <main id="main-content" className="min-h-screen bg-bg">
         {/* Hero Section - Full width QR generator */}
