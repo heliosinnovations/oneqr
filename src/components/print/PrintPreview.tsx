@@ -7,6 +7,8 @@ interface PrintPreviewProps {
   footerContent: string;
   qrDataUrl: string | null;
   qrLabel?: string;
+  headerSpacing?: number;
+  footerSpacing?: number;
 }
 
 export default function PrintPreview({
@@ -14,6 +16,8 @@ export default function PrintPreview({
   footerContent,
   qrDataUrl,
   qrLabel = "Scan Me",
+  headerSpacing = 16,
+  footerSpacing = 16,
 }: PrintPreviewProps) {
   const isHeaderEmpty = useMemo(() => {
     const stripped = headerContent.replace(/<[^>]*>/g, "").trim();
@@ -28,10 +32,16 @@ export default function PrintPreview({
   return (
     <div className="paper" id="print-area">
       {isHeaderEmpty ? (
-        <div className="paper-header empty">Add a header</div>
+        <div
+          className="paper-header empty"
+          style={{ paddingBottom: `${headerSpacing}px` }}
+        >
+          Add a header
+        </div>
       ) : (
         <div
           className="paper-header"
+          style={{ paddingBottom: `${headerSpacing}px` }}
           dangerouslySetInnerHTML={{ __html: headerContent }}
         />
       )}
@@ -65,10 +75,16 @@ export default function PrintPreview({
       </div>
 
       {isFooterEmpty ? (
-        <div className="paper-footer empty">Add instructions</div>
+        <div
+          className="paper-footer empty"
+          style={{ paddingTop: `${footerSpacing}px` }}
+        >
+          Add instructions
+        </div>
       ) : (
         <div
           className="paper-footer"
+          style={{ paddingTop: `${footerSpacing}px` }}
           dangerouslySetInnerHTML={{ __html: footerContent }}
         />
       )}
