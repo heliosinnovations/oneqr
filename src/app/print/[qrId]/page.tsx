@@ -33,6 +33,9 @@ export default function PrintPage({
   const [headerContent, setHeaderContent] = useState("");
   const [footerContent, setFooterContent] = useState("");
 
+  const [headerSpacing, setHeaderSpacing] = useState(16);
+  const [footerSpacing, setFooterSpacing] = useState(16);
+
   const [headerCollapsed, setHeaderCollapsed] = useState(false);
   const [footerCollapsed, setFooterCollapsed] = useState(false);
 
@@ -75,9 +78,17 @@ export default function PrintPage({
     // Load saved content from localStorage
     const savedHeader = localStorage.getItem(`qr-${qrId}-header`);
     const savedFooter = localStorage.getItem(`qr-${qrId}-footer`);
+    const savedHeaderSpacing = localStorage.getItem(
+      `qr-${qrId}-header-spacing`
+    );
+    const savedFooterSpacing = localStorage.getItem(
+      `qr-${qrId}-footer-spacing`
+    );
 
     if (savedHeader) setHeaderContent(savedHeader);
     if (savedFooter) setFooterContent(savedFooter);
+    if (savedHeaderSpacing) setHeaderSpacing(parseInt(savedHeaderSpacing));
+    if (savedFooterSpacing) setFooterSpacing(parseInt(savedFooterSpacing));
 
     setLoading(false);
   }, [qrId, supabase]);
@@ -99,6 +110,24 @@ export default function PrintPage({
     }
   }, [footerContent, qrId, loading, qrCode]);
 
+  useEffect(() => {
+    if (!loading && qrCode) {
+      localStorage.setItem(
+        `qr-${qrId}-header-spacing`,
+        headerSpacing.toString()
+      );
+    }
+  }, [headerSpacing, qrId, loading, qrCode]);
+
+  useEffect(() => {
+    if (!loading && qrCode) {
+      localStorage.setItem(
+        `qr-${qrId}-footer-spacing`,
+        footerSpacing.toString()
+      );
+    }
+  }, [footerSpacing, qrId, loading, qrCode]);
+
   const handlePrint = () => {
     window.print();
   };
@@ -111,8 +140,12 @@ export default function PrintPage({
     ) {
       setHeaderContent("");
       setFooterContent("");
+      setHeaderSpacing(16);
+      setFooterSpacing(16);
       localStorage.removeItem(`qr-${qrId}-header`);
       localStorage.removeItem(`qr-${qrId}-footer`);
+      localStorage.removeItem(`qr-${qrId}-header-spacing`);
+      localStorage.removeItem(`qr-${qrId}-footer-spacing`);
     }
   };
 
@@ -294,6 +327,43 @@ export default function PrintPage({
                   />
                 </div>
               </div>
+
+              {/* Spacing Controls */}
+              <div className="spacing-controls">
+                <h3 className="spacing-heading">Spacing</h3>
+
+                <div className="spacing-control">
+                  <label htmlFor="header-spacing">
+                    Header Spacing: {headerSpacing}px
+                  </label>
+                  <input
+                    id="header-spacing"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="4"
+                    value={headerSpacing}
+                    onChange={(e) => setHeaderSpacing(parseInt(e.target.value))}
+                    className="spacing-slider"
+                  />
+                </div>
+
+                <div className="spacing-control">
+                  <label htmlFor="footer-spacing">
+                    Footer Spacing: {footerSpacing}px
+                  </label>
+                  <input
+                    id="footer-spacing"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="4"
+                    value={footerSpacing}
+                    onChange={(e) => setFooterSpacing(parseInt(e.target.value))}
+                    className="spacing-slider"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="editor-footer">
@@ -362,6 +432,8 @@ export default function PrintPage({
                 footerContent={footerContent}
                 qrDataUrl={qrDataUrl}
                 qrLabel="Scan Me"
+                headerSpacing={headerSpacing}
+                footerSpacing={footerSpacing}
               />
             </div>
           </div>
