@@ -14,9 +14,10 @@ function PaymentSuccessContent() {
   const qrId = searchParams.get("qr_id");
 
   // Determine redirect destination based on whether a QR code was upgraded
+  // Include refresh=true to force the detail page to fetch fresh data
   const redirectUrl = qrId
-    ? `/dashboard/${qrId}?edit=true`
-    : "/dashboard";
+    ? `/dashboard/${qrId}?edit=true&refresh=true`
+    : "/dashboard?refresh=true";
   const redirectLabel = qrId ? "your QR code" : "dashboard";
 
   // Verify payment with Stripe and update is_editable via server API

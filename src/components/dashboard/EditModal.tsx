@@ -71,13 +71,18 @@ export default function EditModal({
       setLoadingProfile(true);
 
       // Re-fetch the QR code to check if it's editable
-      const { data: qrData } = await supabase
+      // Use a cache-busting approach to ensure fresh data
+      const { data: qrData, error } = await supabase
         .from("qr_codes")
         .select("is_editable")
         .eq("id", qrCode.id)
         .single();
 
-      if (qrData) {
+      if (error) {
+        console.error("Error fetching QR status:", error);
+        // Still use the prop value if fetch fails
+        setIsEditable(qrCode.is_editable);
+      } else if (qrData) {
         setIsEditable(qrData.is_editable);
       }
 
@@ -85,7 +90,7 @@ export default function EditModal({
     }
 
     fetchQRStatus();
-  }, [supabase, qrCode.id, forceRefresh]);
+  }, [supabase, qrCode.id, qrCode.is_editable, forceRefresh]);
 
   // Generate QR preview
   useEffect(() => {

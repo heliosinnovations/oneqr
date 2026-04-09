@@ -604,6 +604,8 @@ export default function QRDetailPage({
             setShowEditModal(false);
             // Remove query params
             router.replace(`/dashboard/${id}`);
+            // Refetch QR code to get latest is_editable status
+            fetchQRCode();
           }}
           onUpdate={(updatedUrl) => {
             setQrCode((prev) =>
