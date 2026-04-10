@@ -14,11 +14,11 @@ function PaymentSuccessContent() {
   const qrId = searchParams.get("qr_id");
 
   // Determine redirect destination based on whether a QR code was upgraded
-  // Include refresh=true to force the detail page to fetch fresh data
+  // Include refresh=true to force the edit page to fetch fresh data
   const redirectUrl = qrId
-    ? `/dashboard/${qrId}?edit=true&refresh=true`
+    ? `/edit/${qrId}?refresh=true`
     : "/dashboard?refresh=true";
-  const redirectLabel = qrId ? "your QR code" : "dashboard";
+  const redirectLabel = qrId ? "edit page" : "dashboard";
 
   // Verify payment with Stripe and update is_editable via server API
   // This uses server-side permissions to bypass RLS policies

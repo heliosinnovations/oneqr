@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import QRCode from "qrcode";
 import { createClient } from "@/lib/supabase/client";
-import EditModal from "@/components/dashboard/EditModal";
 
 interface QRCodeData {
   id: string;
@@ -35,7 +34,6 @@ export default function QRDetailPage({
   const [loading, setLoading] = useState(true);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [scanData, setScanData] = useState<ScanData[]>([]);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const supabase = createClient();
@@ -43,11 +41,12 @@ export default function QRDetailPage({
   // Check URL params for modal triggers and refresh
   const shouldRefresh = searchParams.get("refresh") === "true";
 
+  // Redirect to edit page if edit or upgrade param is present
   useEffect(() => {
     if (searchParams.get("edit") === "true" || searchParams.get("upgrade") === "true") {
-      setShowEditModal(true);
+      router.push(`/edit/${id}`);
     }
-  }, [searchParams]);
+  }, [searchParams, router, id]);
 
   // Clean up refresh param from URL after processing (prevents refetch on back/forward)
   useEffect(() => {
@@ -351,8 +350,8 @@ export default function QRDetailPage({
           </Link>
 
           {/* Edit Button - Always shown */}
-          <button
-            onClick={() => setShowEditModal(true)}
+          <Link
+            href={`/edit/${qrCode.id}`}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent)] px-6 py-3.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500]"
           >
             <svg
@@ -369,7 +368,7 @@ export default function QRDetailPage({
               />
             </svg>
             Edit QR Code
-          </button>
+          </Link>
 
           {/* Delete Button */}
           <button
@@ -406,12 +405,12 @@ export default function QRDetailPage({
               <h3 className="font-serif text-lg text-[var(--fg)]">
                 Current Destination
               </h3>
-              <button
-                onClick={() => setShowEditModal(true)}
+              <Link
+                href={`/edit/${qrCode.id}`}
                 className="text-sm font-medium text-[var(--accent)] transition-colors hover:underline"
               >
                 Edit
-              </button>
+              </Link>
             </div>
             <div className="flex items-start gap-4 rounded-lg bg-[var(--surface)] p-4">
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)]">
@@ -583,49 +582,18 @@ export default function QRDetailPage({
                     $1.99 one-time. Edit this QR code forever.
                   </p>
                 </div>
-                <button
-                  onClick={() => setShowEditModal(true)}
+                <Link
+                  href={`/edit/${qrCode.id}`}
                   className="inline-flex items-center justify-center whitespace-nowrap rounded-lg bg-white px-6 py-3 text-sm font-semibold text-[var(--accent)] transition-transform hover:-translate-y-0.5"
                 >
                   Unlock for $1.99
-                </button>
+                </Link>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Edit Modal - Always available */}
-      {showEditModal && (
-        <EditModal
-          qrCode={qrCode}
-          forceRefresh={shouldRefresh}
-          onClose={() => {
-            setShowEditModal(false);
-            // Remove query params
-            router.replace(`/dashboard/${id}`);
-            // Refetch QR code to get latest is_editable status
-            fetchQRCode();
-          }}
-          onUpdate={(updatedUrl) => {
-            setQrCode((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    destination_url: updatedUrl,
-                    updated_at: new Date().toISOString(),
-                  }
-                : null
-            );
-            // Regenerate QR preview
-            QRCode.toDataURL(updatedUrl, {
-              width: 400,
-              margin: 2,
-              color: { dark: "#1a1a1a", light: "#f7f6f1" },
-            }).then(setQrDataUrl);
-          }}
-        />
-      )}
     </div>
   );
 }

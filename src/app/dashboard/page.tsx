@@ -464,7 +464,7 @@ function DashboardContent() {
                   View
                 </Link>
                 <Link
-                  href={`/dashboard/${qr.id}?edit=true`}
+                  href={`/edit/${qr.id}`}
                   className="flex items-center justify-center gap-1.5 rounded-lg border border-[var(--accent)] bg-[var(--accent)] px-2 py-2.5 text-xs font-medium text-white no-underline transition-colors hover:bg-[#e64500]"
                 >
                   <svg
