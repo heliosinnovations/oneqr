@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import QRCode from "qrcode";
 import { jsPDF } from "jspdf";
 import {
@@ -14,6 +15,9 @@ import {
   generateWiFiString,
   generateVCardString,
 } from "@/components/ContentTypeForms";
+import { createClient } from "@/lib/supabase/client";
+import AuthModal from "@/components/AuthModal";
+import type { User } from "@supabase/supabase-js";
 
 type TabType = "content" | "labels" | "colors" | "style" | "export";
 type ToastType = { message: string; type: "success" | "error"; id: number };
@@ -714,6 +718,12 @@ function GeneratorContent() {
   const [toasts, setToasts] = useState<ToastType[]>([]);
   const toastIdRef = useRef(0);
 
+  // Save to dashboard state
+  const [user, setUser] = useState<User | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedQrId, setSavedQrId] = useState<string | null>(null);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Update URL from query param when it changes
@@ -723,6 +733,75 @@ function GeneratorContent() {
       setUrlInitialized(true);
     }
   }, [urlParam, urlInitialized]);
+
+  // Check authentication state
+  useEffect(() => {
+    const supabase = createClient();
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+        // Auto-save after successful sign in if auth modal was open
+        if (event === "SIGNED_IN" && showAuthModal) {
+          setShowAuthModal(false);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [showAuthModal]);
+
+  // Generate short code for QR
+  const generateShortCode = (): string => {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < 8; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  };
+
+  // Extract title from content
+  const extractTitleFromContent = (content: string): string => {
+    if (content.startsWith("mailto:")) {
+      const email = content.replace("mailto:", "").split("?")[0];
+      return `Email: ${email}`;
+    }
+    if (content.startsWith("tel:")) {
+      const phone = content.replace("tel:", "");
+      return `Phone: ${phone}`;
+    }
+    if (content.startsWith("sms:")) {
+      const phone = content.replace("sms:", "").split("?")[0];
+      return `SMS: ${phone}`;
+    }
+    if (content.toUpperCase().startsWith("WIFI:")) {
+      const ssidMatch = content.match(/S:([^;]+)/);
+      const ssid = ssidMatch ? ssidMatch[1] : "Network";
+      return `WiFi: ${ssid}`;
+    }
+    if (content.startsWith("BEGIN:VCARD")) {
+      const nameMatch = content.match(/FN:([^\r\n]+)/);
+      const name = nameMatch ? nameMatch[1] : "Contact";
+      return `vCard: ${name}`;
+    }
+    if (content.startsWith("geo:")) {
+      return "Location QR";
+    }
+    try {
+      const urlObj = new URL(content);
+      const hostname = urlObj.hostname.replace(/^www\./, "");
+      return `${hostname} QR`;
+    } catch {
+      return "QR Code";
+    }
+  };
 
   // Debounce helper
   const debounce = <T extends (...args: Parameters<T>) => void>(
@@ -797,6 +876,90 @@ function GeneratorContent() {
     },
     []
   );
+
+  // Save QR code to database
+  const saveQRCode = useCallback(async () => {
+    if (!qrDataUrl || !generatedUrl) return;
+
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    setIsSaving(true);
+
+    const title = extractTitleFromContent(generatedUrl);
+
+    // Build qr_data object with current customization settings
+    const qrCustomization = {
+      foreground_color: fgColor,
+      background_color: bgColor,
+      pattern,
+      corner_style: cornerStyle,
+      error_level: errorLevel,
+      text_above: textAbove || undefined,
+      text_below: textBelow || undefined,
+      text_font_size: textFontSize,
+      text_font_weight: textFontWeight,
+      text_font_family: textFontFamily,
+      text_color: textColor,
+    };
+
+    let retries = 3;
+    while (retries > 0) {
+      const shortCode = generateShortCode();
+
+      const { data, error } = await supabase
+        .from("qr_codes")
+        .insert({
+          user_id: session.user.id,
+          title,
+          short_code: shortCode,
+          destination_url: generatedUrl,
+          is_editable: false,
+          scan_count: 0,
+          qr_data: qrCustomization,
+        })
+        .select("id")
+        .single();
+
+      if (error) {
+        if (error.code === "23505" && error.message.includes("short_code")) {
+          retries--;
+          continue;
+        }
+        showToast(error.message || "Failed to save QR code", "error");
+        setIsSaving(false);
+        return;
+      }
+
+      setSavedQrId(data.id);
+      showToast("QR code saved! View in dashboard", "success");
+      setIsSaving(false);
+      return;
+    }
+
+    showToast("Failed to generate unique code. Please try again.", "error");
+    setIsSaving(false);
+  }, [
+    qrDataUrl,
+    generatedUrl,
+    fgColor,
+    bgColor,
+    pattern,
+    cornerStyle,
+    errorLevel,
+    textAbove,
+    textBelow,
+    textFontSize,
+    textFontWeight,
+    textFontFamily,
+    textColor,
+    showToast,
+  ]);
 
   // Helper to get text label configuration
   const getTextConfig = useCallback((): TextLabelConfig | undefined => {
@@ -3381,6 +3544,48 @@ showpage
                 </button>
               </div>
 
+              {/* Save Section - Show when user is logged in */}
+              {user && (
+                <div className="border-t border-[var(--pro-border)] px-4 py-3 sm:px-5 sm:py-4">
+                  {savedQrId ? (
+                    <Link
+                      href="/dashboard"
+                      className="flex w-full items-center justify-center gap-1.5 rounded-md border-2 border-green-600 bg-green-50 py-2.5 text-xs font-semibold text-green-700 transition-colors hover:bg-green-100 sm:gap-2 sm:py-3 sm:text-sm"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                      >
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                      View in Dashboard
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={saveQRCode}
+                      disabled={isSaving || !qrDataUrl}
+                      className="flex w-full items-center justify-center gap-1.5 rounded-md border-2 border-[var(--pro-fg)] bg-transparent py-2.5 text-xs font-semibold text-[var(--pro-fg)] transition-colors hover:bg-[var(--pro-fg)] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:py-3 sm:text-sm"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                      >
+                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                        <polyline points="17 21 17 13 7 13 7 21" />
+                        <polyline points="7 3 7 8 15 8" />
+                      </svg>
+                      {isSaving ? "Saving..." : "Save to Dashboard"}
+                    </button>
+                  )}
+                </div>
+              )}
+
               {/* Download Section */}
               <div className="border-t border-[var(--pro-border)] bg-[var(--pro-surface-hover)] p-4 sm:p-5">
                 <button
@@ -3434,6 +3639,12 @@ showpage
 
         {/* Hidden canvas for potential future use */}
         <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
+
+        {/* Auth Modal for save */}
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+        />
     </div>
   );
 }
