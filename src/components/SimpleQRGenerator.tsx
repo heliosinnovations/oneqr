@@ -6,6 +6,7 @@ import Link from "next/link";
 import { trackEvent } from "@/lib/analytics";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/AuthModal";
+import { User } from "@supabase/supabase-js";
 
 // Generate a random 8-character alphanumeric code
 function generateShortCode(): string {
@@ -70,6 +71,26 @@ export default function SimpleQRGenerator() {
     message: string;
   } | null>(null);
   const [savedQrId, setSavedQrId] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
+
+  // Check user authentication status
+  useEffect(() => {
+    const supabase = createClient();
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setUserLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Generate QR code when URL changes (with debounce)
   const generateQR = useCallback(async (inputUrl: string) => {
@@ -139,13 +160,63 @@ export default function SimpleQRGenerator() {
 
     const link = document.createElement("a");
     link.href = qrDataUrl;
-    link.download = "qr-code.png";
+    link.download = `qr-code-${Date.now()}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
     trackEvent.qrDownloaded("png", "simple");
   }, [qrDataUrl]);
+
+  const downloadSVG = useCallback(async () => {
+    if (!url.trim()) return;
+
+    // Process URL - only add https:// if it's not a special protocol
+    let processedUrl = url.trim();
+    const specialProtocols = [
+      "http://",
+      "https://",
+      "mailto:",
+      "tel:",
+      "sms:",
+      "WIFI:",
+      "wifi:",
+      "BEGIN:",
+      "geo:",
+    ];
+    const hasProtocol = specialProtocols.some((protocol) =>
+      processedUrl.startsWith(protocol)
+    );
+    if (!hasProtocol) {
+      processedUrl = "https://" + processedUrl;
+    }
+
+    try {
+      const svgString = await QRCode.toString(processedUrl, {
+        type: "svg",
+        margin: 2,
+        color: {
+          dark: "#1a1a1a",
+          light: "#ffffff",
+        },
+        errorCorrectionLevel: "M",
+      });
+
+      const blob = new Blob([svgString], { type: "image/svg+xml" });
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `qr-code-${Date.now()}.svg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
+
+      trackEvent.qrDownloaded("svg", "simple");
+    } catch {
+      // Silent fail for invalid URLs
+    }
+  }, [url]);
 
   // Save QR code to database
   const saveQRCode = useCallback(async () => {
@@ -369,6 +440,7 @@ export default function SimpleQRGenerator() {
       {/* Actions Section */}
       {qrDataUrl && (
         <div className="flex flex-col gap-3 sm:gap-4">
+          {/* Download buttons - always available, no login required */}
           <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={downloadPNG}
@@ -385,43 +457,83 @@ export default function SimpleQRGenerator() {
               </svg>
               Download PNG
             </button>
-            {savedQrId ? (
-              <Link
-                href="/dashboard"
-                className="flex flex-1 items-center justify-center gap-1.5 border-2 border-green-600 bg-green-50 px-3 py-2.5 text-sm font-semibold text-green-700 transition-colors hover:bg-green-100 sm:gap-2 sm:px-6 sm:py-4 sm:text-[15px]"
+            <button
+              onClick={downloadSVG}
+              className="flex flex-1 items-center justify-center gap-1.5 border-2 border-fg bg-transparent px-3 py-2.5 text-sm font-semibold text-fg transition-colors hover:bg-fg hover:text-bg sm:gap-2 sm:px-6 sm:py-4 sm:text-[15px]"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
-                >
-                  <path d="M20 6L9 17l-5-5" />
-                </svg>
-                View in Dashboard
-              </Link>
-            ) : (
-              <button
-                onClick={saveQRCode}
-                disabled={isSaving}
-                className="flex flex-1 items-center justify-center gap-1.5 border-2 border-fg bg-transparent px-3 py-2.5 text-sm font-semibold text-fg transition-colors hover:bg-fg hover:text-bg disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:px-6 sm:py-4 sm:text-[15px]"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
-                >
-                  <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
-                  <polyline points="17 21 17 13 7 13 7 21" />
-                  <polyline points="7 3 7 8 15 8" />
-                </svg>
-                {isSaving ? "Saving..." : "Save QR Code"}
-              </button>
-            )}
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+              </svg>
+              Download SVG
+            </button>
           </div>
+
+          {/* Save to dashboard button for logged-in users */}
+          {!userLoading && user && (
+            <>
+              {savedQrId ? (
+                <Link
+                  href="/dashboard"
+                  className="flex items-center justify-center gap-2 border-2 border-green-600 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700 transition-colors hover:bg-green-100 sm:py-4 sm:text-[15px]"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                  >
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                  View in Dashboard
+                </Link>
+              ) : (
+                <button
+                  onClick={saveQRCode}
+                  disabled={isSaving}
+                  className="flex items-center justify-center gap-2 bg-accent px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-fg disabled:cursor-not-allowed disabled:opacity-50 sm:py-4 sm:text-[15px]"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                  >
+                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                    <polyline points="17 21 17 13 7 13 7 21" />
+                    <polyline points="7 3 7 8 15 8" />
+                  </svg>
+                  {isSaving ? "Saving..." : "💾 Save to Dashboard"}
+                </button>
+              )}
+            </>
+          )}
+
+          {/* Subtle prompt for non-logged-in users */}
+          {!userLoading && !user && !savedQrId && (
+            <div className="border-accent/30 rounded-lg border bg-accent-light p-4">
+              <p className="mb-3 text-sm text-fg">
+                💾 Want to save and manage your QR codes?
+              </p>
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="w-full bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-fg sm:py-3"
+              >
+                Create Free Account
+              </button>
+              <p className="mt-2 text-center text-xs text-muted">
+                Save unlimited QR codes • Re-download anytime • Organize with
+                folders
+              </p>
+            </div>
+          )}
 
           {/* Save status message */}
           {saveStatus && !savedQrId && (
