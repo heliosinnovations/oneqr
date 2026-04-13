@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneQR Templates - Variation 1: Grid Cards</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #fffef9;
+            --fg: #1a1a1a;
+            --accent: #ff4d00;
+            --accent-light: #fff0e6;
+            --accent-hover: #e64500;
+            --muted: #666;
+            --muted-light: #999;
+            --border: #e5e5e0;
+            --surface: #f7f6f1;
+            --success: #16a34a;
+            --success-light: #dcfce7;
+            --error: #dc2626;
+            --error-light: #fef2f2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'DM Serif Display', serif;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.5rem;
+            color: var(--fg);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--fg);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--accent-light);
+            color: var(--accent);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .hero p {
+            color: var(--muted);
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Search and Filter */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-light);
+        }
+
+        .search-box svg {
+            color: var(--muted);
+            flex-shrink: 0;
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            background: transparent;
+        }
+
+        .search-box input::placeholder {
+            color: var(--muted-light);
+        }
+
+        /* Category Pills */
+        .category-pills {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+            padding: 0 2rem;
+        }
+
+        .pill {
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--muted);
+        }
+
+        .pill:hover {
+            border-color: var(--fg);
+            color: var(--fg);
+        }
+
+        .pill.active {
+            background: var(--fg);
+            color: white;
+            border-color: var(--fg);
+        }
+
+        /* Templates Grid */
+        .templates-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .template-count {
+            background: var(--surface);
+            color: var(--muted);
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Template Card - Large Illustrated Style */
+        .template-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .template-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 12px 40px rgba(255, 77, 0, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .template-card-icon {
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .template-card-icon svg {
+            width: 64px;
+            height: 64px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Icon backgrounds with brand colors */
+        .icon-wifi { background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); color: #0284c7; }
+        .icon-vcard { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); color: #db2777; }
+        .icon-whatsapp { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); color: #16a34a; }
+        .icon-email { background: linear-gradient(135deg, #fff0e6 0%, #fed7aa 100%); color: #ea580c; }
+        .icon-sms { background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); color: #4f46e5; }
+        .icon-phone { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #d97706; }
+        .icon-appstore { background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); color: #9333ea; }
+        .icon-maps { background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%); color: #0d9488; }
+        .icon-calendar { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #dc2626; }
+        .icon-payment { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #2563eb; }
+
+        .template-card-content {
+            padding: 1.25rem;
+        }
+
+        .template-card-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .template-card-description {
+            color: var(--muted);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .template-card-fields {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+            margin-bottom: 1rem;
+        }
+
+        .field-tag {
+            background: var(--surface);
+            color: var(--muted);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .template-card-cta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .use-template-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--accent);
+            color: white;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-decoration: none;
+            transition: background 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .use-template-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .popular-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* ==================== */
+        /* TEMPLATE FORM SECTION */
+        /* ==================== */
+
+        .form-section {
+            background: var(--surface);
+            padding: 4rem 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .form-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .form-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header h2 span {
+            color: var(--accent);
+        }
+
+        .form-header p {
+            color: var(--muted);
+        }
+
+        .form-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .form-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .form-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-panel-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-panel-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .form-panel-title h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.125rem;
+        }
+
+        .form-panel-title p {
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .form-label .required {
+            color: var(--error);
+        }
+
+        .form-label .optional {
+            color: var(--muted-light);
+            font-weight: 400;
+            font-size: 0.75rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-light);
+        }
+
+        .form-input::placeholder {
+            color: var(--muted-light);
+        }
+
+        .form-hint {
+            margin-top: 0.375rem;
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-light);
+        }
+
+        .radio-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .radio-option {
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-option:hover {
+            border-color: var(--fg);
+        }
+
+        .radio-option.active {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .radio-option .radio-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: block;
+        }
+
+        .radio-option .radio-hint {
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .generate-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .advanced-link {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--muted);
+            font-size: 0.875rem;
+            text-decoration: none;
+        }
+
+        .advanced-link:hover {
+            color: var(--accent);
+        }
+
+        /* QR Preview Panel */
+        .preview-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            position: sticky;
+            top: 100px;
+        }
+
+        .preview-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .preview-header h3 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .preview-header p {
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        .qr-preview {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 1.5rem;
+            background: var(--surface);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--border);
+        }
+
+        .qr-preview svg {
+            color: var(--muted-light);
+        }
+
+        .qr-preview.has-content {
+            background: white;
+            border: 2px solid var(--border);
+            border-style: solid;
+        }
+
+        .preview-info {
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .preview-info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .preview-info-item + .preview-info-item {
+            margin-top: 0.5rem;
+        }
+
+        .preview-info-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--success);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .templates-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .category-pills {
+                justify-content: flex-start;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 0.5rem;
+            }
+
+            .pill {
+                white-space: nowrap;
+            }
+        }
+
+        /* Section Divider */
+        .section-divider {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .section-divider-line {
+            height: 1px;
+            background: var(--border);
+            max-width: 200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/" class="logo">One<span>QR</span></a>
+            <div class="nav-links">
+                <a href="/">Generator</a>
+                <a href="/templates" class="active">Templates</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/pricing">Pricing</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            Smart Templates
+        </div>
+        <h1>QR codes made <span>easy</span></h1>
+        <p>Choose a template, fill in the details, and generate professional QR codes in seconds. No technical knowledge required.</p>
+    </section>
+
+    <!-- Search -->
+    <div class="search-container">
+        <div class="search-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" placeholder="Search templates... (WiFi, vCard, WhatsApp...)">
+        </div>
+    </div>
+
+    <!-- Category Pills -->
+    <div class="category-pills">
+        <button class="pill active">All Templates</button>
+        <button class="pill">Connectivity</button>
+        <button class="pill">Contact</button>
+        <button class="pill">Messaging</button>
+        <button class="pill">Social</button>
+        <button class="pill">Business</button>
+    </div>
+
+    <!-- Templates Grid -->
+    <section class="templates-section">
+        <div class="section-header">
+            <h2 class="section-title">Popular Templates <span class="template-count">10</span></h2>
+        </div>
+
+        <div class="templates-grid">
+            <!-- WiFi Template -->
+            <article class="template-card">
+                <div class="template-card-icon icon-wifi">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+                        <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+                        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                        <line x1="12" y1="20" x2="12.01" y2="20"/>
+                    </svg>
+                </div>
+                <div class="template-card-content">
+                    <h3 class="template-card-title">WiFi Network</h3>
+                    <p class="template-card-description">Share your WiFi credentials instantly. Guests scan and connect - no typing passwords.</p>
+                    <div class="template-card-fields">
+                        <span class="field-tag">Network Name</span>
+                        <span class="field-tag">Password</span>
+                        <span class="field-tag">Security</span>
+                    </div>
+                    <div class="template-card-cta">
+                        <button class="use-template-btn">
+                            Use Template
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                        <span class="popular-badge">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            Popular
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- vCard Template -->
+            <article class="template-card">
+                <div class="template-card-icon icon-vcard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <div class="template-card-content">
+                    <h3 class="template-card-title">vCard Contact</h3>
+                    <p class="template-card-description">Digital business card. Share your contact info and save it directly to phones.</p>
+                    <div class="template-card-fields">
+                        <span class="field-tag">Name</span>
+                        <span class="field-tag">Phone</span>
+                        <span class="field-tag">Email</span>
+                        <span class="field-tag">+3 more</span>
+                    </div>
+                    <div class="template-card-cta">
+                        <button class="use-template-btn">
+                            Use Template
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                        <span class="popular-badge">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            Popular
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- WhatsApp Template -->
+            <article class="template-card">
+                <div class="template-card-icon icon-whatsapp">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                </div>
+                <div class="template-card-content">
+                    <h3 class="template-card-title">WhatsApp Chat</h3>
+                    <p class="template-card-description">Start a WhatsApp conversation instantly with a pre-filled message.</p>
+                    <div class="template-card-fields">
+                        <span class="field-tag">Phone Number</span>
+                        <span class="field-tag">Message</span>
+                    </div>
+                    <div class="template-card-cta">
+                        <button class="use-template-btn">
+                            Use Template
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                        <span class="popular-badge">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            Popular
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Email Template -->
+            <article class="template-card">
+                <div class="template-card-icon icon-email">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                    </svg>
+                </div>
+                <div class="template-card-content">
+                    <h3 class="template-card-title">Email Composer</h3>
+                    <p class="template-card-description">Pre-fill email with recipient, subject, and body. One scan to compose.</p>
+                    <div class="template-card-fields">
+                        <span class="field-tag">Email</span>
+                        <span class="field-tag">Subject</span>
+                        <span class="field-tag">Body</span>
+                    </div>
+                    <div class="template-card-cta">
+                        <button class="use-template-btn">
+                            Use Template
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SMS Template -->
+            <article class="template-card">
+                <div class="template-card-icon icon-sms">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </div>
+                <div class="template-card-content">
+                    <h3 class="template-card-title">SMS Sender</h3>
+                    <p class="template-card-description">Open SMS app with number and message ready. Perfect for orders or support.</p>
+                    <div class="template-card-fields">
+                        <span class="field-tag">Phone Number</span>
+                        <span class="field-tag">Message</span>
+                    </div>
+                    <div class="template-card-cta">
+                        <button class="use-template-btn">
+                            Use Template
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Phone Template -->
+            <article class="template-card">
+                <div class="template-card-icon icon-phone">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                </div>
+                <div class="template-card-content">
+                    <h3 class="template-card-title">Phone Dialer</h3>
+                    <p class="template-card-description">Dial a phone number instantly. Great for "Call Now" marketing materials.</p>
+                    <div class="template-card-fields">
+                        <span class="field-tag">Phone Number</span>
+                    </div>
+                    <div class="template-card-cta">
+                        <button class="use-template-btn">
+                            Use Template
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- App Store Template -->
+            <article class="template-card">
+                <div class="template-card-icon icon-appstore">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </div>
+                <div class="template-card-content">
+                    <h3 class="template-card-title">App Store Link</h3>
+                    <p class="template-card-description">Link to your app on iOS App Store, Google Play, or both platforms.</p>
+                    <div class="template-card-fields">
+                        <span class="field-tag">App Name</span>
+                        <span class="field-tag">iOS URL</span>
+                        <span class="field-tag">Android URL</span>
+                    </div>
+                    <div class="template-card-cta">
+                        <button class="use-template-btn">
+                            Use Template
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Google Maps Template -->
+            <article class="template-card">
+                <div class="template-card-icon icon-maps">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                </div>
+                <div class="template-card-content">
+                    <h3 class="template-card-title">Google Maps</h3>
+                    <p class="template-card-description">Share a location with directions. Perfect for stores and events.</p>
+                    <div class="template-card-fields">
+                        <span class="field-tag">Address</span>
+                        <span class="field-tag">Place Name</span>
+                    </div>
+                    <div class="template-card-cta">
+                        <button class="use-template-btn">
+                            Use Template
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Calendar Template -->
+            <article class="template-card">
+                <div class="template-card-icon icon-calendar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                </div>
+                <div class="template-card-content">
+                    <h3 class="template-card-title">Calendar Event</h3>
+                    <p class="template-card-description">Add an event to calendar with one scan. Title, date, time, and location.</p>
+                    <div class="template-card-fields">
+                        <span class="field-tag">Title</span>
+                        <span class="field-tag">Date</span>
+                        <span class="field-tag">Time</span>
+                        <span class="field-tag">+2 more</span>
+                    </div>
+                    <div class="template-card-cta">
+                        <button class="use-template-btn">
+                            Use Template
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Payment Template -->
+            <article class="template-card">
+                <div class="template-card-icon icon-payment">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                </div>
+                <div class="template-card-content">
+                    <h3 class="template-card-title">Payment Link</h3>
+                    <p class="template-card-description">Accept tips or payments via PayPal, Venmo, or Cash App.</p>
+                    <div class="template-card-fields">
+                        <span class="field-tag">Platform</span>
+                        <span class="field-tag">Username/Link</span>
+                    </div>
+                    <div class="template-card-cta">
+                        <button class="use-template-btn">
+                            Use Template
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- Section Divider -->
+    <div class="section-divider">
+        <div class="section-divider-line"></div>
+    </div>
+
+    <!-- Form Section - WiFi Example -->
+    <section class="form-section" id="wifi-form">
+        <div class="form-container">
+            <div class="form-header">
+                <h2>WiFi Network <span>Template</span></h2>
+                <p>Fill in your network details and generate a scannable QR code</p>
+            </div>
+
+            <div class="form-layout">
+                <!-- Form Panel -->
+                <div class="form-panel">
+                    <div class="form-panel-header">
+                        <div class="form-panel-icon icon-wifi">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+                                <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+                                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                                <line x1="12" y1="20" x2="12.01" y2="20"/>
+                            </svg>
+                        </div>
+                        <div class="form-panel-title">
+                            <h3>WiFi Network</h3>
+                            <p>Share your WiFi credentials instantly</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Network Name (SSID)
+                            <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" placeholder="e.g., MyHomeWiFi" value="Guest WiFi">
+                        <p class="form-hint">Enter the exact name of your WiFi network</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Security Type</label>
+                        <div class="radio-group">
+                            <div class="radio-option active">
+                                <span class="radio-label">WPA/WPA2</span>
+                                <span class="radio-hint">Most common</span>
+                            </div>
+                            <div class="radio-option">
+                                <span class="radio-label">WEP</span>
+                                <span class="radio-hint">Legacy</span>
+                            </div>
+                            <div class="radio-option">
+                                <span class="radio-label">None</span>
+                                <span class="radio-hint">Open network</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Password
+                            <span class="required">*</span>
+                        </label>
+                        <input type="password" class="form-input" placeholder="Enter your WiFi password" value="welcome123">
+                        <p class="form-hint">Your password is encoded in the QR - never stored on our servers</p>
+                    </div>
+
+                    <button class="generate-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                        Generate QR Code
+                    </button>
+
+                    <a href="/generator?advanced=true" class="advanced-link">
+                        Advanced customization (colors, patterns, logo) →
+                    </a>
+                </div>
+
+                <!-- Preview Panel -->
+                <div class="preview-panel">
+                    <div class="preview-header">
+                        <h3>Live Preview</h3>
+                        <p>Your QR code updates as you type</p>
+                    </div>
+
+                    <div class="qr-preview has-content">
+                        <!-- QR Code placeholder - would be generated dynamically -->
+                        <svg width="160" height="160" viewBox="0 0 160 160" fill="none">
+                            <rect width="160" height="160" fill="white"/>
+                            <!-- Position detection patterns -->
+                            <rect x="10" y="10" width="35" height="35" fill="#1a1a1a"/>
+                            <rect x="15" y="15" width="25" height="25" fill="white"/>
+                            <rect x="20" y="20" width="15" height="15" fill="#1a1a1a"/>
+
+                            <rect x="115" y="10" width="35" height="35" fill="#1a1a1a"/>
+                            <rect x="120" y="15" width="25" height="25" fill="white"/>
+                            <rect x="125" y="20" width="15" height="15" fill="#1a1a1a"/>
+
+                            <rect x="10" y="115" width="35" height="35" fill="#1a1a1a"/>
+                            <rect x="15" y="120" width="25" height="25" fill="white"/>
+                            <rect x="20" y="125" width="15" height="15" fill="#1a1a1a"/>
+
+                            <!-- Data modules (simplified representation) -->
+                            <rect x="55" y="10" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="65" y="10" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="75" y="10" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="85" y="15" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="95" y="10" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="105" y="15" width="5" height="5" fill="#1a1a1a"/>
+
+                            <rect x="55" y="25" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="70" y="25" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="80" y="25" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="90" y="25" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="100" y="25" width="5" height="5" fill="#1a1a1a"/>
+
+                            <rect x="10" y="55" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="25" y="55" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="35" y="55" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="10" y="70" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="20" y="70" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="35" y="70" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="10" y="80" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="30" y="80" width="5" height="5" fill="#1a1a1a"/>
+
+                            <!-- Center area -->
+                            <rect x="55" y="55" width="50" height="50" fill="white"/>
+                            <rect x="60" y="60" width="40" height="40" rx="8" fill="#ff4d00" opacity="0.1"/>
+                            <circle cx="80" cy="80" r="12" fill="#ff4d00"/>
+                            <path d="M76 80a8 8 0 0 1 8 0M73 77a12 12 0 0 1 14 0M70 74a16 16 0 0 1 20 0" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+                            <!-- More data modules -->
+                            <rect x="115" y="55" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="125" y="60" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="135" y="55" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="145" y="65" width="5" height="5" fill="#1a1a1a"/>
+
+                            <rect x="55" y="115" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="65" y="120" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="75" y="115" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="85" y="125" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="95" y="115" width="5" height="5" fill="#1a1a1a"/>
+                            <rect x="105" y="120" width="5" height="5" fill="#1a1a1a"/>
+
+                            <rect x="115" y="115" width="35" height="35" fill="#1a1a1a"/>
+                            <rect x="120" y="120" width="25" height="25" fill="white"/>
+                            <rect x="125" y="125" width="15" height="15" fill="#1a1a1a"/>
+                        </svg>
+                    </div>
+
+                    <div class="preview-info">
+                        <div class="preview-info-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            WiFi credentials encoded
+                        </div>
+                        <div class="preview-info-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            WPA/WPA2 security
+                        </div>
+                        <div class="preview-info-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            Ready to scan
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- vCard Form Example (collapsed view) -->
+    <section class="form-section" id="vcard-form" style="background: white;">
+        <div class="form-container">
+            <div class="form-header">
+                <h2>vCard Contact <span>Template</span></h2>
+                <p>Create a digital business card that saves directly to phones</p>
+            </div>
+
+            <div class="form-layout">
+                <!-- Form Panel -->
+                <div class="form-panel" style="border-color: #fce7f3;">
+                    <div class="form-panel-header">
+                        <div class="form-panel-icon icon-vcard">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                        <div class="form-panel-title">
+                            <h3>vCard Contact</h3>
+                            <p>Digital business card</p>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">
+                                First Name
+                                <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" placeholder="John" value="Sarah">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                Last Name
+                                <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" placeholder="Doe" value="Johnson">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Phone
+                            <span class="required">*</span>
+                        </label>
+                        <input type="tel" class="form-input" placeholder="+1 (555) 000-0000" value="+1 (555) 123-4567">
+                        <p class="form-hint">Include country code for international contacts</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Email
+                            <span class="required">*</span>
+                        </label>
+                        <input type="email" class="form-input" placeholder="john@company.com" value="sarah@acmecorp.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Company
+                            <span class="optional">(optional)</span>
+                        </label>
+                        <input type="text" class="form-input" placeholder="Acme Inc." value="Acme Corporation">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Website
+                            <span class="optional">(optional)</span>
+                        </label>
+                        <input type="url" class="form-input" placeholder="https://company.com" value="https://acmecorp.com">
+                    </div>
+
+                    <button class="generate-btn" style="background: #db2777;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                        Generate QR Code
+                    </button>
+
+                    <a href="/generator?advanced=true" class="advanced-link">
+                        Advanced customization (colors, patterns, logo) →
+                    </a>
+                </div>
+
+                <!-- Preview Panel -->
+                <div class="preview-panel">
+                    <div class="preview-header">
+                        <h3>Live Preview</h3>
+                        <p>Your QR code updates as you type</p>
+                    </div>
+
+                    <div class="qr-preview has-content">
+                        <svg width="160" height="160" viewBox="0 0 160 160" fill="none">
+                            <rect width="160" height="160" fill="white"/>
+                            <rect x="10" y="10" width="35" height="35" fill="#1a1a1a"/>
+                            <rect x="15" y="15" width="25" height="25" fill="white"/>
+                            <rect x="20" y="20" width="15" height="15" fill="#1a1a1a"/>
+
+                            <rect x="115" y="10" width="35" height="35" fill="#1a1a1a"/>
+                            <rect x="120" y="15" width="25" height="25" fill="white"/>
+                            <rect x="125" y="20" width="15" height="15" fill="#1a1a1a"/>
+
+                            <rect x="10" y="115" width="35" height="35" fill="#1a1a1a"/>
+                            <rect x="15" y="120" width="25" height="25" fill="white"/>
+                            <rect x="20" y="125" width="15" height="15" fill="#1a1a1a"/>
+
+                            <rect x="55" y="55" width="50" height="50" fill="white"/>
+                            <rect x="60" y="60" width="40" height="40" rx="8" fill="#db2777" opacity="0.1"/>
+                            <circle cx="80" cy="80" r="12" fill="#db2777"/>
+                            <path d="M80 72v6m0 4v0" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="80" cy="86" r="1.5" fill="white"/>
+                        </svg>
+                    </div>
+
+                    <div class="preview-info">
+                        <div class="preview-info-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            vCard 3.0 format
+                        </div>
+                        <div class="preview-info-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            6 fields encoded
+                        </div>
+                        <div class="preview-info-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            Works on iOS & Android
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Template Selector -->
+    <section style="max-width: 400px; margin: 4rem auto; padding: 0 2rem;">
+        <h2 style="font-family: 'DM Serif Display', serif; font-size: 1.5rem; text-align: center; margin-bottom: 2rem;">Mobile View</h2>
+
+        <div style="background: white; border: 1px solid var(--border); border-radius: 16px; overflow: hidden;">
+            <!-- Compact card for mobile -->
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border-bottom: 1px solid var(--border);">
+                <div style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2">
+                        <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+                        <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+                        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                        <line x1="12" y1="20" x2="12.01" y2="20"/>
+                    </svg>
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="font-family: 'DM Serif Display', serif; font-size: 1rem; margin-bottom: 0.125rem;">WiFi Network</h4>
+                    <p style="color: var(--muted); font-size: 0.75rem;">Share WiFi credentials</p>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2">
+                    <path d="m9 18 6-6-6-6"/>
+                </svg>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border-bottom: 1px solid var(--border);">
+                <div style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="font-family: 'DM Serif Display', serif; font-size: 1rem; margin-bottom: 0.125rem;">vCard Contact</h4>
+                    <p style="color: var(--muted); font-size: 0.75rem;">Digital business card</p>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2">
+                    <path d="m9 18 6-6-6-6"/>
+                </svg>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem;">
+                <div style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#16a34a">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="font-family: 'DM Serif Display', serif; font-size: 1rem; margin-bottom: 0.125rem;">WhatsApp Chat</h4>
+                    <p style="color: var(--muted); font-size: 0.75rem;">Start a conversation</p>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2">
+                    <path d="m9 18 6-6-6-6"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
