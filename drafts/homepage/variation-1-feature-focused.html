@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TheQRSpot - The Ultimate Free QR Code Generator | Variation 1: Feature-Focused</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --success: #22c55e;
+      --success-light: #dcfce7;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'DM Serif Display', serif;
+      line-height: 1.2;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 254, 249, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      padding: 1rem 2rem;
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--fg);
+    }
+
+    .nav-cta {
+      background: var(--fg);
+      color: var(--bg);
+      padding: 0.625rem 1.25rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .nav-cta:hover {
+      background: var(--accent);
+    }
+
+    /* Hero Section - Feature Focused */
+    .hero {
+      padding: 8rem 2rem 4rem;
+      background: linear-gradient(180deg, var(--accent-light) 0%, var(--bg) 100%);
+    }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero-content {
+      max-width: 560px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--success-light);
+      color: #15803d;
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-badge svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero h1 .highlight {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      max-width: 480px;
+    }
+
+    .hero-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .hero-feature {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9375rem;
+    }
+
+    .hero-feature svg {
+      width: 20px;
+      height: 20px;
+      color: var(--success);
+      flex-shrink: 0;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--accent) 0%, #e64500 100%);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 4px 14px rgba(255, 77, 0, 0.35);
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 77, 0, 0.45);
+    }
+
+    .btn-secondary {
+      color: var(--fg);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary:hover {
+      color: var(--accent);
+    }
+
+    /* QR Generator Card */
+    .hero-generator {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), 0 0 0 1px var(--border);
+    }
+
+    .generator-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .generator-header h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .generator-header p {
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+
+    .generator-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      background: var(--surface);
+      padding: 0.25rem;
+      border-radius: 8px;
+    }
+
+    .generator-tab {
+      flex: 1;
+      padding: 0.625rem;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .generator-tab.active {
+      background: white;
+      color: var(--fg);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .generator-input {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .generator-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .generator-qr-preview {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .qr-placeholder {
+      width: 160px;
+      height: 160px;
+      background: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed var(--border);
+    }
+
+    .qr-placeholder svg {
+      width: 80px;
+      height: 80px;
+      color: var(--muted);
+      opacity: 0.5;
+    }
+
+    .generator-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .generator-btn {
+      padding: 0.875rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .generator-btn-primary {
+      background: var(--fg);
+      color: white;
+      grid-column: span 2;
+    }
+
+    .generator-btn-primary:hover {
+      background: var(--accent);
+    }
+
+    /* Comparison Section - MAIN FOCUS */
+    .comparison {
+      padding: 6rem 2rem;
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    .comparison-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-label {
+      display: inline-block;
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: 2.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+      color: rgba(255, 254, 249, 0.6);
+      font-size: 1.125rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Comparison Table */
+    .comparison-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .comparison-table thead {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .comparison-table th {
+      padding: 1.25rem 1.5rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .comparison-table th:first-child {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .comparison-table th.theqrspot {
+      color: var(--accent);
+      background: rgba(255, 77, 0, 0.1);
+    }
+
+    .comparison-table th.competitors {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .comparison-table td {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.9375rem;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .comparison-table td:first-child {
+      font-weight: 500;
+    }
+
+    .comparison-table td.theqrspot-cell {
+      background: rgba(255, 77, 0, 0.05);
+    }
+
+    .check-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: var(--success);
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+
+    .check-icon svg {
+      width: 14px;
+      height: 14px;
+      color: white;
+    }
+
+    .x-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+
+    .x-icon svg {
+      width: 14px;
+      height: 14px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .value-highlight {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .value-muted {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .comparison-cta {
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    .comparison-cta .btn-primary {
+      background: var(--accent);
+      box-shadow: 0 4px 20px rgba(255, 77, 0, 0.4);
+    }
+
+    /* Stats Section */
+    .stats {
+      padding: 4rem 2rem;
+      background: var(--surface);
+    }
+
+    .stats-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      text-align: center;
+    }
+
+    .stat-item {
+      padding: 2rem;
+    }
+
+    .stat-number {
+      font-family: 'DM Serif Display', serif;
+      font-size: 3rem;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.9375rem;
+    }
+
+    /* Templates Section */
+    .templates {
+      padding: 6rem 2rem;
+    }
+
+    .templates-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .templates-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .template-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .template-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(255, 77, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .template-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--accent-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+
+    .template-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .template-info h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .template-info p {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    .templates-cta {
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    /* Use Cases */
+    .use-cases {
+      padding: 6rem 2rem;
+      background: var(--surface);
+    }
+
+    .use-cases-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .use-cases-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .use-case-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .use-case-emoji {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .use-case-card h4 {
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .use-case-card p {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    /* Final CTA */
+    .final-cta {
+      padding: 6rem 2rem;
+      text-align: center;
+      background: linear-gradient(180deg, var(--bg) 0%, var(--accent-light) 100%);
+    }
+
+    .final-cta-inner {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .final-cta h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .final-cta p {
+      font-size: 1.125rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 3rem 2rem;
+      background: var(--fg);
+      color: rgba(255, 254, 249, 0.6);
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      color: var(--bg);
+    }
+
+    .footer-logo span {
+      color: var(--accent);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: rgba(255, 254, 249, 0.6);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--bg);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+
+      .hero-generator {
+        max-width: 480px;
+        margin: 0 auto;
+      }
+
+      .templates-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 6rem 1.5rem 3rem;
+      }
+
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero-features {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .comparison-table {
+        font-size: 0.875rem;
+      }
+
+      .comparison-table th,
+      .comparison-table td {
+        padding: 1rem;
+      }
+
+      .stats-inner {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .stat-item {
+        padding: 1rem;
+      }
+
+      .stat-number {
+        font-size: 2.25rem;
+      }
+
+      .templates-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .use-cases-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="logo">TheQR<span>Spot</span></a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="/templates">Templates</a></li>
+        <li><a href="/bulk">Bulk Create</a></li>
+        <li><a href="/faq">FAQ</a></li>
+      </ul>
+      <a href="#qr-generator" class="nav-cta">Create QR Code</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          100% Free Forever
+        </div>
+        <h1>The Ultimate <span class="highlight">Free</span> QR Code Generator</h1>
+        <p class="hero-subtitle">Unlimited QR codes. Advanced customization. No watermarks. No subscriptions. Forever free.</p>
+
+        <div class="hero-features">
+          <div class="hero-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Unlimited static QR codes</span>
+          </div>
+          <div class="hero-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>10+ smart templates</span>
+          </div>
+          <div class="hero-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>High-res exports (2000px)</span>
+          </div>
+          <div class="hero-feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Bulk generation (50 codes)</span>
+          </div>
+        </div>
+
+        <div class="hero-cta-group">
+          <a href="#qr-generator" class="btn-primary">
+            Create Free QR Code
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+          <a href="/templates" class="btn-secondary">
+            Browse Templates
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- QR Generator Preview -->
+      <div class="hero-generator" id="qr-generator">
+        <div class="generator-header">
+          <h3>Instant QR Generator</h3>
+          <p>No login required</p>
+        </div>
+
+        <div class="generator-tabs">
+          <button class="generator-tab active">URL</button>
+          <button class="generator-tab">WiFi</button>
+          <button class="generator-tab">vCard</button>
+          <button class="generator-tab">More</button>
+        </div>
+
+        <input type="url" class="generator-input" placeholder="Enter URL (e.g., https://example.com)">
+
+        <div class="generator-qr-preview">
+          <div class="qr-placeholder">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="3" height="3"/>
+              <rect x="18" y="14" width="3" height="3"/>
+              <rect x="14" y="18" width="3" height="3"/>
+              <rect x="18" y="18" width="3" height="3"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="generator-actions">
+          <button class="generator-btn generator-btn-primary">Generate QR Code</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Section - MAIN FOCUS -->
+  <section class="comparison" id="features">
+    <div class="comparison-inner">
+      <div class="section-header">
+        <span class="section-label">Why Choose TheQRSpot?</span>
+        <h2 class="section-title">More features. Zero cost.</h2>
+        <p class="section-subtitle">See how we compare to paid alternatives. Spoiler: we're better and completely free.</p>
+      </div>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th class="theqrspot">TheQRSpot</th>
+            <th class="competitors">Competitors</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Price</td>
+            <td class="theqrspot-cell">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span class="value-highlight">FREE</span>
+            </td>
+            <td>
+              <span class="x-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <span class="value-muted">$5-15/month</span>
+            </td>
+          </tr>
+          <tr>
+            <td>QR Codes</td>
+            <td class="theqrspot-cell">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span class="value-highlight">Unlimited</span>
+            </td>
+            <td>
+              <span class="x-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <span class="value-muted">2-5 codes</span>
+            </td>
+          </tr>
+          <tr>
+            <td>Customization</td>
+            <td class="theqrspot-cell">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span class="value-highlight">Advanced (colors, patterns, labels)</span>
+            </td>
+            <td>
+              <span class="x-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <span class="value-muted">Basic / Locked</span>
+            </td>
+          </tr>
+          <tr>
+            <td>Smart Templates</td>
+            <td class="theqrspot-cell">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span class="value-highlight">10+ templates</span>
+            </td>
+            <td>
+              <span class="x-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <span class="value-muted">Few / None</span>
+            </td>
+          </tr>
+          <tr>
+            <td>Bulk Generation</td>
+            <td class="theqrspot-cell">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span class="value-highlight">Up to 50 codes</span>
+            </td>
+            <td>
+              <span class="x-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <span class="value-muted">Paid only</span>
+            </td>
+          </tr>
+          <tr>
+            <td>High-Res Export</td>
+            <td class="theqrspot-cell">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span class="value-highlight">2000px PNG, SVG</span>
+            </td>
+            <td>
+              <span class="x-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <span class="value-muted">400px PNG</span>
+            </td>
+          </tr>
+          <tr>
+            <td>Watermarks</td>
+            <td class="theqrspot-cell">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span class="value-highlight">None</span>
+            </td>
+            <td>
+              <span class="x-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <span class="value-muted">Yes (free tier)</span>
+            </td>
+          </tr>
+          <tr>
+            <td>Save to Account</td>
+            <td class="theqrspot-cell">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span class="value-highlight">Unlimited + Folders</span>
+            </td>
+            <td>
+              <span class="x-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <span class="value-muted">Limited</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="comparison-cta">
+        <a href="#qr-generator" class="btn-primary">
+          Start Creating for Free
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats">
+    <div class="stats-inner">
+      <div class="stat-item">
+        <div class="stat-number">50,000+</div>
+        <div class="stat-label">Happy users creating QR codes</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">500,000+</div>
+        <div class="stat-label">QR codes generated</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">Free, forever</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Templates Section -->
+  <section class="templates">
+    <div class="templates-inner">
+      <div class="section-header" style="color: var(--fg);">
+        <span class="section-label">Smart Templates</span>
+        <h2 class="section-title" style="color: var(--fg);">10+ ready-to-use templates</h2>
+        <p class="section-subtitle" style="color: var(--muted);">From WiFi networks to digital business cards. Just fill in your details.</p>
+      </div>
+
+      <div class="templates-grid">
+        <div class="template-card">
+          <div class="template-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+              <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+              <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+              <circle cx="12" cy="20" r="1"/>
+            </svg>
+          </div>
+          <div class="template-info">
+            <h4>WiFi</h4>
+            <p>Share network credentials instantly</p>
+          </div>
+        </div>
+
+        <div class="template-card">
+          <div class="template-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <div class="template-info">
+            <h4>vCard</h4>
+            <p>Digital business card</p>
+          </div>
+        </div>
+
+        <div class="template-card">
+          <div class="template-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            </svg>
+          </div>
+          <div class="template-info">
+            <h4>WhatsApp</h4>
+            <p>Start chat instantly</p>
+          </div>
+        </div>
+
+        <div class="template-card">
+          <div class="template-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div class="template-info">
+            <h4>Email</h4>
+            <p>Pre-filled email drafts</p>
+          </div>
+        </div>
+
+        <div class="template-card">
+          <div class="template-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <div class="template-info">
+            <h4>Location</h4>
+            <p>Share GPS coordinates</p>
+          </div>
+        </div>
+
+        <div class="template-card">
+          <div class="template-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+              <line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+          </div>
+          <div class="template-info">
+            <h4>Payment</h4>
+            <p>UPI, PayPal, Venmo</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="templates-cta">
+        <a href="/templates" class="btn-secondary">
+          View all 10+ templates
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use Cases -->
+  <section class="use-cases">
+    <div class="use-cases-inner">
+      <div class="section-header" style="color: var(--fg);">
+        <span class="section-label">Perfect For</span>
+        <h2 class="section-title" style="color: var(--fg);">Every industry. Every use case.</h2>
+      </div>
+
+      <div class="use-cases-grid">
+        <div class="use-case-card">
+          <div class="use-case-emoji">🍽️</div>
+          <h4>Restaurants</h4>
+          <p>Digital menus and ordering</p>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-emoji">🛍️</div>
+          <h4>Retail</h4>
+          <p>Product info and promotions</p>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-emoji">🎫</div>
+          <h4>Events</h4>
+          <p>Check-in and ticketing</p>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-emoji">💼</div>
+          <h4>Business Cards</h4>
+          <p>Digital contact sharing</p>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-emoji">🏠</div>
+          <h4>Real Estate</h4>
+          <p>Property tours and info</p>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-emoji">📶</div>
+          <h4>WiFi Sharing</h4>
+          <p>Guest network access</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final-cta">
+    <div class="final-cta-inner">
+      <h2>Ready to create your free QR code?</h2>
+      <p>Join 50,000+ users who trust TheQRSpot for their QR code needs. No credit card. No catches. Just free.</p>
+      <a href="#qr-generator" class="btn-primary">
+        Create Free QR Code Now
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">TheQR<span>Spot</span></div>
+      <ul class="footer-links">
+        <li><a href="/templates">Templates</a></li>
+        <li><a href="/bulk">Bulk Create</a></li>
+        <li><a href="/faq">FAQ</a></li>
+        <li><a href="/privacy">Privacy</a></li>
+        <li><a href="/terms">Terms</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>
