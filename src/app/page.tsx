@@ -1,9 +1,26 @@
 import SimpleQRGenerator from "@/components/SimpleQRGenerator";
 import ComparisonSection from "@/components/ComparisonSection";
-import PricingSection from "@/components/PricingSection";
+import StatsSection from "@/components/StatsSection";
+import TemplatesSection from "@/components/TemplatesSection";
+import UseCasesSection from "@/components/UseCasesSection";
+import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 import Link from "next/link";
+
+function CheckIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      className="h-5 w-5 flex-shrink-0 text-emerald-500"
+    >
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
 
 export default function Home() {
   return (
@@ -11,337 +28,131 @@ export default function Home() {
       <Navigation />
 
       <main id="main-content" className="min-h-screen bg-bg">
-        {/* Hero Section - Full width QR generator */}
+        {/* Hero Section - Split layout with content left, QR generator right */}
         <section
-          className="mx-auto max-w-7xl px-6 pb-20 pt-24 lg:px-12 lg:pb-24 lg:pt-28"
+          className="bg-gradient-to-b from-accent-light to-bg px-6 pb-16 pt-24 lg:px-12 lg:pb-20 lg:pt-32"
           aria-labelledby="hero-heading"
         >
-          {/* Minimal heading above the fold */}
-          <header className="mb-12 text-center">
-            <h1
-              id="hero-heading"
-              className="font-serif text-4xl leading-[1.1] tracking-tight text-fg md:text-5xl lg:text-6xl"
-            >
-              Create unlimited QR codes{" "}
-              <span className="italic text-accent">free</span>.
-              <br />
-              <span className="text-accent">No subscriptions ever.</span>
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
-              Pay $1.99 once per QR code to unlock editing and analytics.
-            </p>
-          </header>
-
-          {/* Full-width QR Generator - Above the fold */}
-          <div id="qr-generator" className="mx-auto max-w-lg scroll-mt-24">
-            <SimpleQRGenerator />
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section
-          id="features"
-          className="scroll-mt-20 bg-fg px-6 py-24 text-bg lg:px-12 lg:py-32"
-          aria-labelledby="features-heading"
-        >
-          <div className="mx-auto max-w-6xl">
-            {/* Section Header */}
-            <header className="mb-20 text-center">
-              <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-accent">
-                Built for professionals
-              </p>
-              <h2
-                id="features-heading"
-                className="font-serif text-4xl leading-[1.15] tracking-tight md:text-5xl lg:text-[56px]"
-              >
-                Professional QR codes.
-                <br />
-                <span className="italic text-accent">Free to create.</span>{" "}
-                $1.99 to edit.
-              </h2>
-              <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/60">
-                Create unlimited QR codes free. Pay $1.99 per QR to unlock
-                editing and analytics.
-              </p>
-            </header>
-
-            {/* Features Grid */}
-            <ul
-              className="grid gap-px md:grid-cols-2"
-              role="list"
-              aria-label="Product features"
-            >
-              <li className="group relative bg-white/[0.02] p-8 transition-colors hover:bg-white/[0.04] lg:p-10">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="text-accent">
-                    <svg
-                      className="h-8 w-8"
-                      viewBox="0 0 32 32"
-                      fill="currentColor"
-                    >
-                      {/* QR code with expanding sizes */}
-                      <rect x="2" y="2" width="5" height="5" rx="0.5" />
-                      <rect x="2" y="25" width="5" height="5" rx="0.5" />
-                      <rect x="25" y="2" width="5" height="5" rx="0.5" />
-                      <rect x="9" y="2" width="2" height="2" />
-                      <rect x="13" y="2" width="2" height="2" />
-                      <rect x="9" y="6" width="2" height="2" />
-                      <rect x="2" y="9" width="2" height="2" />
-                      <rect x="2" y="13" width="2" height="2" />
-                      <rect x="9" y="25" width="2" height="2" />
-                      <rect x="13" y="25" width="2" height="2" />
-                      <rect x="9" y="29" width="2" height="2" />
-                      {/* Expanding arrows */}
-                      <path
-                        d="M18 14 L22 14 L22 10 M22 14 L22 18 L26 18"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        fill="none"
-                      />
-                    </svg>
-                  </div>
-                  <h3 className="font-serif text-2xl tracking-tight">
-                    High Resolution <span className="text-accent">Export</span>
-                  </h3>
-                </div>
-                <p className="text-base leading-relaxed text-white/60">
-                  Export from 512px up to 4096px. Perfect for billboards,
-                  posters, and large format printing. Print-ready quality at any
-                  size.
-                </p>
-              </li>
-
-              <li className="group relative bg-white/[0.02] p-8 transition-colors hover:bg-white/[0.04] lg:p-10">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="text-accent">
-                    <svg
-                      className="h-8 w-8"
-                      viewBox="0 0 32 32"
-                      fill="currentColor"
-                    >
-                      {/* Layered QR codes representing multiple formats */}
-                      <g opacity="0.3">
-                        <rect x="6" y="6" width="4" height="4" rx="0.5" />
-                        <rect x="6" y="22" width="4" height="4" rx="0.5" />
-                        <rect x="22" y="6" width="4" height="4" rx="0.5" />
-                        <rect x="12" y="6" width="1.5" height="1.5" />
-                        <rect x="6" y="12" width="1.5" height="1.5" />
-                      </g>
-                      <g opacity="0.6">
-                        <rect x="4" y="4" width="4" height="4" rx="0.5" />
-                        <rect x="4" y="20" width="4" height="4" rx="0.5" />
-                        <rect x="20" y="4" width="4" height="4" rx="0.5" />
-                        <rect x="10" y="4" width="1.5" height="1.5" />
-                        <rect x="4" y="10" width="1.5" height="1.5" />
-                      </g>
-                      <g>
-                        <rect x="2" y="2" width="4" height="4" rx="0.5" />
-                        <rect x="2" y="18" width="4" height="4" rx="0.5" />
-                        <rect x="18" y="2" width="4" height="4" rx="0.5" />
-                        <rect x="8" y="2" width="1.5" height="1.5" />
-                        <rect x="2" y="8" width="1.5" height="1.5" />
-                      </g>
-                    </svg>
-                  </div>
-                  <h3 className="font-serif text-2xl tracking-tight">
-                    Multi-Format <span className="text-accent">Export</span>
-                  </h3>
-                </div>
-                <p className="text-base leading-relaxed text-white/60">
-                  Download as PNG, SVG, PDF, or EPS. Vector formats for infinite
-                  scaling, raster for quick sharing. Works with any design tool.
-                </p>
-              </li>
-
-              <li className="group relative bg-white/[0.02] p-8 transition-colors hover:bg-white/[0.04] lg:p-10">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="text-accent">
-                    <svg
-                      className="h-8 w-8"
-                      viewBox="0 0 32 32"
-                      fill="currentColor"
-                    >
-                      {/* QR code with print quality indicators */}
-                      <rect x="2" y="8" width="4" height="4" rx="0.5" />
-                      <rect x="2" y="20" width="4" height="4" rx="0.5" />
-                      <rect x="20" y="8" width="4" height="4" rx="0.5" />
-                      <rect x="8" y="8" width="1.5" height="1.5" />
-                      <rect x="12" y="8" width="1.5" height="1.5" />
-                      <rect x="8" y="12" width="1.5" height="1.5" />
-                      <rect x="2" y="14" width="1.5" height="1.5" />
-                      <rect x="8" y="20" width="1.5" height="1.5" />
-                      <rect x="12" y="20" width="1.5" height="1.5" />
-                      {/* Print measurement lines */}
-                      <line
-                        x1="26"
-                        y1="8"
-                        x2="30"
-                        y2="8"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                      <line
-                        x1="26"
-                        y1="24"
-                        x2="30"
-                        y2="24"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                      <line
-                        x1="28"
-                        y1="8"
-                        x2="28"
-                        y2="24"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                      {/* Tick marks */}
-                      <line
-                        x1="27"
-                        y1="12"
-                        x2="29"
-                        y2="12"
-                        stroke="currentColor"
-                        strokeWidth="1"
-                      />
-                      <line
-                        x1="27"
-                        y1="16"
-                        x2="29"
-                        y2="16"
-                        stroke="currentColor"
-                        strokeWidth="1"
-                      />
-                      <line
-                        x1="27"
-                        y1="20"
-                        x2="29"
-                        y2="20"
-                        stroke="currentColor"
-                        strokeWidth="1"
-                      />
-                    </svg>
-                  </div>
-                  <h3 className="font-serif text-2xl tracking-tight">
-                    Print Quality <span className="text-accent">Controls</span>
-                  </h3>
-                </div>
-                <p className="text-base leading-relaxed text-white/60">
-                  Set DPI from 72 to 600 with a built-in size calculator. Know
-                  exactly how your QR will print. Professional output every
-                  time.
-                </p>
-              </li>
-
-              <li className="group relative bg-white/[0.02] p-8 transition-colors hover:bg-white/[0.04] lg:p-10">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="text-accent">
-                    <svg
-                      className="h-8 w-8"
-                      viewBox="0 0 32 32"
-                      fill="currentColor"
-                    >
-                      {/* QR code with gradient/style variation */}
-                      <defs>
-                        <linearGradient
-                          id="qr-gradient"
-                          x1="0%"
-                          y1="0%"
-                          x2="100%"
-                          y2="100%"
-                        >
-                          <stop
-                            offset="0%"
-                            stopColor="currentColor"
-                            stopOpacity="1"
-                          />
-                          <stop
-                            offset="100%"
-                            stopColor="currentColor"
-                            stopOpacity="0.4"
-                          />
-                        </linearGradient>
-                      </defs>
-                      {/* Corner blocks with rounded edges */}
-                      <rect
-                        x="2"
-                        y="2"
-                        width="5"
-                        height="5"
-                        rx="1"
-                        fill="url(#qr-gradient)"
-                      />
-                      <rect
-                        x="2"
-                        y="25"
-                        width="5"
-                        height="5"
-                        rx="1"
-                        fill="url(#qr-gradient)"
-                      />
-                      <rect
-                        x="25"
-                        y="2"
-                        width="5"
-                        height="5"
-                        rx="1"
-                        fill="url(#qr-gradient)"
-                      />
-                      {/* Styled data modules */}
-                      <circle cx="10" cy="3" r="1" opacity="0.8" />
-                      <circle cx="14" cy="3" r="1" opacity="0.6" />
-                      <circle cx="18" cy="3" r="1" opacity="0.4" />
-                      <circle cx="10" cy="7" r="1" opacity="0.7" />
-                      <circle cx="3" cy="10" r="1" opacity="0.8" />
-                      <circle cx="3" cy="14" r="1" opacity="0.6" />
-                      <circle cx="3" cy="18" r="1" opacity="0.4" />
-                      <circle cx="7" cy="10" r="1" opacity="0.7" />
-                      <circle cx="10" cy="26" r="1" opacity="0.8" />
-                      <circle cx="14" cy="26" r="1" opacity="0.6" />
-                      <circle cx="10" cy="30" r="1" opacity="0.7" />
-                    </svg>
-                  </div>
-                  <h3 className="font-serif text-2xl tracking-tight">
-                    Advanced <span className="text-accent">Design</span>
-                  </h3>
-                </div>
-                <p className="text-base leading-relaxed text-white/60">
-                  6 data patterns, 9 eye styles, gradient support, and custom
-                  colors. Make your QR code stand out from the crowd.
-                </p>
-              </li>
-            </ul>
-
-            {/* CTA to advanced generator */}
-            <aside className="mt-16 border-t border-white/10 pt-12 text-center">
-              <Link
-                href="/generator"
-                className="inline-flex items-center gap-3 bg-accent px-8 py-4 text-lg font-semibold text-white transition-colors hover:bg-white hover:text-fg"
-              >
-                Try Advanced Generator
+          <div className="mx-auto grid max-w-[1200px] items-center gap-10 lg:grid-cols-2 lg:gap-16">
+            {/* Left column - Content */}
+            <div className="max-w-[560px]">
+              {/* Badge */}
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-emerald-700">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2"
-                  className="h-5 w-5"
+                  strokeWidth="2.5"
+                  className="h-3.5 w-3.5"
                 >
-                  <path d="M5 12h14M12 5l7 7-7 7" />
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
-              </Link>
-              <p className="mt-4 text-sm opacity-50">
-                All features are free. No signup required.
+                100% Free Forever
+              </div>
+
+              {/* Headline */}
+              <h1
+                id="hero-heading"
+                className="mb-6 font-serif text-4xl leading-[1.1] tracking-tight text-fg md:text-5xl lg:text-[56px]"
+              >
+                The Ultimate{" "}
+                <span className="italic text-accent">Free</span> QR Code
+                Generator
+              </h1>
+
+              {/* Subheadline */}
+              <p className="mb-8 max-w-[480px] text-lg text-muted lg:text-xl">
+                Unlimited QR codes. Advanced customization. No watermarks. No
+                subscriptions. Forever free.
               </p>
-            </aside>
+
+              {/* Feature highlights */}
+              <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="flex items-center gap-3">
+                  <CheckIcon />
+                  <span className="text-[15px]">Unlimited static QR codes</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckIcon />
+                  <span className="text-[15px]">10+ smart templates</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckIcon />
+                  <span className="text-[15px]">High-res exports (4K)</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckIcon />
+                  <span className="text-[15px]">Bulk generation (50 codes)</span>
+                </div>
+              </div>
+
+              {/* CTA buttons */}
+              <div className="flex flex-wrap items-center gap-4">
+                <Link
+                  href="#qr-generator"
+                  className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-accent to-[#e64500] px-6 py-4 font-semibold text-white shadow-lg shadow-accent/35 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-accent/45"
+                >
+                  Create Free QR Code
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+                <Link
+                  href="/templates"
+                  className="inline-flex items-center gap-2 font-semibold text-fg transition-colors hover:text-accent"
+                >
+                  Browse Templates
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right column - QR Generator */}
+            <div
+              id="qr-generator"
+              className="mx-auto w-full max-w-[480px] scroll-mt-24 rounded-2xl bg-white p-6 shadow-xl shadow-black/10 lg:mx-0 lg:p-8"
+            >
+              <div className="mb-6 text-center">
+                <h3 className="font-serif text-xl text-fg">
+                  Instant QR Generator
+                </h3>
+                <p className="text-sm text-muted">No login required</p>
+              </div>
+              <SimpleQRGenerator />
+            </div>
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <PricingSection />
-
-        {/* Comparison Section */}
+        {/* Comparison Section - Dark background with feature comparison */}
         <ComparisonSection />
+
+        {/* Stats Section */}
+        <StatsSection />
+
+        {/* Templates Section */}
+        <TemplatesSection />
+
+        {/* Use Cases Section */}
+        <UseCasesSection />
+
+        {/* Final CTA Section */}
+        <FinalCTA />
       </main>
 
       <Footer />
