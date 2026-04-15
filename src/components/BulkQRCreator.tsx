@@ -7,6 +7,7 @@ import * as XLSX from "xlsx";
 import QRCode from "qrcode";
 import JSZip from "jszip";
 import { jsPDF } from "jspdf";
+import { createClient } from "@/lib/supabase/client";
 
 // Types
 type WizardStep = 1 | 2 | 3 | 4 | 5;
@@ -65,7 +66,7 @@ interface GenerationProgress {
 }
 
 interface DownloadSettings {
-  mode: "zip" | "pdf";
+  mode: "zip" | "pdf-grid" | "pdf-single";
   format: DownloadFormat;
   resolution: Resolution;
   filenamePattern: string;
@@ -73,6 +74,8 @@ interface DownloadSettings {
   pageSize: PageSize;
   includeLabels: boolean;
 }
+
+type BulkFormatTemplate = "url" | "wifi" | "vcard" | "custom";
 
 // Constants
 const BODY_PATTERNS: { id: BodyPattern; name: string }[] = [
@@ -118,6 +121,40 @@ const DEFAULT_TEMPLATE: TemplateSettings = {
   bgColor: "#ffffff",
   errorCorrection: "M",
   logoDataUrl: null,
+};
+
+// Free tier limit
+const FREE_TIER_LIMIT = 50;
+
+// CSV Template samples for download
+const CSV_TEMPLATES = {
+  url: {
+    name: "URL Template",
+    filename: "url-template.csv",
+    content: `title,url
+My Website,https://example.com
+Company Blog,https://blog.example.com
+Product Page,https://shop.example.com/product
+Contact Us,https://example.com/contact
+Portfolio,https://portfolio.example.com`,
+  },
+  wifi: {
+    name: "WiFi Template",
+    filename: "wifi-template.csv",
+    content: `title,ssid,password,security
+Office WiFi,OfficeNetwork,SecurePass123,WPA
+Guest WiFi,GuestNet,Welcome2024,WPA
+Home Network,HomeWiFi,FamilyPassword,WPA2
+Conference Room,ConferenceNet,Meeting456,WPA`,
+  },
+  vcard: {
+    name: "vCard Template",
+    filename: "vcard-template.csv",
+    content: `title,name,phone,email,company,job_title,website
+John Smith,John Smith,+1-555-123-4567,john@example.com,Example Corp,CEO,https://example.com
+Jane Doe,Jane Doe,+1-555-987-6543,jane@company.org,Tech Solutions,CTO,https://techsolutions.com
+Bob Wilson,Bob Wilson,+1-555-456-7890,bob@startup.io,Startup Inc,Developer,https://startup.io`,
+  },
 };
 
 const DEFAULT_DOWNLOAD: DownloadSettings = {
@@ -179,6 +216,15 @@ export default function BulkQRCreator() {
   const [downloadSettings, setDownloadSettings] =
     useState<DownloadSettings>(DEFAULT_DOWNLOAD);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isSavingToDashboard, setIsSavingToDashboard] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Bulk format template state
+  const [bulkFormatTemplate, setBulkFormatTemplate] =
+    useState<BulkFormatTemplate>("custom");
+
+  // Supabase client
+  const supabase = createClient();
 
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -308,8 +354,10 @@ export default function BulkQRCreator() {
           return;
         }
 
-        if (data.length > 10001) {
-          setUploadError("File exceeds maximum of 10,000 rows.");
+        if (data.length > FREE_TIER_LIMIT + 1) {
+          setUploadError(
+            `Free tier limited to ${FREE_TIER_LIMIT} QR codes. Your file has ${data.length - 1} rows. Please reduce to ${FREE_TIER_LIMIT} or fewer.`
+          );
           return;
         }
 
@@ -343,8 +391,10 @@ export default function BulkQRCreator() {
           return;
         }
 
-        if (jsonData.length > 10001) {
-          setUploadError("File exceeds maximum of 10,000 rows.");
+        if (jsonData.length > FREE_TIER_LIMIT + 1) {
+          setUploadError(
+            `Free tier limited to ${FREE_TIER_LIMIT} QR codes. Your file has ${jsonData.length - 1} rows. Please reduce to ${FREE_TIER_LIMIT} or fewer.`
+          );
           return;
         }
 
@@ -408,8 +458,10 @@ export default function BulkQRCreator() {
         return;
       }
 
-      if (filteredData.length > 10001) {
-        setUploadError("Data exceeds maximum of 10,000 rows.");
+      if (filteredData.length > FREE_TIER_LIMIT + 1) {
+        setUploadError(
+          `Free tier limited to ${FREE_TIER_LIMIT} QR codes. Your data has ${filteredData.length - 1} rows. Please reduce to ${FREE_TIER_LIMIT} or fewer.`
+        );
         return;
       }
 
@@ -467,6 +519,29 @@ export default function BulkQRCreator() {
     const mapping: ColumnMapping = { type: null, content: null, label: null };
     const lowerHeaders = headers.map((h) => h.toLowerCase().trim());
 
+    // Auto-detect bulk format template based on headers
+    const hasWiFiHeaders =
+      lowerHeaders.includes("ssid") ||
+      lowerHeaders.includes("password") ||
+      lowerHeaders.includes("security");
+    const hasVCardHeaders =
+      lowerHeaders.includes("phone") ||
+      lowerHeaders.includes("email") ||
+      lowerHeaders.includes("company") ||
+      lowerHeaders.includes("job_title");
+    const hasUrlHeaders =
+      lowerHeaders.includes("url") || lowerHeaders.includes("link");
+
+    if (hasWiFiHeaders) {
+      setBulkFormatTemplate("wifi");
+    } else if (hasVCardHeaders && !hasUrlHeaders) {
+      setBulkFormatTemplate("vcard");
+    } else if (hasUrlHeaders) {
+      setBulkFormatTemplate("url");
+    } else {
+      setBulkFormatTemplate("custom");
+    }
+
     // Auto-detect type column
     const typeKeywords = ["type", "qr_type", "qrtype", "kind"];
     for (let i = 0; i < lowerHeaders.length; i++) {
@@ -513,27 +588,129 @@ export default function BulkQRCreator() {
     setColumnMapping(mapping);
   }, []);
 
+  // Format WiFi data from row
+  const formatWiFiContent = useCallback(
+    (row: string[]): string => {
+      const lowerHeaders = headers.map((h) => h.toLowerCase().trim());
+      const ssidIndex = lowerHeaders.findIndex((h) => h === "ssid");
+      const passwordIndex = lowerHeaders.findIndex(
+        (h) => h === "password" || h === "pass"
+      );
+      const securityIndex = lowerHeaders.findIndex(
+        (h) => h === "security" || h === "encryption"
+      );
+
+      const ssid = ssidIndex >= 0 ? row[ssidIndex] || "" : "";
+      const password = passwordIndex >= 0 ? row[passwordIndex] || "" : "";
+      const security = securityIndex >= 0 ? row[securityIndex] || "WPA" : "WPA";
+
+      if (!ssid) return "";
+      return `WIFI:S:${ssid};T:${security};P:${password};;`;
+    },
+    [headers]
+  );
+
+  // Format vCard data from row
+  const formatVCardContent = useCallback(
+    (row: string[]): string => {
+      const lowerHeaders = headers.map((h) => h.toLowerCase().trim());
+      const nameIndex = lowerHeaders.findIndex((h) => h === "name");
+      const phoneIndex = lowerHeaders.findIndex((h) => h === "phone");
+      const emailIndex = lowerHeaders.findIndex((h) => h === "email");
+      const companyIndex = lowerHeaders.findIndex(
+        (h) => h === "company" || h === "org"
+      );
+      const jobTitleIndex = lowerHeaders.findIndex(
+        (h) => h === "job_title" || h === "title" || h === "jobtitle"
+      );
+      const websiteIndex = lowerHeaders.findIndex(
+        (h) => h === "website" || h === "url"
+      );
+
+      const name = nameIndex >= 0 ? row[nameIndex] || "" : "";
+      const phone = phoneIndex >= 0 ? row[phoneIndex] || "" : "";
+      const email = emailIndex >= 0 ? row[emailIndex] || "" : "";
+      const company = companyIndex >= 0 ? row[companyIndex] || "" : "";
+      const jobTitle = jobTitleIndex >= 0 ? row[jobTitleIndex] || "" : "";
+      const website = websiteIndex >= 0 ? row[websiteIndex] || "" : "";
+
+      if (!name) return "";
+
+      const nameParts = name.split(" ");
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      let vcard = "BEGIN:VCARD\nVERSION:3.0\n";
+      vcard += `N:${lastName};${firstName};;;\n`;
+      vcard += `FN:${name}\n`;
+      if (phone) vcard += `TEL;TYPE=WORK,VOICE:${phone}\n`;
+      if (email) vcard += `EMAIL:${email}\n`;
+      if (company) vcard += `ORG:${company}\n`;
+      if (jobTitle) vcard += `TITLE:${jobTitle}\n`;
+      if (website) vcard += `URL:${website}\n`;
+      vcard += "END:VCARD";
+
+      return vcard;
+    },
+    [headers]
+  );
+
   // Process mapped data into parsed rows
   useEffect(() => {
-    if (rawData.length === 0 || !columnMapping.content) return;
+    if (rawData.length === 0) return;
+
+    // For WiFi and vCard templates, we don't need columnMapping.content
+    if (
+      bulkFormatTemplate !== "wifi" &&
+      bulkFormatTemplate !== "vcard" &&
+      !columnMapping.content
+    ) {
+      return;
+    }
 
     const typeIndex = columnMapping.type
       ? headers.indexOf(columnMapping.type)
       : -1;
-    const contentIndex = headers.indexOf(columnMapping.content!);
+    const contentIndex = columnMapping.content
+      ? headers.indexOf(columnMapping.content)
+      : -1;
     const labelIndex = columnMapping.label
       ? headers.indexOf(columnMapping.label)
       : -1;
 
+    // For bulk templates, find title column
+    const lowerHeaders = headers.map((h) => h.toLowerCase().trim());
+    const titleIndex = lowerHeaders.findIndex((h) => h === "title");
+
     const contentSet = new Set<string>();
     const rows: ParsedRow[] = rawData.map((row, index) => {
-      const content = row[contentIndex] || "";
-      const type =
-        typeIndex >= 0 ? detectQRType(row[typeIndex] || "", content) : "auto";
-      const label =
-        labelIndex >= 0
-          ? row[labelIndex] || `Row-${index + 1}`
-          : `Row-${index + 1}`;
+      let content = "";
+      let type: QRType = "auto";
+
+      // Format content based on bulk format template
+      if (bulkFormatTemplate === "wifi") {
+        content = formatWiFiContent(row);
+        type = "wifi";
+      } else if (bulkFormatTemplate === "vcard") {
+        content = formatVCardContent(row);
+        type = "vcard";
+      } else {
+        content = contentIndex >= 0 ? row[contentIndex] || "" : "";
+        type =
+          typeIndex >= 0 ? detectQRType(row[typeIndex] || "", content) : "auto";
+      }
+
+      // Get label from title column or label column
+      let label = "";
+      if (titleIndex >= 0) {
+        label = row[titleIndex] || "";
+      }
+      if (!label && labelIndex >= 0) {
+        label = row[labelIndex] || "";
+      }
+      if (!label) {
+        label = `Row-${index + 1}`;
+      }
 
       // Validation
       let isValid = true;
@@ -542,7 +719,13 @@ export default function BulkQRCreator() {
 
       if (!content.trim()) {
         isValid = false;
-        errorMessage = "Missing content field";
+        if (bulkFormatTemplate === "wifi") {
+          errorMessage = "Missing SSID field";
+        } else if (bulkFormatTemplate === "vcard") {
+          errorMessage = "Missing name field";
+        } else {
+          errorMessage = "Missing content field";
+        }
       } else if (type === "url" || (type === "auto" && isUrl(content))) {
         if (!isValidUrl(content)) {
           isValid = false;
@@ -573,7 +756,14 @@ export default function BulkQRCreator() {
 
     setParsedRows(rows);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rawData, headers, columnMapping]);
+  }, [
+    rawData,
+    headers,
+    columnMapping,
+    bulkFormatTemplate,
+    formatWiFiContent,
+    formatVCardContent,
+  ]);
 
   const detectQRType = (typeStr: string, content: string): QRType => {
     const lower = typeStr.toLowerCase().trim();
@@ -615,6 +805,23 @@ export default function BulkQRCreator() {
       return false;
     }
   };
+
+  // Download CSV template
+  const downloadCSVTemplate = useCallback(
+    (templateType: "url" | "wifi" | "vcard") => {
+      const template = CSV_TEMPLATES[templateType];
+      const blob = new Blob([template.content], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = template.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
+    []
+  );
 
   const removeFile = useCallback(() => {
     setFile(null);
@@ -1112,7 +1319,62 @@ export default function BulkQRCreator() {
     setIsDownloading(false);
   }, [progress.generatedCodes, downloadSettings]);
 
-  const downloadPDF = useCallback(async () => {
+  // Multi-page PDF with one QR per page
+  const downloadSinglePagePDF = useCallback(async () => {
+    setIsDownloading(true);
+
+    const { pageSize, includeLabels } = downloadSettings;
+
+    // Page dimensions in mm
+    const pageDimensions = {
+      a4: { width: 210, height: 297 },
+      letter: { width: 215.9, height: 279.4 },
+      custom: { width: 210, height: 297 },
+    };
+
+    const { width: pageWidth, height: pageHeight } = pageDimensions[pageSize];
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: [pageWidth, pageHeight],
+    });
+
+    // Center QR on page
+    const qrSize = 100; // 100mm QR code
+    const xCenter = (pageWidth - qrSize) / 2;
+    const yPosition = 50;
+
+    for (let i = 0; i < progress.generatedCodes.length; i++) {
+      const code = progress.generatedCodes[i];
+
+      if (i > 0) {
+        pdf.addPage();
+      }
+
+      // Add title at top
+      pdf.setFontSize(16);
+      pdf.setTextColor(26, 26, 26);
+      pdf.text(code.label, pageWidth / 2, 30, { align: "center" });
+
+      // Add QR code image centered
+      pdf.addImage(code.dataUrl, "PNG", xCenter, yPosition, qrSize, qrSize);
+
+      // Add label below if enabled
+      if (includeLabels) {
+        pdf.setFontSize(10);
+        pdf.setTextColor(100);
+        pdf.text(code.label, pageWidth / 2, yPosition + qrSize + 10, {
+          align: "center",
+        });
+      }
+    }
+
+    pdf.save("qr-codes-single.pdf");
+    setIsDownloading(false);
+  }, [progress.generatedCodes, downloadSettings]);
+
+  // Grid PDF with multiple QRs per page
+  const downloadGridPDF = useCallback(async () => {
     setIsDownloading(true);
 
     const { gridLayout, pageSize, includeLabels } = downloadSettings;
@@ -1145,7 +1407,6 @@ export default function BulkQRCreator() {
     const cellHeight = qrSize + labelHeight + spacing;
 
     const codesPerPage = cols * rows;
-    let currentPage = 0;
     let positionOnPage = 0;
 
     for (let i = 0; i < progress.generatedCodes.length; i++) {
@@ -1153,7 +1414,6 @@ export default function BulkQRCreator() {
 
       if (positionOnPage === 0 && i > 0) {
         pdf.addPage();
-        currentPage++;
       }
 
       const col = positionOnPage % cols;
@@ -1179,9 +1439,73 @@ export default function BulkQRCreator() {
       }
     }
 
-    pdf.save("qr-codes.pdf");
+    pdf.save("qr-codes-grid.pdf");
     setIsDownloading(false);
   }, [progress.generatedCodes, downloadSettings]);
+
+  // Save all QR codes to dashboard (for logged-in users)
+  const saveToDashboard = useCallback(async () => {
+    setIsSavingToDashboard(true);
+    setSaveSuccess(false);
+
+    try {
+      // Check if user is logged in
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        // Redirect to login or show auth modal
+        router.push("/dashboard");
+        setIsSavingToDashboard(false);
+        return;
+      }
+
+      // Get the valid rows that were generated
+      const toInsert = progress.generatedCodes.map((code) => {
+        const row = validRows.find((r) => r.rowNumber === code.rowNumber);
+        return {
+          user_id: user.id,
+          title: code.label,
+          destination_url: row?.content || "",
+          short_code: Math.random().toString(36).substring(2, 10),
+          is_editable: false,
+          scan_count: 0,
+          qr_data: {
+            foreground_color: template.fgColor,
+            background_color: template.bgColor,
+            body_pattern: template.bodyPattern,
+            eye_frame_style: template.eyeFrameStyle,
+            eye_ball_style: template.eyeBallStyle,
+            error_correction: template.errorCorrection,
+          },
+        };
+      });
+
+      const { error } = await supabase.from("qr_codes").insert(toInsert);
+
+      if (error) {
+        console.error("Error saving to dashboard:", error);
+        alert(
+          "Failed to save QR codes. Please try again or log in if you haven't."
+        );
+        setIsSavingToDashboard(false);
+        return;
+      }
+
+      setSaveSuccess(true);
+      setIsSavingToDashboard(false);
+
+      // Redirect to dashboard after success
+      setTimeout(() => {
+        router.push("/dashboard?refresh=true");
+      }, 1500);
+    } catch (error) {
+      console.error("Error saving to dashboard:", error);
+      alert("An error occurred. Please try again.");
+      setIsSavingToDashboard(false);
+    }
+  }, [progress.generatedCodes, validRows, template, supabase, router]);
 
   // Navigation
   const goToStep = (step: WizardStep) => {
@@ -1194,6 +1518,10 @@ export default function BulkQRCreator() {
   const canProceed = (): boolean => {
     switch (currentStep) {
       case 1:
+        // For WiFi and vCard templates, don't require content column mapping
+        if (bulkFormatTemplate === "wifi" || bulkFormatTemplate === "vcard") {
+          return parsedRows.length > 0;
+        }
         return parsedRows.length > 0 && !!columnMapping.content;
       case 2:
         return true; // Template is always valid
@@ -1276,8 +1604,86 @@ export default function BulkQRCreator() {
             Upload Your Data
           </h1>
           <p className="mt-2 text-muted">
-            Upload a CSV or Excel file, or paste your data directly
+            Upload a CSV or Excel file, or paste your data directly (up to{" "}
+            {FREE_TIER_LIMIT} QR codes)
           </p>
+        </div>
+
+        {/* Free Tier Limit Notice */}
+        <div className="mb-6 flex items-center gap-3 border border-blue-200 bg-blue-50 p-4">
+          <svg
+            className="h-5 w-5 flex-shrink-0 text-blue-500"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4M12 8h.01" />
+          </svg>
+          <p className="text-sm text-blue-700">
+            Free tier: Generate up to{" "}
+            <strong>{FREE_TIER_LIMIT} QR codes</strong> at once. Download sample
+            templates below to get started quickly.
+          </p>
+        </div>
+
+        {/* CSV Template Downloads */}
+        <div className="mb-6 flex flex-wrap items-center gap-3">
+          <span className="text-sm font-medium text-muted">
+            Download templates:
+          </span>
+          <button
+            onClick={() => downloadCSVTemplate("url")}
+            className="flex items-center gap-1 border border-border bg-white px-3 py-1.5 text-xs font-medium transition-colors hover:border-accent hover:bg-accent-light"
+          >
+            <svg
+              className="h-3.5 w-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            URL Template
+          </button>
+          <button
+            onClick={() => downloadCSVTemplate("wifi")}
+            className="flex items-center gap-1 border border-border bg-white px-3 py-1.5 text-xs font-medium transition-colors hover:border-accent hover:bg-accent-light"
+          >
+            <svg
+              className="h-3.5 w-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            WiFi Template
+          </button>
+          <button
+            onClick={() => downloadCSVTemplate("vcard")}
+            className="flex items-center gap-1 border border-border bg-white px-3 py-1.5 text-xs font-medium transition-colors hover:border-accent hover:bg-accent-light"
+          >
+            <svg
+              className="h-3.5 w-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            vCard Template
+          </button>
         </div>
 
         {/* Input Method Tabs */}
@@ -2228,7 +2634,7 @@ export default function BulkQRCreator() {
       </div>
 
       {/* Download Options */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-3">
         {/* ZIP Download */}
         <div
           onClick={() =>
@@ -2263,7 +2669,7 @@ export default function BulkQRCreator() {
             <h4 className="font-serif text-lg">ZIP Archive</h4>
           </div>
           <p className="mb-4 text-sm text-muted">
-            Download all QR codes as individual files in a ZIP archive
+            Download all QR codes as individual PNG files in a ZIP archive
           </p>
 
           {downloadSettings.mode === "zip" && (
@@ -2285,8 +2691,6 @@ export default function BulkQRCreator() {
                   >
                     <option value="png">PNG</option>
                     <option value="svg">SVG</option>
-                    <option value="pdf">PDF</option>
-                    <option value="eps">EPS</option>
                   </select>
                 </div>
                 <div>
@@ -2355,13 +2759,13 @@ export default function BulkQRCreator() {
           )}
         </div>
 
-        {/* PDF Download */}
+        {/* Multi-page PDF (One per page) */}
         <div
           onClick={() =>
-            setDownloadSettings((prev) => ({ ...prev, mode: "pdf" }))
+            setDownloadSettings((prev) => ({ ...prev, mode: "pdf-single" }))
           }
           className={`cursor-pointer border-2 bg-white p-6 transition-all ${
-            downloadSettings.mode === "pdf"
+            downloadSettings.mode === "pdf-single"
               ? "border-accent bg-accent-light"
               : "border-border hover:border-accent"
           }`}
@@ -2369,7 +2773,7 @@ export default function BulkQRCreator() {
           <div className="mb-4 flex items-center gap-4">
             <div
               className={`flex h-12 w-12 items-center justify-center ${
-                downloadSettings.mode === "pdf"
+                downloadSettings.mode === "pdf-single"
                   ? "bg-accent text-white"
                   : "bg-surface text-muted"
               }`}
@@ -2388,50 +2792,28 @@ export default function BulkQRCreator() {
             <h4 className="font-serif text-lg">Multi-page PDF</h4>
           </div>
           <p className="mb-4 text-sm text-muted">
-            Generate a single PDF with multiple QR codes per page
+            One QR code per page, perfect for printing large QRs
           </p>
 
-          {downloadSettings.mode === "pdf" && (
+          {downloadSettings.mode === "pdf-single" && (
             <div className="space-y-4 border-t border-border pt-4">
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-muted">
-                    Page Size
-                  </label>
-                  <select
-                    value={downloadSettings.pageSize}
-                    onChange={(e) =>
-                      setDownloadSettings((prev) => ({
-                        ...prev,
-                        pageSize: e.target.value as PageSize,
-                      }))
-                    }
-                    className="w-full border border-border bg-white p-2 text-sm"
-                  >
-                    <option value="a4">A4</option>
-                    <option value="letter">Letter</option>
-                    <option value="custom">Custom</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-muted">
-                    Grid Layout
-                  </label>
-                  <select
-                    value={downloadSettings.gridLayout}
-                    onChange={(e) =>
-                      setDownloadSettings((prev) => ({
-                        ...prev,
-                        gridLayout: e.target.value as GridLayout,
-                      }))
-                    }
-                    className="w-full border border-border bg-white p-2 text-sm"
-                  >
-                    <option value="2x2">2 x 2</option>
-                    <option value="3x3">3 x 3</option>
-                    <option value="4x4">4 x 4</option>
-                  </select>
-                </div>
+              <div>
+                <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-muted">
+                  Page Size
+                </label>
+                <select
+                  value={downloadSettings.pageSize}
+                  onChange={(e) =>
+                    setDownloadSettings((prev) => ({
+                      ...prev,
+                      pageSize: e.target.value as PageSize,
+                    }))
+                  }
+                  className="w-full border border-border bg-white p-2 text-sm"
+                >
+                  <option value="a4">A4</option>
+                  <option value="letter">Letter</option>
+                </select>
               </div>
               <label className="flex items-center gap-2 text-sm">
                 <input
@@ -2448,7 +2830,7 @@ export default function BulkQRCreator() {
                 Include labels below QR codes
               </label>
               <button
-                onClick={downloadPDF}
+                onClick={downloadSinglePagePDF}
                 disabled={isDownloading}
                 className="flex w-full items-center justify-center gap-2 bg-accent px-5 py-3 font-semibold text-white transition-colors hover:bg-fg disabled:opacity-50"
               >
@@ -2467,7 +2849,128 @@ export default function BulkQRCreator() {
                       <polyline points="7 10 12 15 17 10" />
                       <line x1="12" y1="15" x2="12" y2="3" />
                     </svg>
-                    Download PDF (
+                    Download PDF ({progress.generatedCodes.length} pages)
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Grid PDF Download */}
+        <div
+          onClick={() =>
+            setDownloadSettings((prev) => ({ ...prev, mode: "pdf-grid" }))
+          }
+          className={`cursor-pointer border-2 bg-white p-6 transition-all ${
+            downloadSettings.mode === "pdf-grid"
+              ? "border-accent bg-accent-light"
+              : "border-border hover:border-accent"
+          }`}
+        >
+          <div className="mb-4 flex items-center gap-4">
+            <div
+              className={`flex h-12 w-12 items-center justify-center ${
+                downloadSettings.mode === "pdf-grid"
+                  ? "bg-accent text-white"
+                  : "bg-surface text-muted"
+              }`}
+            >
+              <svg
+                className="h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+            </div>
+            <h4 className="font-serif text-lg">Grid PDF</h4>
+          </div>
+          <p className="mb-4 text-sm text-muted">
+            Multiple QR codes per page in a grid layout (3x5 recommended)
+          </p>
+
+          {downloadSettings.mode === "pdf-grid" && (
+            <div className="space-y-4 border-t border-border pt-4">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-muted">
+                    Page Size
+                  </label>
+                  <select
+                    value={downloadSettings.pageSize}
+                    onChange={(e) =>
+                      setDownloadSettings((prev) => ({
+                        ...prev,
+                        pageSize: e.target.value as PageSize,
+                      }))
+                    }
+                    className="w-full border border-border bg-white p-2 text-sm"
+                  >
+                    <option value="a4">A4</option>
+                    <option value="letter">Letter</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-muted">
+                    Grid Layout
+                  </label>
+                  <select
+                    value={downloadSettings.gridLayout}
+                    onChange={(e) =>
+                      setDownloadSettings((prev) => ({
+                        ...prev,
+                        gridLayout: e.target.value as GridLayout,
+                      }))
+                    }
+                    className="w-full border border-border bg-white p-2 text-sm"
+                  >
+                    <option value="2x2">2 x 2 (4 per page)</option>
+                    <option value="3x3">3 x 3 (9 per page)</option>
+                    <option value="4x4">4 x 4 (16 per page)</option>
+                  </select>
+                </div>
+              </div>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={downloadSettings.includeLabels}
+                  onChange={(e) =>
+                    setDownloadSettings((prev) => ({
+                      ...prev,
+                      includeLabels: e.target.checked,
+                    }))
+                  }
+                  className="h-4 w-4"
+                />
+                Include labels below QR codes
+              </label>
+              <button
+                onClick={downloadGridPDF}
+                disabled={isDownloading}
+                className="flex w-full items-center justify-center gap-2 bg-accent px-5 py-3 font-semibold text-white transition-colors hover:bg-fg disabled:opacity-50"
+              >
+                {isDownloading ? (
+                  "Preparing download..."
+                ) : (
+                  <>
+                    <svg
+                      className="h-4 w-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Download Grid PDF (
                     {Math.ceil(
                       progress.generatedCodes.length /
                         (downloadSettings.gridLayout === "2x2"
@@ -2482,6 +2985,72 @@ export default function BulkQRCreator() {
               </button>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Save to Dashboard */}
+      <div className="mt-8 border border-border bg-white p-6">
+        <div className="flex items-start gap-4">
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center bg-surface">
+            <svg
+              className="h-6 w-6 text-muted"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h4 className="font-serif text-lg">Save All to Dashboard</h4>
+            <p className="mt-1 text-sm text-muted">
+              Save all generated QR codes to your dashboard for future editing
+              and tracking. Requires a free account.
+            </p>
+            {saveSuccess && (
+              <div className="mt-3 flex items-center gap-2 text-sm text-green-600">
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+                Successfully saved! Redirecting to dashboard...
+              </div>
+            )}
+          </div>
+          <button
+            onClick={saveToDashboard}
+            disabled={isSavingToDashboard || saveSuccess}
+            className="flex items-center gap-2 border border-border bg-white px-5 py-3 font-medium transition-colors hover:border-accent hover:bg-accent-light disabled:opacity-50"
+          >
+            {isSavingToDashboard ? (
+              "Saving..."
+            ) : saveSuccess ? (
+              "Saved!"
+            ) : (
+              <>
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                  <polyline points="7 3 7 8 15 8" />
+                </svg>
+                Save to Dashboard
+              </>
+            )}
+          </button>
         </div>
       </div>
     </section>
