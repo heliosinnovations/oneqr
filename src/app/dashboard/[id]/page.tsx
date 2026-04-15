@@ -43,7 +43,10 @@ export default function QRDetailPage({
 
   // Redirect to edit page if edit or upgrade param is present
   useEffect(() => {
-    if (searchParams.get("edit") === "true" || searchParams.get("upgrade") === "true") {
+    if (
+      searchParams.get("edit") === "true" ||
+      searchParams.get("upgrade") === "true"
+    ) {
       router.push(`/edit/${id}`);
     }
   }, [searchParams, router, id]);
@@ -593,7 +596,6 @@ export default function QRDetailPage({
           )}
         </div>
       </div>
-
     </div>
   );
 }

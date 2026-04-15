@@ -418,7 +418,8 @@ export default function ComparisonSection() {
 
         {/* Footer Note */}
         <p className="mt-6 text-center text-[13px] text-muted">
-          * Comparison based on typical QR code generator pricing and features as of March 2026.
+          * Comparison based on typical QR code generator pricing and features
+          as of March 2026.
         </p>
 
         {/* CTA */}

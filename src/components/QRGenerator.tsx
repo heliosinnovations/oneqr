@@ -138,7 +138,16 @@ export default function QRGenerator() {
       setTimeout(() => setIsUpdating(false), 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url, size, fgColor, bgColor, errorLevel, logoDataUrl, gradientType, fgColorEnd]);
+  }, [
+    url,
+    size,
+    fgColor,
+    bgColor,
+    errorLevel,
+    logoDataUrl,
+    gradientType,
+    fgColorEnd,
+  ]);
 
   // Generate QR with gradient
   const generateQRWithGradient = async (data: string): Promise<string> => {
@@ -176,7 +185,12 @@ export default function QRGenerator() {
           // Create gradient
           let gradient: CanvasGradient;
           if (gradientType === "linear") {
-            gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient = ctx.createLinearGradient(
+              0,
+              0,
+              canvas.width,
+              canvas.height
+            );
           } else {
             // radial
             const centerX = canvas.width / 2;
@@ -355,7 +369,15 @@ export default function QRGenerator() {
       generateQR();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fgColor, bgColor, size, errorLevel, logoDataUrl, gradientType, fgColorEnd]);
+  }, [
+    fgColor,
+    bgColor,
+    size,
+    errorLevel,
+    logoDataUrl,
+    gradientType,
+    fgColorEnd,
+  ]);
 
   // Clear QR when URL input is cleared
   useEffect(() => {
@@ -953,7 +975,13 @@ export default function QRGenerator() {
       </div>
 
       {/* Hidden canvas for QR generation */}
-      <canvas ref={canvasRef} className="hidden" aria-hidden="true" width={512} height={512} />
+      <canvas
+        ref={canvasRef}
+        className="hidden"
+        aria-hidden="true"
+        width={512}
+        height={512}
+      />
 
       <style jsx>{`
         @keyframes fadeIn {

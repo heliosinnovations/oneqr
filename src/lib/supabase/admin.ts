@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 // Admin client with service role key - bypasses RLS
 // Use ONLY for trusted server-side operations
@@ -7,7 +7,7 @@ export function createAdminClient() {
   const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseServiceRole) {
-    throw new Error('Missing Supabase admin credentials');
+    throw new Error("Missing Supabase admin credentials");
   }
 
   return createClient(supabaseUrl, supabaseServiceRole, {
