@@ -345,6 +345,7 @@ export default function BulkQRCreator() {
 
   const parseCSV = useCallback((file: File) => {
     Papa.parse(file, {
+      skipEmptyLines: true,
       complete: (results) => {
         const data = results.data as string[][];
         if (data.length < 2) {
@@ -438,6 +439,7 @@ export default function BulkQRCreator() {
     try {
       const results = Papa.parse<string[]>(text, {
         delimiter: delimiter,
+        skipEmptyLines: true,
       });
 
       if (results.errors && results.errors.length > 0) {
