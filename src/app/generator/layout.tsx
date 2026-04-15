@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 export const metadata: Metadata = {
   title: "Advanced QR Code Generator | The QR Spot - Create Custom QR Codes",
   description:
-    "Create stunning, customized QR codes with our advanced generator. Full control over colors, patterns, logos, labels, and export formats. Free to generate, pay once to edit.",
+    "Create stunning, customized QR codes with our advanced generator. Full control over colors, patterns, logos, labels, and export formats. Completely free to use.",
   keywords: [
     "QR code generator",
     "custom QR code",

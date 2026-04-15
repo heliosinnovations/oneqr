@@ -15,7 +15,7 @@ export default function Footer() {
           >
             The QR <span className="text-accent">Spot</span>
           </Link>
-          <p className="mt-1 text-xs text-muted">Pay once, own forever.</p>
+          <p className="mt-1 text-xs text-muted">Free forever.</p>
         </div>
 
         {/* Links */}
