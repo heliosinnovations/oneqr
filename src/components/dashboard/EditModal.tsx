@@ -1076,12 +1076,12 @@ export default function EditModal({
         </div>
 
         {/* Tabs - Horizontal layout on mobile with smaller icons and text */}
-        <div className="flex flex-shrink-0 border-b border-[var(--border)] overflow-x-auto">
+        <div className="flex flex-shrink-0 overflow-x-auto border-b border-[var(--border)]">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-1 min-w-0 flex-row items-center justify-center gap-1.5 px-3 py-3 text-[11px] font-medium transition-all whitespace-nowrap sm:gap-2 sm:px-4 sm:text-sm ${
+              className={`flex min-w-0 flex-1 flex-row items-center justify-center gap-1.5 whitespace-nowrap px-3 py-3 text-[11px] font-medium transition-all sm:gap-2 sm:px-4 sm:text-sm ${
                 activeTab === tab.id
                   ? "border-b-2 border-[var(--accent)] text-[var(--accent)]"
                   : "text-[var(--muted)] hover:text-[var(--fg)]"

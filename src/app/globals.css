@@ -131,7 +131,8 @@ body {
 
 /* Hero Animation: Color Shift */
 @keyframes colorShift {
-  0%, 100% {
+  0%,
+  100% {
     color: #1a1a1a;
   }
   50% {

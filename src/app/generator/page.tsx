@@ -744,22 +744,23 @@ function GeneratorContent() {
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null);
-        // Auto-save after successful sign in if auth modal was open
-        if (event === "SIGNED_IN" && showAuthModal) {
-          setShowAuthModal(false);
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+      // Auto-save after successful sign in if auth modal was open
+      if (event === "SIGNED_IN" && showAuthModal) {
+        setShowAuthModal(false);
       }
-    );
+    });
 
     return () => subscription.unsubscribe();
   }, [showAuthModal]);
 
   // Generate short code for QR
   const generateShortCode = (): string => {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let result = "";
     for (let i = 0; i < 8; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -882,7 +883,9 @@ function GeneratorContent() {
     if (!qrDataUrl || !generatedUrl) return;
 
     const supabase = createClient();
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
     if (!session) {
       setShowAuthModal(true);
@@ -1946,917 +1949,1019 @@ showpage
   return (
     <div className="min-h-screen bg-[var(--pro-bg)]">
       {/* Main Container */}
-        <main className="mx-auto max-w-[1400px] px-4 pb-4 pt-[88px] sm:px-6 sm:pb-6 sm:pt-[96px]">
-          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_380px] lg:items-start lg:gap-6 xl:grid-cols-[1fr_420px]">
-            {/* Configuration Panel */}
-            <div className="order-2 flex flex-col gap-4 lg:order-1">
-              {/* Customization Panel with Tabs */}
-              <div className="rounded-lg border border-[var(--pro-border)] bg-[var(--pro-surface)]">
-                {/* Tabs */}
-                <div className="border-b border-[var(--pro-border)] px-3 sm:px-5">
-                  <div className="scrollbar-hide -mb-px flex overflow-x-auto">
-                    {(
-                      [
-                        "content",
-                        "labels",
-                        "colors",
-                        "style",
-                        "export",
-                      ] as TabType[]
-                    ).map((tab) => (
+      <main className="mx-auto max-w-[1400px] px-4 pb-4 pt-[88px] sm:px-6 sm:pb-6 sm:pt-[96px]">
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_380px] lg:items-start lg:gap-6 xl:grid-cols-[1fr_420px]">
+          {/* Configuration Panel */}
+          <div className="order-2 flex flex-col gap-4 lg:order-1">
+            {/* Customization Panel with Tabs */}
+            <div className="rounded-lg border border-[var(--pro-border)] bg-[var(--pro-surface)]">
+              {/* Tabs */}
+              <div className="border-b border-[var(--pro-border)] px-3 sm:px-5">
+                <div className="scrollbar-hide -mb-px flex overflow-x-auto">
+                  {(
+                    [
+                      "content",
+                      "labels",
+                      "colors",
+                      "style",
+                      "export",
+                    ] as TabType[]
+                  ).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`shrink-0 border-b-2 px-3 py-3 text-xs font-medium transition-all sm:px-4 sm:py-3.5 sm:text-sm ${
+                        activeTab === tab
+                          ? "border-[var(--pro-accent)] text-[var(--pro-accent)]"
+                          : "border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]"
+                      }`}
+                    >
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Content Tab */}
+              {activeTab === "content" && (
+                <div className="p-4 sm:p-5">
+                  {/* WiFi Form */}
+                  {selectedContentType === "wifi" && (
+                    <div>
                       <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`shrink-0 border-b-2 px-3 py-3 text-xs font-medium transition-all sm:px-4 sm:py-3.5 sm:text-sm ${
-                          activeTab === tab
-                            ? "border-[var(--pro-accent)] text-[var(--pro-accent)]"
-                            : "border-transparent text-[var(--pro-muted)] hover:text-[var(--pro-fg)]"
+                        onClick={resetToUrlMode}
+                        className="mb-4 flex items-center gap-1.5 text-xs text-[var(--pro-muted)] transition-colors hover:text-[var(--pro-accent)]"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          className="h-3.5 w-3.5"
+                        >
+                          <path d="M19 12H5M12 19l-7-7 7-7" />
+                        </svg>
+                        Back to content selection
+                      </button>
+                      <WiFiForm data={wifiData} onChange={handleWifiChange} />
+                    </div>
+                  )}
+
+                  {/* Contact/vCard Form */}
+                  {selectedContentType === "vcard" && (
+                    <div>
+                      <button
+                        onClick={resetToUrlMode}
+                        className="mb-4 flex items-center gap-1.5 text-xs text-[var(--pro-muted)] transition-colors hover:text-[var(--pro-accent)]"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          className="h-3.5 w-3.5"
+                        >
+                          <path d="M19 12H5M12 19l-7-7 7-7" />
+                        </svg>
+                        Back to content selection
+                      </button>
+                      <ContactForm
+                        data={contactData}
+                        onChange={handleContactChange}
+                      />
+                    </div>
+                  )}
+
+                  {/* Default URL/Text Input */}
+                  {selectedContentType !== "wifi" &&
+                    selectedContentType !== "vcard" && (
+                      <>
+                        <div className="mb-4 sm:mb-5">
+                          <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-[var(--pro-fg)]">
+                            URL or Text{" "}
+                            <span className="text-[var(--pro-error)]">*</span>
+                          </label>
+                          <div className="relative">
+                            <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pro-muted)]">
+                              <Icon
+                                name="globe"
+                                className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                              />
+                            </div>
+                            <input
+                              type="url"
+                              id="contentInput"
+                              value={url}
+                              onChange={(e) => {
+                                setUrl(e.target.value);
+                                validateURL(e.target.value);
+                              }}
+                              placeholder="https://example.com"
+                              className={`w-full rounded-md border py-2.5 pl-9 pr-16 text-sm outline-none transition-all sm:pl-10 sm:pr-20 ${
+                                urlValid
+                                  ? "border-[var(--pro-success)] shadow-[0_0_0_3px_var(--pro-success-light)]"
+                                  : url
+                                    ? "border-[var(--pro-error)] shadow-[0_0_0_3px_var(--pro-error-light)]"
+                                    : "border-[var(--pro-border)] focus:border-[var(--pro-accent)] focus:shadow-[0_0_0_3px_var(--pro-accent-light)]"
+                              }`}
+                            />
+                            <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1 sm:right-3 sm:gap-2">
+                              {url && (
+                                <span
+                                  className={`flex items-center gap-0.5 text-[10px] font-semibold sm:gap-1 sm:text-xs ${
+                                    urlValid
+                                      ? "text-[var(--pro-success)]"
+                                      : "text-[var(--pro-error)]"
+                                  }`}
+                                >
+                                  <Icon
+                                    name={urlValid ? "check" : "x"}
+                                    className="h-3 w-3 sm:h-3.5 sm:w-3.5"
+                                  />
+                                  <span className="xs:inline hidden">
+                                    {urlValid ? "Valid" : "Invalid"}
+                                  </span>
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <p className="mt-1.5 text-[10px] text-[var(--pro-muted)] sm:text-xs">
+                            Enter a URL, text, or use one of the quick actions
+                            below
+                          </p>
+                        </div>
+
+                        {/* Quick Actions */}
+                        <div className="flex flex-wrap gap-1.5">
+                          {QUICK_ACTIONS.map((action) => (
+                            <button
+                              key={action.id}
+                              onClick={() => setTemplate(action.id)}
+                              className="flex items-center gap-1 rounded border border-[var(--pro-border)] bg-[var(--pro-surface-hover)] px-2 py-1 text-[10px] font-medium transition-all hover:border-[var(--pro-accent)] hover:bg-[var(--pro-accent-light)] hover:text-[var(--pro-accent)] sm:px-2.5 sm:py-1.5 sm:text-xs"
+                            >
+                              <Icon name={action.icon} className="h-3 w-3" />
+                              {action.label}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                </div>
+              )}
+
+              {/* Labels Tab */}
+              {activeTab === "labels" && (
+                <div className="p-4 sm:p-5">
+                  {/* Text Above */}
+                  <div className="mb-4 sm:mb-5">
+                    <label className="mb-2 block text-xs font-semibold">
+                      Text Above QR
+                      <span className="ml-1 font-normal text-[var(--pro-muted)]">
+                        (optional)
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      value={textAbove}
+                      onChange={(e) => setTextAbove(e.target.value)}
+                      placeholder="e.g., Scan me!"
+                      className="w-full rounded-md border border-[var(--pro-border)] px-3 py-2.5 text-sm outline-none transition-all focus:border-[var(--pro-accent)] focus:shadow-[0_0_0_3px_var(--pro-accent-light)]"
+                    />
+                  </div>
+
+                  {/* Text Below */}
+                  <div className="mb-4 sm:mb-5">
+                    <label className="mb-2 block text-xs font-semibold">
+                      Text Below QR
+                      <span className="ml-1 font-normal text-[var(--pro-muted)]">
+                        (optional)
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      value={textBelow}
+                      onChange={(e) => setTextBelow(e.target.value)}
+                      placeholder="e.g., Visit our website"
+                      className="w-full rounded-md border border-[var(--pro-border)] px-3 py-2.5 text-sm outline-none transition-all focus:border-[var(--pro-accent)] focus:shadow-[0_0_0_3px_var(--pro-accent-light)]"
+                    />
+                  </div>
+
+                  {/* Text Styling - only show if text is entered */}
+                  {(textAbove || textBelow) && (
+                    <>
+                      {/* Font Size Slider */}
+                      <div className="mb-4 sm:mb-5">
+                        <label className="mb-2 flex items-center justify-between text-xs font-semibold">
+                          <span>Font Size</span>
+                          <span className="font-normal text-[var(--pro-muted)]">
+                            {textFontSize}px
+                          </span>
+                        </label>
+                        <input
+                          type="range"
+                          min="12"
+                          max="32"
+                          step="1"
+                          value={textFontSize}
+                          onChange={(e) =>
+                            setTextFontSize(Number(e.target.value))
+                          }
+                          className="w-full cursor-pointer accent-[var(--pro-accent)]"
+                        />
+                        <div className="mt-1 flex justify-between text-[10px] text-[var(--pro-muted)]">
+                          <span>12px</span>
+                          <span>32px</span>
+                        </div>
+                      </div>
+
+                      {/* Font Weight */}
+                      <div className="mb-4 sm:mb-5">
+                        <label className="mb-2 block text-xs font-semibold">
+                          Font Weight
+                        </label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {FONT_WEIGHT_OPTIONS.map((option) => (
+                            <button
+                              key={option.value}
+                              onClick={() => setTextFontWeight(option.value)}
+                              className={`rounded-md border p-2 text-center text-xs font-medium transition-all ${
+                                textFontWeight === option.value
+                                  ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)] text-[var(--pro-accent)]"
+                                  : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
+                              }`}
+                              style={{
+                                fontWeight:
+                                  option.value === "500" ? 500 : option.value,
+                              }}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Font Family */}
+                      <div className="mb-4 sm:mb-5">
+                        <label className="mb-2 block text-xs font-semibold">
+                          Font Family
+                        </label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {FONT_FAMILY_OPTIONS.map((option) => (
+                            <button
+                              key={option.value}
+                              onClick={() => setTextFontFamily(option.value)}
+                              className={`rounded-md border p-2 text-center text-xs transition-all ${
+                                textFontFamily === option.value
+                                  ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)] text-[var(--pro-accent)]"
+                                  : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
+                              }`}
+                              style={{ fontFamily: option.value }}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Text Color */}
+                      <div>
+                        <label className="mb-2 block text-xs font-semibold">
+                          Text Color
+                        </label>
+                        <div className="flex gap-2">
+                          <div
+                            className="relative h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-md border border-[var(--pro-border)]"
+                            style={{ backgroundColor: textColor }}
+                          >
+                            <input
+                              type="color"
+                              value={textColor}
+                              onChange={(e) => setTextColor(e.target.value)}
+                              className="absolute -left-1/2 -top-1/2 h-[200%] w-[200%] cursor-pointer"
+                            />
+                          </div>
+                          <input
+                            type="text"
+                            value={textColor.toUpperCase()}
+                            onChange={(e) =>
+                              handleHexInput(e.target.value, setTextColor)
+                            }
+                            onBlur={(e) => {
+                              if (!isValidHex(e.target.value)) {
+                                setTextColor("#1a1a1a");
+                              }
+                            }}
+                            className="flex-1 rounded-md border border-[var(--pro-border)] px-3 py-2 font-mono text-sm uppercase focus:border-[var(--pro-accent)] focus:outline-none"
+                          />
+                        </div>
+                        <p className="mt-1.5 text-[10px] text-[var(--pro-muted)] sm:text-xs">
+                          Tip: Use the QR foreground color for consistency
+                        </p>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Empty state hint */}
+                  {!textAbove && !textBelow && (
+                    <div className="mt-2 flex items-start gap-2 rounded-lg border border-blue-100 bg-[var(--pro-accent-light)] p-3">
+                      <svg
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--pro-accent)]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <p className="text-xs text-[var(--pro-accent)]">
+                        Add text above or below your QR code to provide context
+                        or branding. Text styling options will appear after you
+                        enter text.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Colors Tab */}
+              {activeTab === "colors" && (
+                <div className="p-4 sm:p-5">
+                  <div className="xs:grid-cols-2 grid grid-cols-1 gap-4">
+                    {/* Foreground Color */}
+                    <div>
+                      <label className="mb-2 block text-xs font-semibold">
+                        Foreground Color
+                      </label>
+                      <div className="flex gap-2">
+                        <div
+                          className="relative h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-md border border-[var(--pro-border)]"
+                          style={{ backgroundColor: fgColor }}
+                        >
+                          <input
+                            type="color"
+                            id="fgColorPicker"
+                            value={fgColor}
+                            onChange={(e) => setFgColor(e.target.value)}
+                            className="absolute -left-1/2 -top-1/2 h-[200%] w-[200%] cursor-pointer"
+                          />
+                        </div>
+                        <input
+                          type="text"
+                          id="fgHexInput"
+                          value={fgColor.toUpperCase()}
+                          onChange={(e) =>
+                            handleHexInput(e.target.value, setFgColor)
+                          }
+                          onBlur={(e) => {
+                            if (!isValidHex(e.target.value)) {
+                              setFgColor("#1a1a1a");
+                            }
+                          }}
+                          className="flex-1 rounded-md border border-[var(--pro-border)] px-3 py-2 font-mono text-sm uppercase focus:border-[var(--pro-accent)] focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                    {/* Background Color */}
+                    <div>
+                      <label className="mb-2 block text-xs font-semibold">
+                        Background Color
+                      </label>
+                      <div className="flex gap-2">
+                        <div
+                          className="relative h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-md border border-[var(--pro-border)]"
+                          style={{ backgroundColor: bgColor }}
+                        >
+                          <input
+                            type="color"
+                            id="bgColorPicker"
+                            value={bgColor}
+                            onChange={(e) => setBgColor(e.target.value)}
+                            className="absolute -left-1/2 -top-1/2 h-[200%] w-[200%] cursor-pointer"
+                          />
+                        </div>
+                        <input
+                          type="text"
+                          id="bgHexInput"
+                          value={bgColor.toUpperCase()}
+                          onChange={(e) =>
+                            handleHexInput(e.target.value, setBgColor)
+                          }
+                          onBlur={(e) => {
+                            if (!isValidHex(e.target.value)) {
+                              setBgColor("#ffffff");
+                            }
+                          }}
+                          className="flex-1 rounded-md border border-[var(--pro-border)] px-3 py-2 font-mono text-sm uppercase focus:border-[var(--pro-accent)] focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Contrast Alert */}
+                  <div
+                    id="contrastAlert"
+                    className={`mt-4 flex items-start gap-3 rounded-md border p-3 ${
+                      wcagAAA
+                        ? "border-[var(--pro-success)] bg-[var(--pro-success-light)]"
+                        : wcagAA
+                          ? "border-[var(--pro-warning)] bg-[var(--pro-warning-light)]"
+                          : "border-[var(--pro-error)] bg-[var(--pro-error-light)]"
+                    }`}
+                  >
+                    <Icon
+                      name={
+                        wcagAAA
+                          ? "check-circle"
+                          : wcagAA
+                            ? "alert-circle"
+                            : "x-circle"
+                      }
+                      className={`h-5 w-5 shrink-0 ${
+                        wcagAAA
+                          ? "text-[var(--pro-success)]"
+                          : wcagAA
+                            ? "text-[var(--pro-warning)]"
+                            : "text-[var(--pro-error)]"
+                      }`}
+                    />
+                    <div className="flex-1">
+                      <div className="text-sm font-semibold">
+                        {wcagAAA
+                          ? `Excellent Contrast (${contrastRatio.toFixed(1)}:1)`
+                          : wcagAA
+                            ? `Good Contrast (${contrastRatio.toFixed(1)}:1)`
+                            : `Low Contrast (${contrastRatio.toFixed(1)}:1)`}
+                      </div>
+                      <div className="text-xs text-[var(--pro-muted)]">
+                        {wcagAAA
+                          ? "Your QR code will be easily scannable"
+                          : wcagAA
+                            ? "QR code should be scannable, but higher contrast recommended"
+                            : "QR code may be difficult to scan - increase contrast"}
+                      </div>
+                      <div className="mt-2 flex gap-1.5">
+                        <span
+                          id="wcagAA"
+                          className={`rounded bg-white px-2 py-0.5 text-[10px] font-bold ${
+                            wcagAA
+                              ? "text-[var(--pro-success)]"
+                              : "text-[var(--pro-error)] line-through"
+                          }`}
+                        >
+                          AA {wcagAA ? "✓" : "✗"}
+                        </span>
+                        <span
+                          id="wcagAAA"
+                          className={`rounded bg-white px-2 py-0.5 text-[10px] font-bold ${
+                            wcagAAA
+                              ? "text-[var(--pro-success)]"
+                              : "text-[var(--pro-error)] line-through"
+                          }`}
+                        >
+                          AAA {wcagAAA ? "✓" : "✗"}
+                        </span>
+                        <span
+                          className={`rounded bg-white px-2 py-0.5 text-[10px] font-bold ${
+                            contrastRatio >= 3
+                              ? "text-[var(--pro-success)]"
+                              : "text-[var(--pro-error)] line-through"
+                          }`}
+                        >
+                          Large Text {contrastRatio >= 3 ? "✓" : "✗"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Presets */}
+                  <div className="mt-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-[var(--pro-muted)] sm:mt-6">
+                    <div className="h-px flex-1 bg-[var(--pro-border)]" />
+                    Presets
+                    <div className="h-px flex-1 bg-[var(--pro-border)]" />
+                  </div>
+                  <div className="mt-3 grid grid-cols-4 gap-1.5 sm:mt-4 sm:gap-2">
+                    {COLOR_PRESETS.map((preset) => (
+                      <button
+                        key={preset.color}
+                        onClick={() => selectColorPreset(preset.color)}
+                        className={`rounded-md border p-3 text-center transition-all ${
+                          fgColor === preset.color
+                            ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)]"
+                            : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
                         }`}
                       >
-                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                        <div
+                          className="mx-auto mb-1.5 h-6 w-6 rounded"
+                          style={{ backgroundColor: preset.color }}
+                        />
+                        <span
+                          className={`text-xs font-semibold ${
+                            fgColor === preset.color
+                              ? "text-[var(--pro-accent)]"
+                              : "text-[var(--pro-muted)]"
+                          }`}
+                        >
+                          {preset.name}
+                        </span>
                       </button>
                     ))}
                   </div>
                 </div>
+              )}
 
-                {/* Content Tab */}
-                {activeTab === "content" && (
-                  <div className="p-4 sm:p-5">
-                    {/* WiFi Form */}
-                    {selectedContentType === "wifi" && (
-                      <div>
+              {/* Style Tab */}
+              {activeTab === "style" && (
+                <div className="p-4 sm:p-5">
+                  {/* Data Pattern */}
+                  <div className="mb-4 sm:mb-5">
+                    <label className="mb-2 block text-xs font-semibold">
+                      Data Pattern
+                    </label>
+                    <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+                      {(
+                        ["square", "rounded", "dots", "classy"] as PatternType[]
+                      ).map((p) => (
                         <button
-                          onClick={resetToUrlMode}
-                          className="mb-4 flex items-center gap-1.5 text-xs text-[var(--pro-muted)] transition-colors hover:text-[var(--pro-accent)]"
-                        >
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            className="h-3.5 w-3.5"
-                          >
-                            <path d="M19 12H5M12 19l-7-7 7-7" />
-                          </svg>
-                          Back to content selection
-                        </button>
-                        <WiFiForm data={wifiData} onChange={handleWifiChange} />
-                      </div>
-                    )}
-
-                    {/* Contact/vCard Form */}
-                    {selectedContentType === "vcard" && (
-                      <div>
-                        <button
-                          onClick={resetToUrlMode}
-                          className="mb-4 flex items-center gap-1.5 text-xs text-[var(--pro-muted)] transition-colors hover:text-[var(--pro-accent)]"
-                        >
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            className="h-3.5 w-3.5"
-                          >
-                            <path d="M19 12H5M12 19l-7-7 7-7" />
-                          </svg>
-                          Back to content selection
-                        </button>
-                        <ContactForm
-                          data={contactData}
-                          onChange={handleContactChange}
-                        />
-                      </div>
-                    )}
-
-                    {/* Default URL/Text Input */}
-                    {selectedContentType !== "wifi" &&
-                      selectedContentType !== "vcard" && (
-                        <>
-                          <div className="mb-4 sm:mb-5">
-                            <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-[var(--pro-fg)]">
-                              URL or Text{" "}
-                              <span className="text-[var(--pro-error)]">*</span>
-                            </label>
-                            <div className="relative">
-                              <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pro-muted)]">
-                                <Icon
-                                  name="globe"
-                                  className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
-                                />
-                              </div>
-                              <input
-                                type="url"
-                                id="contentInput"
-                                value={url}
-                                onChange={(e) => {
-                                  setUrl(e.target.value);
-                                  validateURL(e.target.value);
-                                }}
-                                placeholder="https://example.com"
-                                className={`w-full rounded-md border py-2.5 pl-9 pr-16 text-sm outline-none transition-all sm:pl-10 sm:pr-20 ${
-                                  urlValid
-                                    ? "border-[var(--pro-success)] shadow-[0_0_0_3px_var(--pro-success-light)]"
-                                    : url
-                                      ? "border-[var(--pro-error)] shadow-[0_0_0_3px_var(--pro-error-light)]"
-                                      : "border-[var(--pro-border)] focus:border-[var(--pro-accent)] focus:shadow-[0_0_0_3px_var(--pro-accent-light)]"
-                                }`}
-                              />
-                              <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1 sm:right-3 sm:gap-2">
-                                {url && (
-                                  <span
-                                    className={`flex items-center gap-0.5 text-[10px] font-semibold sm:gap-1 sm:text-xs ${
-                                      urlValid
-                                        ? "text-[var(--pro-success)]"
-                                        : "text-[var(--pro-error)]"
-                                    }`}
-                                  >
-                                    <Icon
-                                      name={urlValid ? "check" : "x"}
-                                      className="h-3 w-3 sm:h-3.5 sm:w-3.5"
-                                    />
-                                    <span className="xs:inline hidden">
-                                      {urlValid ? "Valid" : "Invalid"}
-                                    </span>
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <p className="mt-1.5 text-[10px] text-[var(--pro-muted)] sm:text-xs">
-                              Enter a URL, text, or use one of the quick actions
-                              below
-                            </p>
-                          </div>
-
-                          {/* Quick Actions */}
-                          <div className="flex flex-wrap gap-1.5">
-                            {QUICK_ACTIONS.map((action) => (
-                              <button
-                                key={action.id}
-                                onClick={() => setTemplate(action.id)}
-                                className="flex items-center gap-1 rounded border border-[var(--pro-border)] bg-[var(--pro-surface-hover)] px-2 py-1 text-[10px] font-medium transition-all hover:border-[var(--pro-accent)] hover:bg-[var(--pro-accent-light)] hover:text-[var(--pro-accent)] sm:px-2.5 sm:py-1.5 sm:text-xs"
-                              >
-                                <Icon name={action.icon} className="h-3 w-3" />
-                                {action.label}
-                              </button>
-                            ))}
-                          </div>
-                        </>
-                      )}
-                  </div>
-                )}
-
-                {/* Labels Tab */}
-                {activeTab === "labels" && (
-                  <div className="p-4 sm:p-5">
-                    {/* Text Above */}
-                    <div className="mb-4 sm:mb-5">
-                      <label className="mb-2 block text-xs font-semibold">
-                        Text Above QR
-                        <span className="ml-1 font-normal text-[var(--pro-muted)]">
-                          (optional)
-                        </span>
-                      </label>
-                      <input
-                        type="text"
-                        value={textAbove}
-                        onChange={(e) => setTextAbove(e.target.value)}
-                        placeholder="e.g., Scan me!"
-                        className="w-full rounded-md border border-[var(--pro-border)] px-3 py-2.5 text-sm outline-none transition-all focus:border-[var(--pro-accent)] focus:shadow-[0_0_0_3px_var(--pro-accent-light)]"
-                      />
-                    </div>
-
-                    {/* Text Below */}
-                    <div className="mb-4 sm:mb-5">
-                      <label className="mb-2 block text-xs font-semibold">
-                        Text Below QR
-                        <span className="ml-1 font-normal text-[var(--pro-muted)]">
-                          (optional)
-                        </span>
-                      </label>
-                      <input
-                        type="text"
-                        value={textBelow}
-                        onChange={(e) => setTextBelow(e.target.value)}
-                        placeholder="e.g., Visit our website"
-                        className="w-full rounded-md border border-[var(--pro-border)] px-3 py-2.5 text-sm outline-none transition-all focus:border-[var(--pro-accent)] focus:shadow-[0_0_0_3px_var(--pro-accent-light)]"
-                      />
-                    </div>
-
-                    {/* Text Styling - only show if text is entered */}
-                    {(textAbove || textBelow) && (
-                      <>
-                        {/* Font Size Slider */}
-                        <div className="mb-4 sm:mb-5">
-                          <label className="mb-2 flex items-center justify-between text-xs font-semibold">
-                            <span>Font Size</span>
-                            <span className="font-normal text-[var(--pro-muted)]">
-                              {textFontSize}px
-                            </span>
-                          </label>
-                          <input
-                            type="range"
-                            min="12"
-                            max="32"
-                            step="1"
-                            value={textFontSize}
-                            onChange={(e) =>
-                              setTextFontSize(Number(e.target.value))
-                            }
-                            className="w-full cursor-pointer accent-[var(--pro-accent)]"
-                          />
-                          <div className="mt-1 flex justify-between text-[10px] text-[var(--pro-muted)]">
-                            <span>12px</span>
-                            <span>32px</span>
-                          </div>
-                        </div>
-
-                        {/* Font Weight */}
-                        <div className="mb-4 sm:mb-5">
-                          <label className="mb-2 block text-xs font-semibold">
-                            Font Weight
-                          </label>
-                          <div className="grid grid-cols-3 gap-2">
-                            {FONT_WEIGHT_OPTIONS.map((option) => (
-                              <button
-                                key={option.value}
-                                onClick={() => setTextFontWeight(option.value)}
-                                className={`rounded-md border p-2 text-center text-xs font-medium transition-all ${
-                                  textFontWeight === option.value
-                                    ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)] text-[var(--pro-accent)]"
-                                    : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
-                                }`}
-                                style={{
-                                  fontWeight:
-                                    option.value === "500" ? 500 : option.value,
-                                }}
-                              >
-                                {option.label}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Font Family */}
-                        <div className="mb-4 sm:mb-5">
-                          <label className="mb-2 block text-xs font-semibold">
-                            Font Family
-                          </label>
-                          <div className="grid grid-cols-2 gap-2">
-                            {FONT_FAMILY_OPTIONS.map((option) => (
-                              <button
-                                key={option.value}
-                                onClick={() => setTextFontFamily(option.value)}
-                                className={`rounded-md border p-2 text-center text-xs transition-all ${
-                                  textFontFamily === option.value
-                                    ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)] text-[var(--pro-accent)]"
-                                    : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
-                                }`}
-                                style={{ fontFamily: option.value }}
-                              >
-                                {option.label}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Text Color */}
-                        <div>
-                          <label className="mb-2 block text-xs font-semibold">
-                            Text Color
-                          </label>
-                          <div className="flex gap-2">
-                            <div
-                              className="relative h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-md border border-[var(--pro-border)]"
-                              style={{ backgroundColor: textColor }}
-                            >
-                              <input
-                                type="color"
-                                value={textColor}
-                                onChange={(e) => setTextColor(e.target.value)}
-                                className="absolute -left-1/2 -top-1/2 h-[200%] w-[200%] cursor-pointer"
-                              />
-                            </div>
-                            <input
-                              type="text"
-                              value={textColor.toUpperCase()}
-                              onChange={(e) =>
-                                handleHexInput(e.target.value, setTextColor)
-                              }
-                              onBlur={(e) => {
-                                if (!isValidHex(e.target.value)) {
-                                  setTextColor("#1a1a1a");
-                                }
-                              }}
-                              className="flex-1 rounded-md border border-[var(--pro-border)] px-3 py-2 font-mono text-sm uppercase focus:border-[var(--pro-accent)] focus:outline-none"
-                            />
-                          </div>
-                          <p className="mt-1.5 text-[10px] text-[var(--pro-muted)] sm:text-xs">
-                            Tip: Use the QR foreground color for consistency
-                          </p>
-                        </div>
-                      </>
-                    )}
-
-                    {/* Empty state hint */}
-                    {!textAbove && !textBelow && (
-                      <div className="mt-2 flex items-start gap-2 rounded-lg border border-blue-100 bg-[var(--pro-accent-light)] p-3">
-                        <svg
-                          className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--pro-accent)]"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        <p className="text-xs text-[var(--pro-accent)]">
-                          Add text above or below your QR code to provide
-                          context or branding. Text styling options will appear
-                          after you enter text.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Colors Tab */}
-                {activeTab === "colors" && (
-                  <div className="p-4 sm:p-5">
-                    <div className="xs:grid-cols-2 grid grid-cols-1 gap-4">
-                      {/* Foreground Color */}
-                      <div>
-                        <label className="mb-2 block text-xs font-semibold">
-                          Foreground Color
-                        </label>
-                        <div className="flex gap-2">
-                          <div
-                            className="relative h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-md border border-[var(--pro-border)]"
-                            style={{ backgroundColor: fgColor }}
-                          >
-                            <input
-                              type="color"
-                              id="fgColorPicker"
-                              value={fgColor}
-                              onChange={(e) => setFgColor(e.target.value)}
-                              className="absolute -left-1/2 -top-1/2 h-[200%] w-[200%] cursor-pointer"
-                            />
-                          </div>
-                          <input
-                            type="text"
-                            id="fgHexInput"
-                            value={fgColor.toUpperCase()}
-                            onChange={(e) =>
-                              handleHexInput(e.target.value, setFgColor)
-                            }
-                            onBlur={(e) => {
-                              if (!isValidHex(e.target.value)) {
-                                setFgColor("#1a1a1a");
-                              }
-                            }}
-                            className="flex-1 rounded-md border border-[var(--pro-border)] px-3 py-2 font-mono text-sm uppercase focus:border-[var(--pro-accent)] focus:outline-none"
-                          />
-                        </div>
-                      </div>
-                      {/* Background Color */}
-                      <div>
-                        <label className="mb-2 block text-xs font-semibold">
-                          Background Color
-                        </label>
-                        <div className="flex gap-2">
-                          <div
-                            className="relative h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-md border border-[var(--pro-border)]"
-                            style={{ backgroundColor: bgColor }}
-                          >
-                            <input
-                              type="color"
-                              id="bgColorPicker"
-                              value={bgColor}
-                              onChange={(e) => setBgColor(e.target.value)}
-                              className="absolute -left-1/2 -top-1/2 h-[200%] w-[200%] cursor-pointer"
-                            />
-                          </div>
-                          <input
-                            type="text"
-                            id="bgHexInput"
-                            value={bgColor.toUpperCase()}
-                            onChange={(e) =>
-                              handleHexInput(e.target.value, setBgColor)
-                            }
-                            onBlur={(e) => {
-                              if (!isValidHex(e.target.value)) {
-                                setBgColor("#ffffff");
-                              }
-                            }}
-                            className="flex-1 rounded-md border border-[var(--pro-border)] px-3 py-2 font-mono text-sm uppercase focus:border-[var(--pro-accent)] focus:outline-none"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Contrast Alert */}
-                    <div
-                      id="contrastAlert"
-                      className={`mt-4 flex items-start gap-3 rounded-md border p-3 ${
-                        wcagAAA
-                          ? "border-[var(--pro-success)] bg-[var(--pro-success-light)]"
-                          : wcagAA
-                            ? "border-[var(--pro-warning)] bg-[var(--pro-warning-light)]"
-                            : "border-[var(--pro-error)] bg-[var(--pro-error-light)]"
-                      }`}
-                    >
-                      <Icon
-                        name={
-                          wcagAAA
-                            ? "check-circle"
-                            : wcagAA
-                              ? "alert-circle"
-                              : "x-circle"
-                        }
-                        className={`h-5 w-5 shrink-0 ${
-                          wcagAAA
-                            ? "text-[var(--pro-success)]"
-                            : wcagAA
-                              ? "text-[var(--pro-warning)]"
-                              : "text-[var(--pro-error)]"
-                        }`}
-                      />
-                      <div className="flex-1">
-                        <div className="text-sm font-semibold">
-                          {wcagAAA
-                            ? `Excellent Contrast (${contrastRatio.toFixed(1)}:1)`
-                            : wcagAA
-                              ? `Good Contrast (${contrastRatio.toFixed(1)}:1)`
-                              : `Low Contrast (${contrastRatio.toFixed(1)}:1)`}
-                        </div>
-                        <div className="text-xs text-[var(--pro-muted)]">
-                          {wcagAAA
-                            ? "Your QR code will be easily scannable"
-                            : wcagAA
-                              ? "QR code should be scannable, but higher contrast recommended"
-                              : "QR code may be difficult to scan - increase contrast"}
-                        </div>
-                        <div className="mt-2 flex gap-1.5">
-                          <span
-                            id="wcagAA"
-                            className={`rounded bg-white px-2 py-0.5 text-[10px] font-bold ${
-                              wcagAA
-                                ? "text-[var(--pro-success)]"
-                                : "text-[var(--pro-error)] line-through"
-                            }`}
-                          >
-                            AA {wcagAA ? "✓" : "✗"}
-                          </span>
-                          <span
-                            id="wcagAAA"
-                            className={`rounded bg-white px-2 py-0.5 text-[10px] font-bold ${
-                              wcagAAA
-                                ? "text-[var(--pro-success)]"
-                                : "text-[var(--pro-error)] line-through"
-                            }`}
-                          >
-                            AAA {wcagAAA ? "✓" : "✗"}
-                          </span>
-                          <span
-                            className={`rounded bg-white px-2 py-0.5 text-[10px] font-bold ${
-                              contrastRatio >= 3
-                                ? "text-[var(--pro-success)]"
-                                : "text-[var(--pro-error)] line-through"
-                            }`}
-                          >
-                            Large Text {contrastRatio >= 3 ? "✓" : "✗"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Presets */}
-                    <div className="mt-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-[var(--pro-muted)] sm:mt-6">
-                      <div className="h-px flex-1 bg-[var(--pro-border)]" />
-                      Presets
-                      <div className="h-px flex-1 bg-[var(--pro-border)]" />
-                    </div>
-                    <div className="mt-3 grid grid-cols-4 gap-1.5 sm:mt-4 sm:gap-2">
-                      {COLOR_PRESETS.map((preset) => (
-                        <button
-                          key={preset.color}
-                          onClick={() => selectColorPreset(preset.color)}
+                          key={p}
+                          onClick={() => setPattern(p)}
                           className={`rounded-md border p-3 text-center transition-all ${
-                            fgColor === preset.color
+                            pattern === p
                               ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)]"
                               : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
                           }`}
                         >
-                          <div
-                            className="mx-auto mb-1.5 h-6 w-6 rounded"
-                            style={{ backgroundColor: preset.color }}
-                          />
+                          <div className="mx-auto mb-1.5 flex h-7 w-7 items-center justify-center">
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                            >
+                              {p === "square" && (
+                                <>
+                                  <rect x="4" y="4" width="5" height="5" />
+                                  <rect x="10" y="4" width="5" height="5" />
+                                  <rect x="4" y="10" width="5" height="5" />
+                                  <rect x="16" y="10" width="5" height="5" />
+                                  <rect x="10" y="16" width="5" height="5" />
+                                  <rect x="16" y="16" width="5" height="5" />
+                                </>
+                              )}
+                              {p === "rounded" && (
+                                <>
+                                  <rect
+                                    x="4"
+                                    y="4"
+                                    width="5"
+                                    height="5"
+                                    rx="1"
+                                  />
+                                  <rect
+                                    x="10"
+                                    y="4"
+                                    width="5"
+                                    height="5"
+                                    rx="1"
+                                  />
+                                  <rect
+                                    x="4"
+                                    y="10"
+                                    width="5"
+                                    height="5"
+                                    rx="1"
+                                  />
+                                  <rect
+                                    x="16"
+                                    y="10"
+                                    width="5"
+                                    height="5"
+                                    rx="1"
+                                  />
+                                  <rect
+                                    x="10"
+                                    y="16"
+                                    width="5"
+                                    height="5"
+                                    rx="1"
+                                  />
+                                  <rect
+                                    x="16"
+                                    y="16"
+                                    width="5"
+                                    height="5"
+                                    rx="1"
+                                  />
+                                </>
+                              )}
+                              {p === "dots" && (
+                                <>
+                                  <circle cx="6.5" cy="6.5" r="2.5" />
+                                  <circle cx="12.5" cy="6.5" r="2.5" />
+                                  <circle cx="6.5" cy="12.5" r="2.5" />
+                                  <circle cx="18.5" cy="12.5" r="2.5" />
+                                  <circle cx="12.5" cy="18.5" r="2.5" />
+                                  <circle cx="18.5" cy="18.5" r="2.5" />
+                                </>
+                              )}
+                              {p === "classy" && (
+                                <>
+                                  <path d="M4 4h5v5H4z" />
+                                  <path d="M10 4h5v5h-5z" />
+                                  <path d="M4 10h5v5H4z" />
+                                  <path d="M16 10h5v5h-5z" />
+                                  <path d="M10 16h5v5h-5z" />
+                                  <path d="M16 16h5v5h-5z" />
+                                </>
+                              )}
+                            </svg>
+                          </div>
                           <span
-                            className={`text-xs font-semibold ${
-                              fgColor === preset.color
+                            className={`text-xs font-semibold capitalize ${
+                              pattern === p
                                 ? "text-[var(--pro-accent)]"
                                 : "text-[var(--pro-muted)]"
                             }`}
                           >
-                            {preset.name}
+                            {p}
                           </span>
                         </button>
                       ))}
                     </div>
                   </div>
-                )}
 
-                {/* Style Tab */}
-                {activeTab === "style" && (
-                  <div className="p-4 sm:p-5">
-                    {/* Data Pattern */}
-                    <div className="mb-4 sm:mb-5">
-                      <label className="mb-2 block text-xs font-semibold">
-                        Data Pattern
-                      </label>
-                      <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
-                        {(
-                          [
-                            "square",
-                            "rounded",
-                            "dots",
-                            "classy",
-                          ] as PatternType[]
-                        ).map((p) => (
-                          <button
-                            key={p}
-                            onClick={() => setPattern(p)}
-                            className={`rounded-md border p-3 text-center transition-all ${
-                              pattern === p
-                                ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)]"
-                                : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
-                            }`}
-                          >
-                            <div className="mx-auto mb-1.5 flex h-7 w-7 items-center justify-center">
-                              <svg
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                              >
-                                {p === "square" && (
-                                  <>
-                                    <rect x="4" y="4" width="5" height="5" />
-                                    <rect x="10" y="4" width="5" height="5" />
-                                    <rect x="4" y="10" width="5" height="5" />
-                                    <rect x="16" y="10" width="5" height="5" />
-                                    <rect x="10" y="16" width="5" height="5" />
-                                    <rect x="16" y="16" width="5" height="5" />
-                                  </>
-                                )}
-                                {p === "rounded" && (
-                                  <>
-                                    <rect
-                                      x="4"
-                                      y="4"
-                                      width="5"
-                                      height="5"
-                                      rx="1"
-                                    />
-                                    <rect
-                                      x="10"
-                                      y="4"
-                                      width="5"
-                                      height="5"
-                                      rx="1"
-                                    />
-                                    <rect
-                                      x="4"
-                                      y="10"
-                                      width="5"
-                                      height="5"
-                                      rx="1"
-                                    />
-                                    <rect
-                                      x="16"
-                                      y="10"
-                                      width="5"
-                                      height="5"
-                                      rx="1"
-                                    />
-                                    <rect
-                                      x="10"
-                                      y="16"
-                                      width="5"
-                                      height="5"
-                                      rx="1"
-                                    />
-                                    <rect
-                                      x="16"
-                                      y="16"
-                                      width="5"
-                                      height="5"
-                                      rx="1"
-                                    />
-                                  </>
-                                )}
-                                {p === "dots" && (
-                                  <>
-                                    <circle cx="6.5" cy="6.5" r="2.5" />
-                                    <circle cx="12.5" cy="6.5" r="2.5" />
-                                    <circle cx="6.5" cy="12.5" r="2.5" />
-                                    <circle cx="18.5" cy="12.5" r="2.5" />
-                                    <circle cx="12.5" cy="18.5" r="2.5" />
-                                    <circle cx="18.5" cy="18.5" r="2.5" />
-                                  </>
-                                )}
-                                {p === "classy" && (
-                                  <>
-                                    <path d="M4 4h5v5H4z" />
-                                    <path d="M10 4h5v5h-5z" />
-                                    <path d="M4 10h5v5H4z" />
-                                    <path d="M16 10h5v5h-5z" />
-                                    <path d="M10 16h5v5h-5z" />
-                                    <path d="M16 16h5v5h-5z" />
-                                  </>
-                                )}
-                              </svg>
-                            </div>
-                            <span
-                              className={`text-xs font-semibold capitalize ${
-                                pattern === p
-                                  ? "text-[var(--pro-accent)]"
-                                  : "text-[var(--pro-muted)]"
-                              }`}
+                  {/* Corner Style */}
+                  <div className="mb-4 sm:mb-5">
+                    <label className="mb-2 block text-xs font-semibold">
+                      Corner Style
+                    </label>
+                    <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+                      {(
+                        ["square", "rounded", "extra", "dot"] as CornerType[]
+                      ).map((c) => (
+                        <button
+                          key={c}
+                          onClick={() => setCornerStyle(c)}
+                          className={`rounded-md border p-3 text-center transition-all ${
+                            cornerStyle === c
+                              ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)]"
+                              : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
+                          }`}
+                        >
+                          <div className="mx-auto mb-1.5 flex h-7 w-7 items-center justify-center">
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
                             >
-                              {p}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Corner Style */}
-                    <div className="mb-4 sm:mb-5">
-                      <label className="mb-2 block text-xs font-semibold">
-                        Corner Style
-                      </label>
-                      <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
-                        {(
-                          ["square", "rounded", "extra", "dot"] as CornerType[]
-                        ).map((c) => (
-                          <button
-                            key={c}
-                            onClick={() => setCornerStyle(c)}
-                            className={`rounded-md border p-3 text-center transition-all ${
+                              {c === "square" && (
+                                <rect x="4" y="4" width="16" height="16" />
+                              )}
+                              {c === "rounded" && (
+                                <rect
+                                  x="4"
+                                  y="4"
+                                  width="16"
+                                  height="16"
+                                  rx="4"
+                                />
+                              )}
+                              {c === "extra" && (
+                                <rect
+                                  x="4"
+                                  y="4"
+                                  width="16"
+                                  height="16"
+                                  rx="8"
+                                />
+                              )}
+                              {c === "dot" && <circle cx="12" cy="12" r="8" />}
+                            </svg>
+                          </div>
+                          <span
+                            className={`text-xs font-semibold capitalize ${
                               cornerStyle === c
-                                ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)]"
-                                : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
+                                ? "text-[var(--pro-accent)]"
+                                : "text-[var(--pro-muted)]"
                             }`}
                           >
-                            <div className="mx-auto mb-1.5 flex h-7 w-7 items-center justify-center">
-                              <svg
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                              >
-                                {c === "square" && (
-                                  <rect x="4" y="4" width="16" height="16" />
-                                )}
-                                {c === "rounded" && (
-                                  <rect
-                                    x="4"
-                                    y="4"
-                                    width="16"
-                                    height="16"
-                                    rx="4"
-                                  />
-                                )}
-                                {c === "extra" && (
-                                  <rect
-                                    x="4"
-                                    y="4"
-                                    width="16"
-                                    height="16"
-                                    rx="8"
-                                  />
-                                )}
-                                {c === "dot" && (
-                                  <circle cx="12" cy="12" r="8" />
-                                )}
-                              </svg>
-                            </div>
-                            <span
-                              className={`text-xs font-semibold capitalize ${
-                                cornerStyle === c
-                                  ? "text-[var(--pro-accent)]"
-                                  : "text-[var(--pro-muted)]"
+                            {c}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Error Correction */}
+                  <div>
+                    <label className="mb-2 block text-xs font-semibold">
+                      Error Correction Level
+                    </label>
+                    <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+                      {ERROR_LEVELS.map((level) => (
+                        <button
+                          key={level.value}
+                          onClick={() => setErrorLevel(level.value)}
+                          className={`rounded-md border p-3 text-center transition-all ${
+                            errorLevel === level.value
+                              ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)]"
+                              : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
+                          }`}
+                        >
+                          <div className="text-base font-bold">
+                            {level.label}
+                          </div>
+                          <span
+                            className={`text-xs ${
+                              errorLevel === level.value
+                                ? "text-[var(--pro-accent)]"
+                                : "text-[var(--pro-muted)]"
+                            }`}
+                          >
+                            {level.percentage}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                    <p className="mt-1.5 text-xs text-[var(--pro-muted)]">
+                      Higher levels allow QR to work even when partially damaged
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Export Tab */}
+              {activeTab === "export" && (
+                <div className="p-4 sm:p-5">
+                  {/* Export Format - Card Grid with Icons */}
+                  <div className="mb-4 sm:mb-6">
+                    <label className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)] sm:mb-3">
+                      <svg
+                        className="h-4 w-4 text-[var(--pro-accent)]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                        />
+                      </svg>
+                      Export Format
+                    </label>
+
+                    {/* Format Cards Grid */}
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
+                      {(["png", "svg", "pdf", "eps"] as FormatType[]).map(
+                        (format) => {
+                          const info = FORMAT_INFO[format];
+                          const isSelected = exportFormat === format;
+                          return (
+                            <button
+                              key={format}
+                              onClick={() => setExportFormat(format)}
+                              className={`group relative rounded-lg border-2 p-2.5 text-center transition-all hover:-translate-y-0.5 hover:shadow-md sm:rounded-xl sm:p-4 ${
+                                isSelected
+                                  ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)] shadow-[0_0_0_3px_rgba(37,99,235,0.15)]"
+                                  : "border-[var(--pro-border)] bg-white hover:border-[var(--pro-border-dark)]"
                               }`}
                             >
-                              {c}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
+                              {/* Icon */}
+                              <div
+                                className={`mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-lg transition-colors sm:mb-3 sm:h-12 sm:w-12 ${
+                                  isSelected
+                                    ? "bg-[var(--pro-accent)] text-white"
+                                    : "bg-[var(--pro-muted-light)] text-[var(--pro-muted)] group-hover:bg-[var(--pro-border)]"
+                                }`}
+                              >
+                                {format === "png" && (
+                                  <svg
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
+                                  </svg>
+                                )}
+                                {format === "svg" && (
+                                  <svg
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+                                    />
+                                  </svg>
+                                )}
+                                {format === "pdf" && (
+                                  <svg
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                    />
+                                  </svg>
+                                )}
+                                {format === "eps" && (
+                                  <svg
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"
+                                    />
+                                  </svg>
+                                )}
+                              </div>
+                              {/* Label */}
+                              <div className="text-sm font-bold text-[var(--pro-fg)] sm:text-base">
+                                {info.label}
+                              </div>
+                              <div className="mt-0.5 hidden text-xs text-[var(--pro-muted)] sm:mt-1 sm:block">
+                                {info.description}
+                              </div>
+                              {/* Badge */}
+                              <span
+                                className={`mt-1.5 inline-block rounded px-1 py-0.5 text-[8px] font-medium sm:mt-2 sm:px-1.5 sm:text-[9px] ${info.badgeColor}`}
+                              >
+                                {info.badge}
+                              </span>
+                            </button>
+                          );
+                        }
+                      )}
                     </div>
 
-                    {/* Error Correction */}
-                    <div>
-                      <label className="mb-2 block text-xs font-semibold">
-                        Error Correction Level
-                      </label>
-                      <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
-                        {ERROR_LEVELS.map((level) => (
-                          <button
-                            key={level.value}
-                            onClick={() => setErrorLevel(level.value)}
-                            className={`rounded-md border p-3 text-center transition-all ${
-                              errorLevel === level.value
-                                ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)]"
-                                : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)] hover:bg-[var(--pro-surface-hover)]"
-                            }`}
-                          >
-                            <div className="text-base font-bold">
-                              {level.label}
-                            </div>
-                            <span
-                              className={`text-xs ${
-                                errorLevel === level.value
-                                  ? "text-[var(--pro-accent)]"
-                                  : "text-[var(--pro-muted)]"
-                              }`}
-                            >
-                              {level.percentage}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                      <p className="mt-1.5 text-xs text-[var(--pro-muted)]">
-                        Higher levels allow QR to work even when partially
-                        damaged
+                    {/* Format Info Tooltip */}
+                    <div className="mt-3 flex items-start gap-2 rounded-lg border border-blue-100 bg-[var(--pro-accent-light)] p-3">
+                      <svg
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--pro-accent)]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <p className="text-xs text-[var(--pro-accent)]">
+                        <strong>{FORMAT_INFO[exportFormat].label}</strong> -{" "}
+                        {FORMAT_INFO[exportFormat].tip}
                       </p>
                     </div>
                   </div>
-                )}
 
-                {/* Export Tab */}
-                {activeTab === "export" && (
-                  <div className="p-4 sm:p-5">
-                    {/* Export Format - Card Grid with Icons */}
-                    <div className="mb-4 sm:mb-6">
-                      <label className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)] sm:mb-3">
-                        <svg
-                          className="h-4 w-4 text-[var(--pro-accent)]"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                          />
-                        </svg>
-                        Export Format
-                      </label>
+                  {/* HIGH-RESOLUTION EXPORT CONTROLS - Only for PNG (raster format) */}
+                  {!FORMAT_INFO[exportFormat].isVector && (
+                    <div className="mb-6 rounded-xl border border-[var(--pro-border)] bg-gradient-to-br from-[var(--pro-surface)] to-[var(--pro-surface-hover)] p-5">
+                      {/* Resolution Header with Live Display */}
+                      <div className="mb-4 flex items-center justify-between">
+                        <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
+                          <svg
+                            className="h-4 w-4 text-[var(--pro-accent)]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                            />
+                          </svg>
+                          Resolution
+                        </label>
+                        {/* Large Resolution Display */}
+                        <div className="text-right">
+                          <span className="text-3xl font-bold text-[var(--pro-accent)] transition-transform">
+                            {exportResolution}
+                          </span>
+                          <span className="text-lg text-[var(--pro-muted)]">
+                            px
+                          </span>
+                        </div>
+                      </div>
 
-                      {/* Format Cards Grid */}
-                      <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
-                        {(["png", "svg", "pdf", "eps"] as FormatType[]).map(
-                          (format) => {
-                            const info = FORMAT_INFO[format];
-                            const isSelected = exportFormat === format;
-                            return (
-                              <button
-                                key={format}
-                                onClick={() => setExportFormat(format)}
-                                className={`group relative rounded-lg border-2 p-2.5 text-center transition-all hover:-translate-y-0.5 hover:shadow-md sm:rounded-xl sm:p-4 ${
-                                  isSelected
-                                    ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)] shadow-[0_0_0_3px_rgba(37,99,235,0.15)]"
-                                    : "border-[var(--pro-border)] bg-white hover:border-[var(--pro-border-dark)]"
-                                }`}
-                              >
-                                {/* Icon */}
-                                <div
-                                  className={`mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-lg transition-colors sm:mb-3 sm:h-12 sm:w-12 ${
-                                    isSelected
-                                      ? "bg-[var(--pro-accent)] text-white"
-                                      : "bg-[var(--pro-muted-light)] text-[var(--pro-muted)] group-hover:bg-[var(--pro-border)]"
-                                  }`}
-                                >
-                                  {format === "png" && (
-                                    <svg
-                                      className="h-6 w-6"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                      />
-                                    </svg>
-                                  )}
-                                  {format === "svg" && (
-                                    <svg
-                                      className="h-6 w-6"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
-                                      />
-                                    </svg>
-                                  )}
-                                  {format === "pdf" && (
-                                    <svg
-                                      className="h-6 w-6"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                      />
-                                    </svg>
-                                  )}
-                                  {format === "eps" && (
-                                    <svg
-                                      className="h-6 w-6"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"
-                                      />
-                                    </svg>
-                                  )}
-                                </div>
-                                {/* Label */}
-                                <div className="text-sm font-bold text-[var(--pro-fg)] sm:text-base">
-                                  {info.label}
-                                </div>
-                                <div className="mt-0.5 hidden text-xs text-[var(--pro-muted)] sm:mt-1 sm:block">
-                                  {info.description}
-                                </div>
-                                {/* Badge */}
-                                <span
-                                  className={`mt-1.5 inline-block rounded px-1 py-0.5 text-[8px] font-medium sm:mt-2 sm:px-1.5 sm:text-[9px] ${info.badgeColor}`}
-                                >
-                                  {info.badge}
-                                </span>
-                              </button>
-                            );
+                      {/* Slider Container */}
+                      <div className="relative mb-6 pb-8 pt-2">
+                        {/* Slider Track Background */}
+                        <div className="absolute left-0 right-0 top-[18px] h-2 rounded-full bg-[var(--pro-muted-light)]" />
+
+                        {/* Active Track */}
+                        <div
+                          className="absolute left-0 top-[18px] h-2 rounded-full bg-[var(--pro-accent)]"
+                          style={{
+                            width: `${getSliderTrackPercentage(exportResolution)}%`,
+                          }}
+                        />
+
+                        {/* Snap Points */}
+                        <div className="absolute left-0 right-0 top-[18px]">
+                          {RESOLUTION_SNAP_POINTS.map((snapValue) => (
+                            <div
+                              key={snapValue}
+                              className={`absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full transition-colors ${
+                                snapValue <= exportResolution
+                                  ? "bg-[var(--pro-accent)]"
+                                  : "bg-[var(--pro-muted-light)]"
+                              }`}
+                              style={{
+                                left: `${getSnapPointPosition(snapValue)}%`,
+                                top: "50%",
+                              }}
+                            />
+                          ))}
+                        </div>
+
+                        {/* Slider Input */}
+                        <input
+                          type="range"
+                          min="200"
+                          max="2000"
+                          step="1"
+                          value={exportResolution}
+                          onChange={(e) =>
+                            handleResolutionChange(Number(e.target.value))
                           }
-                        )}
+                          className="relative z-10 h-2 w-full cursor-pointer appearance-none rounded-full bg-transparent [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-[var(--pro-accent)] [&::-moz-range-thumb]:shadow-[0_2px_8px_rgba(37,99,235,0.3)] [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-[var(--pro-accent)] [&::-webkit-slider-thumb]:shadow-[0_2px_8px_rgba(37,99,235,0.3)] [&::-webkit-slider-thumb]:transition-transform hover:[&::-webkit-slider-thumb]:scale-110"
+                        />
+
+                        {/* Labels below */}
+                        <div className="absolute left-0 right-0 top-10 flex justify-between px-0">
+                          <span className="text-center text-[11px]">
+                            <span className="text-[var(--pro-muted)]">
+                              200px
+                            </span>
+                            <br />
+                            <span className="text-[10px] text-[var(--pro-muted)]">
+                              Web
+                            </span>
+                          </span>
+                          <span className="text-center text-[11px] text-[var(--pro-muted)]">
+                            500px
+                          </span>
+                          <span
+                            className={`text-center text-[11px] font-semibold ${exportResolution === 1000 ? "text-[var(--pro-accent)]" : "text-[var(--pro-muted)]"}`}
+                          >
+                            1000px
+                            <br />
+                            <span className="text-[10px]">Default</span>
+                          </span>
+                          <span className="text-center text-[11px] text-[var(--pro-muted)]">
+                            1500px
+                          </span>
+                          <span className="text-center text-[11px]">
+                            <span className="text-[var(--pro-muted)]">
+                              2000px
+                            </span>
+                            <br />
+                            <span className="text-[10px] text-[var(--pro-muted)]">
+                              Print
+                            </span>
+                          </span>
+                        </div>
                       </div>
 
-                      {/* Format Info Tooltip */}
-                      <div className="mt-3 flex items-start gap-2 rounded-lg border border-blue-100 bg-[var(--pro-accent-light)] p-3">
-                        <svg
-                          className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--pro-accent)]"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        <p className="text-xs text-[var(--pro-accent)]">
-                          <strong>{FORMAT_INFO[exportFormat].label}</strong> -{" "}
-                          {FORMAT_INFO[exportFormat].tip}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* HIGH-RESOLUTION EXPORT CONTROLS - Only for PNG (raster format) */}
-                    {!FORMAT_INFO[exportFormat].isVector && (
-                      <div className="mb-6 rounded-xl border border-[var(--pro-border)] bg-gradient-to-br from-[var(--pro-surface)] to-[var(--pro-surface-hover)] p-5">
-                        {/* Resolution Header with Live Display */}
-                        <div className="mb-4 flex items-center justify-between">
-                          <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
+                      {/* File Size Estimator */}
+                      <div className="flex items-center justify-between rounded-lg border border-[var(--pro-border)] bg-white p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--pro-accent-light)]">
                             <svg
-                              className="h-4 w-4 text-[var(--pro-accent)]"
+                              className="h-5 w-5 text-[var(--pro-accent)]"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -2865,108 +2970,132 @@ showpage
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth="2"
-                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                               />
                             </svg>
-                            Resolution
-                          </label>
-                          {/* Large Resolution Display */}
-                          <div className="text-right">
-                            <span className="text-3xl font-bold text-[var(--pro-accent)] transition-transform">
-                              {exportResolution}
-                            </span>
-                            <span className="text-lg text-[var(--pro-muted)]">
-                              px
-                            </span>
+                          </div>
+                          <div>
+                            <div className="text-sm font-semibold text-[var(--pro-fg)]">
+                              Estimated File Size
+                            </div>
+                            <div className="text-xs text-[var(--pro-muted)]">
+                              Based on {exportResolution}×{exportResolution}px
+                              PNG
+                            </div>
                           </div>
                         </div>
+                        <div className="text-right">
+                          <span className="text-2xl font-bold text-[var(--pro-fg)]">
+                            {estimateFileSize(exportResolution)}
+                          </span>
+                          <span className="text-sm text-[var(--pro-muted)]">
+                            {" "}
+                            KB
+                          </span>
+                        </div>
+                      </div>
 
-                        {/* Slider Container */}
-                        <div className="relative mb-6 pb-8 pt-2">
-                          {/* Slider Track Background */}
-                          <div className="absolute left-0 right-0 top-[18px] h-2 rounded-full bg-[var(--pro-muted-light)]" />
-
-                          {/* Active Track */}
-                          <div
-                            className="absolute left-0 top-[18px] h-2 rounded-full bg-[var(--pro-accent)]"
-                            style={{
-                              width: `${getSliderTrackPercentage(exportResolution)}%`,
-                            }}
+                      {/* Size Guide Tooltip */}
+                      <div className="mt-3 flex items-start gap-2 text-xs text-[var(--pro-muted)]">
+                        <svg
+                          className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--pro-accent)]"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                           />
+                        </svg>
+                        <span>
+                          <strong>Tip:</strong> Use 200-500px for web/social,
+                          1000px for general use, 1500-2000px for print
+                          materials.
+                        </span>
+                      </div>
+                    </div>
+                  )}
 
-                          {/* Snap Points */}
-                          <div className="absolute left-0 right-0 top-[18px]">
-                            {RESOLUTION_SNAP_POINTS.map((snapValue) => (
-                              <div
-                                key={snapValue}
-                                className={`absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full transition-colors ${
-                                  snapValue <= exportResolution
-                                    ? "bg-[var(--pro-accent)]"
-                                    : "bg-[var(--pro-muted-light)]"
+                  {/* Print Quality Section - Only for PNG (raster format) */}
+                  {!FORMAT_INFO[exportFormat].isVector && (
+                    <div className="mb-6 space-y-4">
+                      {/* Section Header */}
+                      <div className="flex items-center gap-2 border-b border-[var(--pro-border)] pb-2">
+                        <svg
+                          className="h-5 w-5 text-[var(--pro-accent)]"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                          />
+                        </svg>
+                        <h3 className="text-sm font-semibold text-[var(--pro-fg)]">
+                          Print Quality Settings
+                        </h3>
+                      </div>
+
+                      {/* DPI Cards */}
+                      <div>
+                        <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
+                          Print Quality (DPI)
+                        </label>
+                        <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
+                          {DPI_OPTIONS.map((option) => {
+                            const isSelected = dpi === option.value;
+                            return (
+                              <button
+                                key={option.value}
+                                onClick={() => setDpi(option.value)}
+                                className={`rounded-lg border-2 bg-white p-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-md sm:rounded-xl sm:p-3 ${
+                                  isSelected
+                                    ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)] shadow-[0_0_0_3px_rgba(37,99,235,0.15)]"
+                                    : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)]"
                                 }`}
-                                style={{
-                                  left: `${getSnapPointPosition(snapValue)}%`,
-                                  top: "50%",
-                                }}
-                              />
-                            ))}
-                          </div>
-
-                          {/* Slider Input */}
-                          <input
-                            type="range"
-                            min="200"
-                            max="2000"
-                            step="1"
-                            value={exportResolution}
-                            onChange={(e) =>
-                              handleResolutionChange(Number(e.target.value))
-                            }
-                            className="relative z-10 h-2 w-full cursor-pointer appearance-none rounded-full bg-transparent [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-[var(--pro-accent)] [&::-moz-range-thumb]:shadow-[0_2px_8px_rgba(37,99,235,0.3)] [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-[var(--pro-accent)] [&::-webkit-slider-thumb]:shadow-[0_2px_8px_rgba(37,99,235,0.3)] [&::-webkit-slider-thumb]:transition-transform hover:[&::-webkit-slider-thumb]:scale-110"
-                          />
-
-                          {/* Labels below */}
-                          <div className="absolute left-0 right-0 top-10 flex justify-between px-0">
-                            <span className="text-center text-[11px]">
-                              <span className="text-[var(--pro-muted)]">
-                                200px
-                              </span>
-                              <br />
-                              <span className="text-[10px] text-[var(--pro-muted)]">
-                                Web
-                              </span>
-                            </span>
-                            <span className="text-center text-[11px] text-[var(--pro-muted)]">
-                              500px
-                            </span>
-                            <span
-                              className={`text-center text-[11px] font-semibold ${exportResolution === 1000 ? "text-[var(--pro-accent)]" : "text-[var(--pro-muted)]"}`}
-                            >
-                              1000px
-                              <br />
-                              <span className="text-[10px]">Default</span>
-                            </span>
-                            <span className="text-center text-[11px] text-[var(--pro-muted)]">
-                              1500px
-                            </span>
-                            <span className="text-center text-[11px]">
-                              <span className="text-[var(--pro-muted)]">
-                                2000px
-                              </span>
-                              <br />
-                              <span className="text-[10px] text-[var(--pro-muted)]">
-                                Print
-                              </span>
-                            </span>
-                          </div>
+                              >
+                                <div className="mb-1 flex items-center justify-between sm:mb-2">
+                                  <span
+                                    className={`text-lg font-bold sm:text-xl ${
+                                      isSelected
+                                        ? "text-[var(--pro-accent)]"
+                                        : "text-[var(--pro-fg)]"
+                                    }`}
+                                  >
+                                    {option.label}
+                                  </span>
+                                  <span
+                                    className={`rounded-full px-1.5 py-0.5 text-[8px] font-medium sm:px-2 sm:text-[9px] ${
+                                      isSelected
+                                        ? "bg-[var(--pro-accent)] text-white"
+                                        : option.badgeColor
+                                    }`}
+                                  >
+                                    {option.badge}
+                                  </span>
+                                </div>
+                                <p className="hidden text-[10px] leading-tight text-[var(--pro-muted)] sm:block">
+                                  {option.description}
+                                </p>
+                              </button>
+                            );
+                          })}
                         </div>
+                      </div>
 
-                        {/* File Size Estimator */}
-                        <div className="flex items-center justify-between rounded-lg border border-[var(--pro-border)] bg-white p-3">
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--pro-accent-light)]">
+                      {/* Physical Size Calculator */}
+                      <div className="rounded-xl border border-[var(--pro-border)] bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] p-5">
+                        <div className="mb-4 flex items-start justify-between">
+                          <div>
+                            <h4 className="flex items-center gap-2 text-sm font-semibold text-[var(--pro-fg)]">
                               <svg
-                                className="h-5 w-5 text-[var(--pro-accent)]"
+                                className="h-4 w-4 text-[var(--pro-accent)]"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -2975,33 +3104,226 @@ showpage
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                   strokeWidth="2"
-                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                  d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
                                 />
                               </svg>
-                            </div>
-                            <div>
-                              <div className="text-sm font-semibold text-[var(--pro-fg)]">
-                                Estimated File Size
-                              </div>
-                              <div className="text-xs text-[var(--pro-muted)]">
-                                Based on {exportResolution}×{exportResolution}px
-                                PNG
-                              </div>
-                            </div>
+                              Physical Size Calculator
+                            </h4>
+                            <p className="mt-1 text-[10px] text-[var(--pro-muted)]">
+                              Calculated from resolution and DPI
+                            </p>
                           </div>
-                          <div className="text-right">
-                            <span className="text-2xl font-bold text-[var(--pro-fg)]">
-                              {estimateFileSize(exportResolution)}
-                            </span>
-                            <span className="text-sm text-[var(--pro-muted)]">
-                              {" "}
-                              KB
-                            </span>
+                          {/* Size Preview Square */}
+                          <div className="relative flex h-16 w-16 items-center justify-center rounded-lg border-2 border-dashed border-[var(--pro-accent)] bg-white">
+                            <div className="flex h-8 w-8 items-center justify-center rounded border border-[var(--pro-accent)] bg-[var(--pro-accent-light)]">
+                              <svg
+                                className="h-4 w-4 text-[var(--pro-accent)]"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm8 0h2v2h-2v-2zm0 4h2v2h-2v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2z" />
+                              </svg>
+                            </div>
                           </div>
                         </div>
 
-                        {/* Size Guide Tooltip */}
-                        <div className="mt-3 flex items-start gap-2 text-xs text-[var(--pro-muted)]">
+                        {/* Size Display Grid */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="rounded-lg border border-[var(--pro-border)] bg-white p-3">
+                            <div className="mb-1 text-[10px] uppercase tracking-wide text-[var(--pro-muted)]">
+                              Inches
+                            </div>
+                            <div className="text-xl font-bold text-[var(--pro-fg)]">
+                              {calculatePhysicalSize(
+                                exportResolution,
+                                dpi
+                              ).inches.toFixed(1)}
+                              &quot; ×{" "}
+                              {calculatePhysicalSize(
+                                exportResolution,
+                                dpi
+                              ).inches.toFixed(1)}
+                              &quot;
+                            </div>
+                          </div>
+                          <div className="rounded-lg border border-[var(--pro-border)] bg-white p-3">
+                            <div className="mb-1 text-[10px] uppercase tracking-wide text-[var(--pro-muted)]">
+                              Centimeters
+                            </div>
+                            <div className="text-xl font-bold text-[var(--pro-fg)]">
+                              {calculatePhysicalSize(
+                                exportResolution,
+                                dpi
+                              ).cm.toFixed(1)}
+                              cm ×{" "}
+                              {calculatePhysicalSize(
+                                exportResolution,
+                                dpi
+                              ).cm.toFixed(1)}
+                              cm
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Size Warning */}
+                        {calculatePhysicalSize(exportResolution, dpi).inches <
+                          MIN_SIZE_INCHES && (
+                          <div className="mt-4">
+                            <div className="flex items-start gap-3 rounded-lg border border-yellow-300 bg-[var(--pro-warning-light)] p-3">
+                              <svg
+                                className="mt-0.5 h-5 w-5 flex-shrink-0 text-[var(--pro-warning)]"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                />
+                              </svg>
+                              <div>
+                                <div className="text-sm font-semibold text-[var(--pro-warning)]">
+                                  Size Warning
+                                </div>
+                                <p className="mt-0.5 text-xs text-[var(--pro-warning)]">
+                                  QR code may be too small for reliable
+                                  scanning. Minimum recommended: 0.8&quot; (2cm)
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Print Quality Checklist */}
+                      <div className="rounded-xl border border-[var(--pro-border)] bg-white p-4">
+                        <h4 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
+                          <svg
+                            className="h-4 w-4 text-[var(--pro-accent)]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          Print Quality Checklist
+                        </h4>
+                        <div className="space-y-2">
+                          {/* Resolution Check */}
+                          <div
+                            className={`flex items-center gap-2 text-sm ${
+                              exportResolution >= 300
+                                ? "text-[var(--pro-success)]"
+                                : "text-[var(--pro-warning)]"
+                            }`}
+                          >
+                            <svg
+                              className="h-4 w-4 flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              {exportResolution >= 300 ? (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M5 13l4 4L19 7"
+                                />
+                              ) : (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                />
+                              )}
+                            </svg>
+                            <span>
+                              Resolution sufficient for print (
+                              {exportResolution}
+                              px)
+                            </span>
+                          </div>
+                          {/* Format Check */}
+                          <div className="flex items-center gap-2 text-sm text-[var(--pro-success)]">
+                            <svg
+                              className="h-4 w-4 flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            <span>
+                              {FORMAT_INFO[exportFormat].label} format (raster,
+                              transparent background)
+                            </span>
+                          </div>
+                          {/* Size Check */}
+                          <div
+                            className={`flex items-center gap-2 text-sm ${
+                              calculatePhysicalSize(exportResolution, dpi)
+                                .inches >= MIN_SIZE_INCHES
+                                ? "text-[var(--pro-success)]"
+                                : "text-[var(--pro-warning)]"
+                            }`}
+                          >
+                            <svg
+                              className="h-4 w-4 flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              {calculatePhysicalSize(exportResolution, dpi)
+                                .inches >= MIN_SIZE_INCHES ? (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M5 13l4 4L19 7"
+                                />
+                              ) : (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                />
+                              )}
+                            </svg>
+                            <span>
+                              Size adequate for scanning (
+                              {calculatePhysicalSize(
+                                exportResolution,
+                                dpi
+                              ).inches.toFixed(1)}
+                              &quot; /{" "}
+                              {calculatePhysicalSize(
+                                exportResolution,
+                                dpi
+                              ).cm.toFixed(1)}
+                              cm)
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Scanning Distance Guide */}
+                      <div className="rounded-lg border border-blue-200 bg-[var(--pro-accent-light)] p-3">
+                        <div className="flex items-start gap-2">
                           <svg
                             className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--pro-accent)]"
                             fill="none"
@@ -3015,22 +3337,44 @@ showpage
                               d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                             />
                           </svg>
-                          <span>
-                            <strong>Tip:</strong> Use 200-500px for web/social,
-                            1000px for general use, 1500-2000px for print
-                            materials.
-                          </span>
+                          <div className="text-xs text-[var(--pro-accent)]">
+                            <strong>Scanning Distance Guide:</strong> At{" "}
+                            {calculatePhysicalSize(
+                              exportResolution,
+                              dpi
+                            ).inches.toFixed(1)}
+                            &quot;, this QR code can be scanned from
+                            approximately{" "}
+                            <span className="font-semibold">
+                              {
+                                calculateScanDistance(
+                                  calculatePhysicalSize(exportResolution, dpi)
+                                    .inches
+                                ).feet
+                              }{" "}
+                              feet (
+                              {
+                                calculateScanDistance(
+                                  calculatePhysicalSize(exportResolution, dpi)
+                                    .inches
+                                ).meters
+                              }
+                              m)
+                            </span>{" "}
+                            away.
+                          </div>
                         </div>
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {/* Print Quality Section - Only for PNG (raster format) */}
-                    {!FORMAT_INFO[exportFormat].isVector && (
-                      <div className="mb-6 space-y-4">
-                        {/* Section Header */}
-                        <div className="flex items-center gap-2 border-b border-[var(--pro-border)] pb-2">
+                  {/* Vector Format Notice - Only for SVG, PDF, EPS */}
+                  {FORMAT_INFO[exportFormat].isVector && (
+                    <div className="mb-6 rounded-xl border border-purple-200 bg-purple-50 p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-purple-100">
                           <svg
-                            className="h-5 w-5 text-[var(--pro-accent)]"
+                            className="h-5 w-5 text-purple-600"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -3039,612 +3383,259 @@ showpage
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth="2"
-                              d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                              d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
                             />
                           </svg>
-                          <h3 className="text-sm font-semibold text-[var(--pro-fg)]">
-                            Print Quality Settings
-                          </h3>
                         </div>
-
-                        {/* DPI Cards */}
                         <div>
-                          <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
-                            Print Quality (DPI)
-                          </label>
-                          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
-                            {DPI_OPTIONS.map((option) => {
-                              const isSelected = dpi === option.value;
-                              return (
-                                <button
-                                  key={option.value}
-                                  onClick={() => setDpi(option.value)}
-                                  className={`rounded-lg border-2 bg-white p-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-md sm:rounded-xl sm:p-3 ${
-                                    isSelected
-                                      ? "border-[var(--pro-accent)] bg-[var(--pro-accent-light)] shadow-[0_0_0_3px_rgba(37,99,235,0.15)]"
-                                      : "border-[var(--pro-border)] hover:border-[var(--pro-border-dark)]"
-                                  }`}
-                                >
-                                  <div className="mb-1 flex items-center justify-between sm:mb-2">
-                                    <span
-                                      className={`text-lg font-bold sm:text-xl ${
-                                        isSelected
-                                          ? "text-[var(--pro-accent)]"
-                                          : "text-[var(--pro-fg)]"
-                                      }`}
-                                    >
-                                      {option.label}
-                                    </span>
-                                    <span
-                                      className={`rounded-full px-1.5 py-0.5 text-[8px] font-medium sm:px-2 sm:text-[9px] ${
-                                        isSelected
-                                          ? "bg-[var(--pro-accent)] text-white"
-                                          : option.badgeColor
-                                      }`}
-                                    >
-                                      {option.badge}
-                                    </span>
-                                  </div>
-                                  <p className="hidden text-[10px] leading-tight text-[var(--pro-muted)] sm:block">
-                                    {option.description}
-                                  </p>
-                                </button>
-                              );
-                            })}
+                          <div className="text-sm font-semibold text-purple-900">
+                            Vector Format Selected
                           </div>
-                        </div>
-
-                        {/* Physical Size Calculator */}
-                        <div className="rounded-xl border border-[var(--pro-border)] bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] p-5">
-                          <div className="mb-4 flex items-start justify-between">
-                            <div>
-                              <h4 className="flex items-center gap-2 text-sm font-semibold text-[var(--pro-fg)]">
-                                <svg
-                                  className="h-4 w-4 text-[var(--pro-accent)]"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                                  />
-                                </svg>
-                                Physical Size Calculator
-                              </h4>
-                              <p className="mt-1 text-[10px] text-[var(--pro-muted)]">
-                                Calculated from resolution and DPI
-                              </p>
-                            </div>
-                            {/* Size Preview Square */}
-                            <div className="relative flex h-16 w-16 items-center justify-center rounded-lg border-2 border-dashed border-[var(--pro-accent)] bg-white">
-                              <div className="flex h-8 w-8 items-center justify-center rounded border border-[var(--pro-accent)] bg-[var(--pro-accent-light)]">
-                                <svg
-                                  className="h-4 w-4 text-[var(--pro-accent)]"
-                                  fill="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm8 0h2v2h-2v-2zm0 4h2v2h-2v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2z" />
-                                </svg>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Size Display Grid */}
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="rounded-lg border border-[var(--pro-border)] bg-white p-3">
-                              <div className="mb-1 text-[10px] uppercase tracking-wide text-[var(--pro-muted)]">
-                                Inches
-                              </div>
-                              <div className="text-xl font-bold text-[var(--pro-fg)]">
-                                {calculatePhysicalSize(
-                                  exportResolution,
-                                  dpi
-                                ).inches.toFixed(1)}
-                                &quot; ×{" "}
-                                {calculatePhysicalSize(
-                                  exportResolution,
-                                  dpi
-                                ).inches.toFixed(1)}
-                                &quot;
-                              </div>
-                            </div>
-                            <div className="rounded-lg border border-[var(--pro-border)] bg-white p-3">
-                              <div className="mb-1 text-[10px] uppercase tracking-wide text-[var(--pro-muted)]">
-                                Centimeters
-                              </div>
-                              <div className="text-xl font-bold text-[var(--pro-fg)]">
-                                {calculatePhysicalSize(
-                                  exportResolution,
-                                  dpi
-                                ).cm.toFixed(1)}
-                                cm ×{" "}
-                                {calculatePhysicalSize(
-                                  exportResolution,
-                                  dpi
-                                ).cm.toFixed(1)}
-                                cm
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Size Warning */}
-                          {calculatePhysicalSize(exportResolution, dpi).inches <
-                            MIN_SIZE_INCHES && (
-                            <div className="mt-4">
-                              <div className="flex items-start gap-3 rounded-lg border border-yellow-300 bg-[var(--pro-warning-light)] p-3">
-                                <svg
-                                  className="mt-0.5 h-5 w-5 flex-shrink-0 text-[var(--pro-warning)]"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                  />
-                                </svg>
-                                <div>
-                                  <div className="text-sm font-semibold text-[var(--pro-warning)]">
-                                    Size Warning
-                                  </div>
-                                  <p className="mt-0.5 text-xs text-[var(--pro-warning)]">
-                                    QR code may be too small for reliable
-                                    scanning. Minimum recommended: 0.8&quot;
-                                    (2cm)
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Print Quality Checklist */}
-                        <div className="rounded-xl border border-[var(--pro-border)] bg-white p-4">
-                          <h4 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--pro-fg)]">
-                            <svg
-                              className="h-4 w-4 text-[var(--pro-accent)]"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                            Print Quality Checklist
-                          </h4>
-                          <div className="space-y-2">
-                            {/* Resolution Check */}
-                            <div
-                              className={`flex items-center gap-2 text-sm ${
-                                exportResolution >= 300
-                                  ? "text-[var(--pro-success)]"
-                                  : "text-[var(--pro-warning)]"
-                              }`}
-                            >
-                              <svg
-                                className="h-4 w-4 flex-shrink-0"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                {exportResolution >= 300 ? (
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M5 13l4 4L19 7"
-                                  />
-                                ) : (
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                  />
-                                )}
-                              </svg>
-                              <span>
-                                Resolution sufficient for print (
-                                {exportResolution}
-                                px)
-                              </span>
-                            </div>
-                            {/* Format Check */}
-                            <div className="flex items-center gap-2 text-sm text-[var(--pro-success)]">
-                              <svg
-                                className="h-4 w-4 flex-shrink-0"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                              <span>
-                                {FORMAT_INFO[exportFormat].label} format
-                                (raster, transparent background)
-                              </span>
-                            </div>
-                            {/* Size Check */}
-                            <div
-                              className={`flex items-center gap-2 text-sm ${
-                                calculatePhysicalSize(exportResolution, dpi)
-                                  .inches >= MIN_SIZE_INCHES
-                                  ? "text-[var(--pro-success)]"
-                                  : "text-[var(--pro-warning)]"
-                              }`}
-                            >
-                              <svg
-                                className="h-4 w-4 flex-shrink-0"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                {calculatePhysicalSize(exportResolution, dpi)
-                                  .inches >= MIN_SIZE_INCHES ? (
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M5 13l4 4L19 7"
-                                  />
-                                ) : (
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                  />
-                                )}
-                              </svg>
-                              <span>
-                                Size adequate for scanning (
-                                {calculatePhysicalSize(
-                                  exportResolution,
-                                  dpi
-                                ).inches.toFixed(1)}
-                                &quot; /{" "}
-                                {calculatePhysicalSize(
-                                  exportResolution,
-                                  dpi
-                                ).cm.toFixed(1)}
-                                cm)
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Scanning Distance Guide */}
-                        <div className="rounded-lg border border-blue-200 bg-[var(--pro-accent-light)] p-3">
-                          <div className="flex items-start gap-2">
-                            <svg
-                              className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--pro-accent)]"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                            <div className="text-xs text-[var(--pro-accent)]">
-                              <strong>Scanning Distance Guide:</strong> At{" "}
-                              {calculatePhysicalSize(
-                                exportResolution,
-                                dpi
-                              ).inches.toFixed(1)}
-                              &quot;, this QR code can be scanned from
-                              approximately{" "}
-                              <span className="font-semibold">
-                                {
-                                  calculateScanDistance(
-                                    calculatePhysicalSize(exportResolution, dpi)
-                                      .inches
-                                  ).feet
-                                }{" "}
-                                feet (
-                                {
-                                  calculateScanDistance(
-                                    calculatePhysicalSize(exportResolution, dpi)
-                                      .inches
-                                  ).meters
-                                }
-                                m)
-                              </span>{" "}
-                              away.
-                            </div>
-                          </div>
+                          <p className="mt-1 text-xs text-purple-700">
+                            Vector files are infinitely scalable - no resolution
+                            setting needed. Perfect for printing at any size
+                            without quality loss.
+                          </p>
                         </div>
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {/* Vector Format Notice - Only for SVG, PDF, EPS */}
-                    {FORMAT_INFO[exportFormat].isVector && (
-                      <div className="mb-6 rounded-xl border border-purple-200 bg-purple-50 p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-purple-100">
-                            <svg
-                              className="h-5 w-5 text-purple-600"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                              />
-                            </svg>
-                          </div>
-                          <div>
-                            <div className="text-sm font-semibold text-purple-900">
-                              Vector Format Selected
-                            </div>
-                            <p className="mt-1 text-xs text-purple-700">
-                              Vector files are infinitely scalable - no
-                              resolution setting needed. Perfect for printing at
-                              any size without quality loss.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Download Button */}
-                    <button
-                      onClick={downloadQR}
-                      disabled={isGenerating || !generatedUrl}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-4 text-sm font-semibold text-white transition-all hover:bg-[var(--pro-accent-hover)] hover:shadow-lg disabled:cursor-not-allowed disabled:bg-[var(--pro-muted-light)]"
+                  {/* Download Button */}
+                  <button
+                    onClick={downloadQR}
+                    disabled={isGenerating || !generatedUrl}
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--pro-accent)] py-4 text-sm font-semibold text-white transition-all hover:bg-[var(--pro-accent-hover)] hover:shadow-lg disabled:cursor-not-allowed disabled:bg-[var(--pro-muted-light)]"
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                        />
-                      </svg>
-                      {FORMAT_INFO[exportFormat].isVector
-                        ? `Download ${FORMAT_INFO[exportFormat].label}`
-                        : `Download ${FORMAT_INFO[exportFormat].label} (${exportResolution}px @ ${dpi} DPI)`}
-                    </button>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      />
+                    </svg>
+                    {FORMAT_INFO[exportFormat].isVector
+                      ? `Download ${FORMAT_INFO[exportFormat].label}`
+                      : `Download ${FORMAT_INFO[exportFormat].label} (${exportResolution}px @ ${dpi} DPI)`}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Preview Panel */}
+          <aside className="order-1 rounded-lg border border-[var(--pro-border)] bg-[var(--pro-surface)] lg:sticky lg:top-6 lg:order-2">
+            <div className="flex items-center justify-between border-b border-[var(--pro-border)] px-4 py-3 sm:px-5 sm:py-4">
+              <h2 className="flex items-center gap-2 text-sm font-semibold">
+                <Icon
+                  name="qr"
+                  className="h-4 w-4 text-[var(--pro-muted)] sm:h-[18px] sm:w-[18px]"
+                />
+                Preview
+              </h2>
+              <span className="rounded bg-[var(--pro-success-light)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--pro-success)] sm:px-2 sm:py-1 sm:text-xs">
+                Live
+              </span>
+            </div>
+
+            {/* QR Preview Area */}
+            <div
+              className="flex min-h-[200px] items-center justify-center p-4 sm:min-h-[300px] sm:p-8"
+              style={{
+                background:
+                  "repeating-conic-gradient(#f0f0f0 0% 25%, #fff 0% 50%) 50% / 16px 16px",
+              }}
+            >
+              <div className="rounded-lg bg-white p-3 shadow-md sm:p-5">
+                {qrDataUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    id="qrPreview"
+                    src={qrDataUrl}
+                    alt={`QR code linking to ${generatedUrl}`}
+                    className="h-[140px] w-[140px] transition-transform sm:h-[200px] sm:w-[200px]"
+                    style={{ transform: `scale(${zoomLevel / 100})` }}
+                  />
+                ) : (
+                  <div
+                    id="qrPreview"
+                    className="flex h-[140px] w-[140px] items-center justify-center sm:h-[200px] sm:w-[200px]"
+                  >
+                    <Icon
+                      name="qr"
+                      className="h-12 w-12 text-[var(--pro-border)] sm:h-16 sm:w-16"
+                    />
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Preview Panel */}
-            <aside className="order-1 rounded-lg border border-[var(--pro-border)] bg-[var(--pro-surface)] lg:sticky lg:top-6 lg:order-2">
-              <div className="flex items-center justify-between border-b border-[var(--pro-border)] px-4 py-3 sm:px-5 sm:py-4">
-                <h2 className="flex items-center gap-2 text-sm font-semibold">
-                  <Icon
-                    name="qr"
-                    className="h-4 w-4 text-[var(--pro-muted)] sm:h-[18px] sm:w-[18px]"
-                  />
-                  Preview
-                </h2>
-                <span className="rounded bg-[var(--pro-success-light)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--pro-success)] sm:px-2 sm:py-1 sm:text-xs">
-                  Live
-                </span>
-              </div>
-
-              {/* QR Preview Area */}
-              <div
-                className="flex min-h-[200px] items-center justify-center p-4 sm:min-h-[300px] sm:p-8"
-                style={{
-                  background:
-                    "repeating-conic-gradient(#f0f0f0 0% 25%, #fff 0% 50%) 50% / 16px 16px",
-                }}
+            {/* Zoom Controls */}
+            <div className="flex items-center justify-center gap-1.5 border-t border-[var(--pro-border)] px-4 py-3 sm:gap-2 sm:px-5 sm:py-4">
+              <button
+                onClick={zoomOut}
+                className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--pro-border)] text-[var(--pro-muted)] transition-colors hover:bg-[var(--pro-surface-hover)] hover:text-[var(--pro-fg)] sm:h-9 sm:w-9"
+                title="Zoom out"
               >
-                <div className="rounded-lg bg-white p-3 shadow-md sm:p-5">
-                  {qrDataUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      id="qrPreview"
-                      src={qrDataUrl}
-                      alt={`QR code linking to ${generatedUrl}`}
-                      className="h-[140px] w-[140px] transition-transform sm:h-[200px] sm:w-[200px]"
-                      style={{ transform: `scale(${zoomLevel / 100})` }}
-                    />
-                  ) : (
-                    <div
-                      id="qrPreview"
-                      className="flex h-[140px] w-[140px] items-center justify-center sm:h-[200px] sm:w-[200px]"
-                    >
-                      <Icon
-                        name="qr"
-                        className="h-12 w-12 text-[var(--pro-border)] sm:h-16 sm:w-16"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
+                <Icon name="zoom-out" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              </button>
+              <span
+                id="zoomValue"
+                className="min-w-[40px] text-center text-xs font-semibold sm:min-w-[50px] sm:text-sm"
+              >
+                {zoomLevel}%
+              </span>
+              <button
+                onClick={zoomIn}
+                className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--pro-border)] text-[var(--pro-muted)] transition-colors hover:bg-[var(--pro-surface-hover)] hover:text-[var(--pro-fg)] sm:h-9 sm:w-9"
+                title="Zoom in"
+              >
+                <Icon name="zoom-in" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              </button>
+              <button
+                onClick={resetZoom}
+                className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--pro-border)] text-[var(--pro-muted)] transition-colors hover:bg-[var(--pro-surface-hover)] hover:text-[var(--pro-fg)] sm:h-9 sm:w-9"
+                title="Reset zoom"
+              >
+                <Icon name="refresh-cw" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              </button>
+            </div>
 
-              {/* Zoom Controls */}
-              <div className="flex items-center justify-center gap-1.5 border-t border-[var(--pro-border)] px-4 py-3 sm:gap-2 sm:px-5 sm:py-4">
-                <button
-                  onClick={zoomOut}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--pro-border)] text-[var(--pro-muted)] transition-colors hover:bg-[var(--pro-surface-hover)] hover:text-[var(--pro-fg)] sm:h-9 sm:w-9"
-                  title="Zoom out"
-                >
-                  <Icon name="zoom-out" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                </button>
-                <span
-                  id="zoomValue"
-                  className="min-w-[40px] text-center text-xs font-semibold sm:min-w-[50px] sm:text-sm"
-                >
-                  {zoomLevel}%
-                </span>
-                <button
-                  onClick={zoomIn}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--pro-border)] text-[var(--pro-muted)] transition-colors hover:bg-[var(--pro-surface-hover)] hover:text-[var(--pro-fg)] sm:h-9 sm:w-9"
-                  title="Zoom in"
-                >
-                  <Icon name="zoom-in" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                </button>
-                <button
-                  onClick={resetZoom}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--pro-border)] text-[var(--pro-muted)] transition-colors hover:bg-[var(--pro-surface-hover)] hover:text-[var(--pro-fg)] sm:h-9 sm:w-9"
-                  title="Reset zoom"
-                >
-                  <Icon
-                    name="refresh-cw"
-                    className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-                  />
-                </button>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-1.5 border-t border-[var(--pro-border)] px-4 py-3 sm:gap-2 sm:px-5 sm:py-4">
-                <button
-                  onClick={copyToClipboard}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-[var(--pro-border)] py-2 text-xs font-medium transition-colors hover:bg-[var(--pro-surface-hover)] sm:gap-2 sm:py-2.5 sm:text-sm"
-                >
-                  <Icon name="copy" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  Copy
-                </button>
-                <button
-                  onClick={async () => {
-                    if (navigator.share) {
-                      try {
-                        await navigator.share({ title: "QR Code", url: url });
-                      } catch {
-                        copyToClipboard();
-                      }
-                    } else {
+            {/* Action Buttons */}
+            <div className="flex gap-1.5 border-t border-[var(--pro-border)] px-4 py-3 sm:gap-2 sm:px-5 sm:py-4">
+              <button
+                onClick={copyToClipboard}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-[var(--pro-border)] py-2 text-xs font-medium transition-colors hover:bg-[var(--pro-surface-hover)] sm:gap-2 sm:py-2.5 sm:text-sm"
+              >
+                <Icon name="copy" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                Copy
+              </button>
+              <button
+                onClick={async () => {
+                  if (navigator.share) {
+                    try {
+                      await navigator.share({ title: "QR Code", url: url });
+                    } catch {
                       copyToClipboard();
                     }
-                  }}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-[var(--pro-border)] py-2 text-xs font-medium transition-colors hover:bg-[var(--pro-surface-hover)] sm:gap-2 sm:py-2.5 sm:text-sm"
-                >
-                  <Icon name="share" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  Share
-                </button>
-              </div>
-
-              {/* Save Section - Show when user is logged in */}
-              {user && (
-                <div className="border-t border-[var(--pro-border)] px-4 py-3 sm:px-5 sm:py-4">
-                  {savedQrId ? (
-                    <Link
-                      href="/dashboard"
-                      className="flex w-full items-center justify-center gap-1.5 rounded-md border-2 border-green-600 bg-green-50 py-2.5 text-xs font-semibold text-green-700 transition-colors hover:bg-green-100 sm:gap-2 sm:py-3 sm:text-sm"
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
-                      >
-                        <path d="M20 6L9 17l-5-5" />
-                      </svg>
-                      View in Dashboard
-                    </Link>
-                  ) : (
-                    <button
-                      onClick={saveQRCode}
-                      disabled={isSaving || !qrDataUrl}
-                      className="flex w-full items-center justify-center gap-1.5 rounded-md border-2 border-[var(--pro-fg)] bg-transparent py-2.5 text-xs font-semibold text-[var(--pro-fg)] transition-colors hover:bg-[var(--pro-fg)] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:py-3 sm:text-sm"
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
-                      >
-                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
-                        <polyline points="17 21 17 13 7 13 7 21" />
-                        <polyline points="7 3 7 8 15 8" />
-                      </svg>
-                      {isSaving ? "Saving..." : "Save to Dashboard"}
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {/* Download Section */}
-              <div className="border-t border-[var(--pro-border)] bg-[var(--pro-surface-hover)] p-4 sm:p-5">
-                <button
-                  onClick={downloadQR}
-                  disabled={isGenerating || !qrDataUrl}
-                  className="flex w-full items-center justify-center gap-1.5 rounded-md bg-[var(--pro-accent)] py-3 text-xs font-semibold text-white transition-colors hover:bg-[var(--pro-accent-hover)] disabled:cursor-not-allowed disabled:bg-[var(--pro-muted-light)] sm:gap-2 sm:py-3.5 sm:text-sm"
-                >
-                  <Icon
-                    name="download"
-                    className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
-                  />
-                  Download QR Code
-                </button>
-                <p className="mt-2 hidden text-center text-xs text-[var(--pro-muted)] sm:mt-3 sm:block">
-                  Keyboard shortcut:{" "}
-                  <kbd className="rounded border border-[var(--pro-border)] bg-white px-1.5 py-0.5 text-[11px]">
-                    ⌘
-                  </kbd>{" "}
-                  +{" "}
-                  <kbd className="rounded border border-[var(--pro-border)] bg-white px-1.5 py-0.5 text-[11px]">
-                    D
-                  </kbd>
-                </p>
-              </div>
-            </aside>
-          </div>
-        </main>
-
-        {/* Toast Container with slide-in animation */}
-        <div
-          id="toastContainer"
-          className="fixed bottom-6 right-6 z-[1000] flex flex-col gap-2"
-        >
-          {toasts.map((toast) => (
-            <div
-              key={toast.id}
-              className={`animate-slideIn flex items-center gap-2.5 rounded-md px-4 py-3 text-sm font-medium text-white shadow-lg ${
-                toast.type === "success"
-                  ? "bg-[var(--pro-success)]"
-                  : "bg-[var(--pro-error)]"
-              }`}
-            >
-              <Icon
-                name={toast.type === "success" ? "check" : "x"}
-                className="h-[18px] w-[18px]"
-              />
-              {toast.message}
+                  } else {
+                    copyToClipboard();
+                  }
+                }}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-[var(--pro-border)] py-2 text-xs font-medium transition-colors hover:bg-[var(--pro-surface-hover)] sm:gap-2 sm:py-2.5 sm:text-sm"
+              >
+                <Icon name="share" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                Share
+              </button>
             </div>
-          ))}
+
+            {/* Save Section - Show when user is logged in */}
+            {user && (
+              <div className="border-t border-[var(--pro-border)] px-4 py-3 sm:px-5 sm:py-4">
+                {savedQrId ? (
+                  <Link
+                    href="/dashboard"
+                    className="flex w-full items-center justify-center gap-1.5 rounded-md border-2 border-green-600 bg-green-50 py-2.5 text-xs font-semibold text-green-700 transition-colors hover:bg-green-100 sm:gap-2 sm:py-3 sm:text-sm"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                    >
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                    View in Dashboard
+                  </Link>
+                ) : (
+                  <button
+                    onClick={saveQRCode}
+                    disabled={isSaving || !qrDataUrl}
+                    className="flex w-full items-center justify-center gap-1.5 rounded-md border-2 border-[var(--pro-fg)] bg-transparent py-2.5 text-xs font-semibold text-[var(--pro-fg)] transition-colors hover:bg-[var(--pro-fg)] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:py-3 sm:text-sm"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                    >
+                      <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                      <polyline points="17 21 17 13 7 13 7 21" />
+                      <polyline points="7 3 7 8 15 8" />
+                    </svg>
+                    {isSaving ? "Saving..." : "Save to Dashboard"}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Download Section */}
+            <div className="border-t border-[var(--pro-border)] bg-[var(--pro-surface-hover)] p-4 sm:p-5">
+              <button
+                onClick={downloadQR}
+                disabled={isGenerating || !qrDataUrl}
+                className="flex w-full items-center justify-center gap-1.5 rounded-md bg-[var(--pro-accent)] py-3 text-xs font-semibold text-white transition-colors hover:bg-[var(--pro-accent-hover)] disabled:cursor-not-allowed disabled:bg-[var(--pro-muted-light)] sm:gap-2 sm:py-3.5 sm:text-sm"
+              >
+                <Icon
+                  name="download"
+                  className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                />
+                Download QR Code
+              </button>
+              <p className="mt-2 hidden text-center text-xs text-[var(--pro-muted)] sm:mt-3 sm:block">
+                Keyboard shortcut:{" "}
+                <kbd className="rounded border border-[var(--pro-border)] bg-white px-1.5 py-0.5 text-[11px]">
+                  ⌘
+                </kbd>{" "}
+                +{" "}
+                <kbd className="rounded border border-[var(--pro-border)] bg-white px-1.5 py-0.5 text-[11px]">
+                  D
+                </kbd>
+              </p>
+            </div>
+          </aside>
         </div>
+      </main>
 
-        {/* Hidden canvas for potential future use */}
-        <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
+      {/* Toast Container with slide-in animation */}
+      <div
+        id="toastContainer"
+        className="fixed bottom-6 right-6 z-[1000] flex flex-col gap-2"
+      >
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            className={`animate-slideIn flex items-center gap-2.5 rounded-md px-4 py-3 text-sm font-medium text-white shadow-lg ${
+              toast.type === "success"
+                ? "bg-[var(--pro-success)]"
+                : "bg-[var(--pro-error)]"
+            }`}
+          >
+            <Icon
+              name={toast.type === "success" ? "check" : "x"}
+              className="h-[18px] w-[18px]"
+            />
+            {toast.message}
+          </div>
+        ))}
+      </div>
 
-        {/* Auth Modal for save */}
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-        />
+      {/* Hidden canvas for potential future use */}
+      <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
+
+      {/* Auth Modal for save */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+      />
     </div>
   );
 }

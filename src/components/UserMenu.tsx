@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { User } from '@supabase/supabase-js';
-import Link from 'next/link';
-import AuthModal from './AuthModal';
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { User } from "@supabase/supabase-js";
+import Link from "next/link";
+import AuthModal from "./AuthModal";
 
 export default function UserMenu() {
   const [user, setUser] = useState<User | null>(null);
@@ -73,7 +73,7 @@ export default function UserMenu() {
         >
           <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" />
         </svg>
-        {user.email?.split('@')[0]}
+        {user.email?.split("@")[0]}
       </button>
 
       {showDropdown && (

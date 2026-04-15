@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import posthog from 'posthog-js';
-import { PostHogProvider as PHProvider } from 'posthog-js/react';
-import { useEffect } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import posthog from "posthog-js";
+import { PostHogProvider as PHProvider } from "posthog-js/react";
+import { useEffect } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
-    person_profiles: 'identified_only',
+    api_host:
+      process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
+    person_profiles: "identified_only",
     capture_pageview: false, // We'll capture manually
     capture_pageleave: true,
   });
@@ -28,7 +29,7 @@ export function PostHogPageview(): null {
       if (searchParams && searchParams.toString()) {
         url = url + `?${searchParams.toString()}`;
       }
-      posthog.capture('$pageview', {
+      posthog.capture("$pageview", {
         $current_url: url,
       });
     }

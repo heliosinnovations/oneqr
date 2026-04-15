@@ -17,7 +17,13 @@ import {
   generateVCardString,
 } from "@/components/ContentTypeForms";
 
-type TabType = "content" | "labels" | "colors" | "style" | "export" | "analytics";
+type TabType =
+  | "content"
+  | "labels"
+  | "colors"
+  | "style"
+  | "export"
+  | "analytics";
 type ToastType = { message: string; type: "success" | "error"; id: number };
 type ErrorLevelType = "L" | "M" | "Q" | "H";
 type PatternType = "square" | "rounded" | "dots" | "classy";
@@ -773,13 +779,17 @@ function EditPageContent({ params }: { params: Promise<{ id: string }> }) {
       if (qrData.foreground_color) setFgColor(qrData.foreground_color);
       if (qrData.background_color) setBgColor(qrData.background_color);
       if (qrData.pattern) setPattern(qrData.pattern as PatternType);
-      if (qrData.corner_style) setCornerStyle(qrData.corner_style as CornerType);
-      if (qrData.error_level) setErrorLevel(qrData.error_level as ErrorLevelType);
+      if (qrData.corner_style)
+        setCornerStyle(qrData.corner_style as CornerType);
+      if (qrData.error_level)
+        setErrorLevel(qrData.error_level as ErrorLevelType);
       if (qrData.text_above) setTextAbove(qrData.text_above);
       if (qrData.text_below) setTextBelow(qrData.text_below);
       if (qrData.text_font_size) setTextFontSize(qrData.text_font_size);
-      if (qrData.text_font_weight) setTextFontWeight(qrData.text_font_weight as FontWeightType);
-      if (qrData.text_font_family) setTextFontFamily(qrData.text_font_family as FontFamilyType);
+      if (qrData.text_font_weight)
+        setTextFontWeight(qrData.text_font_weight as FontWeightType);
+      if (qrData.text_font_family)
+        setTextFontFamily(qrData.text_font_family as FontFamilyType);
       if (qrData.text_color) setTextColor(qrData.text_color);
     }
 
@@ -1387,7 +1397,10 @@ showpage
         text_color: textColor,
       };
 
-      const updateData: { qr_data: QRCustomizationData; destination_url?: string } = {
+      const updateData: {
+        qr_data: QRCustomizationData;
+        destination_url?: string;
+      } = {
         qr_data: qrData,
       };
 
@@ -1415,7 +1428,8 @@ showpage
             ? {
                 ...prev,
                 qr_data: qrData,
-                destination_url: updateData.destination_url || prev.destination_url,
+                destination_url:
+                  updateData.destination_url || prev.destination_url,
               }
             : null
         );
@@ -1549,14 +1563,26 @@ showpage
   }) => {
     const icons: Record<string, JSX.Element> = {
       globe: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <circle cx="12" cy="12" r="10" />
           <line x1="2" y1="12" x2="22" y2="12" />
           <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
         </svg>
       ),
       wifi: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <path d="M5 12.55a11 11 0 0 1 14.08 0" />
           <path d="M1.42 9a16 16 0 0 1 21.16 0" />
           <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
@@ -1564,54 +1590,108 @@ showpage
         </svg>
       ),
       user: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
           <circle cx="12" cy="7" r="4" />
         </svg>
       ),
       mail: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
           <polyline points="22,6 12,13 2,6" />
         </svg>
       ),
       message: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
         </svg>
       ),
       "map-pin": (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
           <circle cx="12" cy="10" r="3" />
         </svg>
       ),
       check: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <polyline points="20 6 9 17 4 12" />
         </svg>
       ),
       x: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <line x1="18" y1="6" x2="6" y2="18" />
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       ),
       download: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
           <polyline points="7 10 12 15 17 10" />
           <line x1="12" y1="15" x2="12" y2="3" />
         </svg>
       ),
       copy: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
           <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
         </svg>
       ),
       share: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <circle cx="18" cy="5" r="3" />
           <circle cx="6" cy="12" r="3" />
           <circle cx="18" cy="19" r="3" />
@@ -1620,7 +1700,13 @@ showpage
         </svg>
       ),
       "zoom-in": (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
           <line x1="11" y1="8" x2="11" y2="14" />
@@ -1628,20 +1714,38 @@ showpage
         </svg>
       ),
       "zoom-out": (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
           <line x1="8" y1="11" x2="14" y2="11" />
         </svg>
       ),
       "refresh-cw": (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <path d="M1 4v6h6" />
           <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
         </svg>
       ),
       qr: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <rect x="3" y="3" width="7" height="7" />
           <rect x="14" y="3" width="7" height="7" />
           <rect x="14" y="14" width="7" height="7" />
@@ -1649,46 +1753,88 @@ showpage
         </svg>
       ),
       "check-circle": (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
           <polyline points="22 4 12 14.01 9 11.01" />
         </svg>
       ),
       "alert-circle": (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <circle cx="12" cy="12" r="10" />
           <line x1="12" y1="8" x2="12" y2="12" />
           <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
       ),
       "x-circle": (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <circle cx="12" cy="12" r="10" />
           <line x1="15" y1="9" x2="9" y2="15" />
           <line x1="9" y1="9" x2="15" y2="15" />
         </svg>
       ),
       lock: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
           <path d="M7 11V7a5 5 0 0 1 10 0v4" />
         </svg>
       ),
       unlock: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
           <path d="M7 11V7a5 5 0 0 1 9.9-1" />
         </svg>
       ),
       chart: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <path d="M18 20V10" />
           <path d="M12 20V4" />
           <path d="M6 20v-6" />
         </svg>
       ),
       "arrow-left": (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={className}
+        >
           <path d="M19 12H5M12 19l-7-7 7-7" />
         </svg>
       ),
@@ -1718,7 +1864,10 @@ showpage
       <div className="flex min-h-screen items-center justify-center bg-[var(--pro-bg)]">
         <div className="text-center">
           <p className="text-[var(--muted)]">QR code not found</p>
-          <Link href="/dashboard" className="mt-4 inline-block text-[var(--accent)]">
+          <Link
+            href="/dashboard"
+            className="mt-4 inline-block text-[var(--accent)]"
+          >
             Back to Dashboard
           </Link>
         </div>
@@ -1805,8 +1954,13 @@ showpage
         </div>
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
-            <Icon name="lock" className="mx-auto mb-2 h-8 w-8 text-[var(--pro-accent)]" />
-            <p className="text-sm font-medium text-[var(--pro-fg)]">Analytics Locked</p>
+            <Icon
+              name="lock"
+              className="mx-auto mb-2 h-8 w-8 text-[var(--pro-accent)]"
+            />
+            <p className="text-sm font-medium text-[var(--pro-fg)]">
+              Analytics Locked
+            </p>
           </div>
         </div>
       </div>
@@ -1883,7 +2037,9 @@ showpage
 
       {/* Weekly Chart */}
       <div className="mb-6">
-        <h4 className="mb-3 text-sm font-semibold text-[var(--pro-fg)]">Last 7 Days</h4>
+        <h4 className="mb-3 text-sm font-semibold text-[var(--pro-fg)]">
+          Last 7 Days
+        </h4>
         <div className="h-40 overflow-hidden rounded-xl bg-[var(--pro-surface-hover)]">
           <div className="flex h-full items-end justify-between gap-2 px-6 py-4">
             {scanData.map(({ day, count }) => (
@@ -1982,17 +2138,23 @@ showpage
                     >
                       {tab.charAt(0).toUpperCase() + tab.slice(1)}
                       {/* Lock icon for locked tabs */}
-                      {isLocked && (tab === "content" || tab === "analytics") && (
-                        <Icon name="lock" className="ml-1 inline-block h-3 w-3 text-[var(--pro-muted)]" />
-                      )}
+                      {isLocked &&
+                        (tab === "content" || tab === "analytics") && (
+                          <Icon
+                            name="lock"
+                            className="ml-1 inline-block h-3 w-3 text-[var(--pro-muted)]"
+                          />
+                        )}
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Content Tab */}
-              {activeTab === "content" && (
-                isLocked ? renderLockedContent() : (
+              {activeTab === "content" &&
+                (isLocked ? (
+                  renderLockedContent()
+                ) : (
                   <div className="p-4 sm:p-5">
                     {/* WiFi Form */}
                     {selectedContentType === "wifi" && (
@@ -2070,7 +2232,7 @@ showpage
                                       name={urlValid ? "check" : "x"}
                                       className="h-3 w-3 sm:h-3.5 sm:w-3.5"
                                     />
-                                    <span className="hidden xs:inline">
+                                    <span className="xs:inline hidden">
                                       {urlValid ? "Valid" : "Invalid"}
                                     </span>
                                   </span>
@@ -2099,8 +2261,7 @@ showpage
                         </>
                       )}
                   </div>
-                )
-              )}
+                ))}
 
               {/* Labels Tab */}
               {activeTab === "labels" && (
@@ -2256,7 +2417,7 @@ showpage
               {/* Colors Tab */}
               {activeTab === "colors" && (
                 <div className="p-4 sm:p-5">
-                  <div className="grid grid-cols-1 gap-4 xs:grid-cols-2">
+                  <div className="xs:grid-cols-2 grid grid-cols-1 gap-4">
                     {/* Foreground Color */}
                     <div>
                       <label className="mb-2 block text-xs font-semibold">
@@ -2413,12 +2574,7 @@ showpage
                     </label>
                     <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
                       {(
-                        [
-                          "square",
-                          "rounded",
-                          "dots",
-                          "classy",
-                        ] as PatternType[]
+                        ["square", "rounded", "dots", "classy"] as PatternType[]
                       ).map((p) => (
                         <button
                           key={p}
@@ -2507,8 +2663,7 @@ showpage
                       ))}
                     </div>
                     <p className="mt-1.5 text-xs text-[var(--pro-muted)]">
-                      Higher levels allow QR to work even when partially
-                      damaged
+                      Higher levels allow QR to work even when partially damaged
                     </p>
                   </div>
                 </div>
@@ -2607,9 +2762,8 @@ showpage
               )}
 
               {/* Analytics Tab */}
-              {activeTab === "analytics" && (
-                isLocked ? renderLockedAnalytics() : renderAnalyticsTab()
-              )}
+              {activeTab === "analytics" &&
+                (isLocked ? renderLockedAnalytics() : renderAnalyticsTab())}
             </div>
           </div>
 
@@ -2680,10 +2834,7 @@ showpage
                 className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--pro-border)] text-[var(--pro-muted)] transition-colors hover:bg-[var(--pro-surface-hover)] hover:text-[var(--pro-fg)] sm:h-9 sm:w-9"
                 title="Reset zoom"
               >
-                <Icon
-                  name="refresh-cw"
-                  className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-                />
+                <Icon name="refresh-cw" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </button>
             </div>
 
@@ -2748,7 +2899,11 @@ function EditPageLoading() {
 }
 
 // Main export with Suspense
-export default function EditPage({ params }: { params: Promise<{ id: string }> }) {
+export default function EditPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   return (
     <Suspense fallback={<EditPageLoading />}>
       <EditPageContent params={params} />
