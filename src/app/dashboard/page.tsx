@@ -630,7 +630,7 @@ function DashboardContent() {
           </div>
           <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
             <div className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
-              Editable (Paid)
+              Editable
             </div>
             <div className="mt-1 font-serif text-3xl text-[var(--fg)]">
               {stats.editable}
@@ -638,7 +638,7 @@ function DashboardContent() {
           </div>
           <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
             <div className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
-              Static (Free)
+              Static
             </div>
             <div className="mt-1 font-serif text-3xl text-[var(--fg)]">
               {stats.static}

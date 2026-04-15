@@ -285,8 +285,8 @@ export default function TemplatesPage() {
                 <div className="text-xs text-muted">Forever</div>
               </div>
               <div className="text-center">
-                <div className="font-serif text-2xl text-accent">$1.99</div>
-                <div className="text-xs text-muted">To edit later</div>
+                <div className="font-serif text-2xl text-accent">∞</div>
+                <div className="text-xs text-muted">Edits allowed</div>
               </div>
             </div>
           </div>

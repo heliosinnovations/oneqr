@@ -22,14 +22,12 @@ const siteUrl = "https://theqrspot.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "The QR Spot - No Subscription QR Codes | Pay Once, Own Forever",
+  title: "The QR Spot - Free QR Code Generator | Unlimited & No Limits",
   description:
-    "Create editable QR codes with no subscriptions. One-time payment. Generate unlimited QR codes free, unlock editing for $1.99. No recurring fees, no hidden costs.",
+    "Create unlimited QR codes completely free. No limits, no watermarks, no sign-up required. Generate, customize, and download professional QR codes instantly.",
   keywords: [
-    "no subscription qr code",
-    "one time payment qr code",
-    "lifetime qr code",
     "free QR code generator",
+    "unlimited QR codes",
     "QR code maker",
     "create QR code",
     "QR code creator",
@@ -38,6 +36,8 @@ export const metadata: Metadata = {
     "QR code online",
     "download QR code",
     "print QR code",
+    "no watermark QR code",
+    "custom QR code",
   ],
   authors: [{ name: "Helios Innovations" }],
   creator: "Helios Innovations",
@@ -58,23 +58,23 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: siteUrl,
     siteName: "The QR Spot",
-    title: "The QR Spot - No Subscription QR Codes | Pay Once, Own Forever",
+    title: "The QR Spot - Free QR Code Generator | Unlimited & No Limits",
     description:
-      "Create editable QR codes with no subscriptions. One-time payment. Generate unlimited QR codes free, unlock editing for $1.99.",
+      "Create unlimited QR codes completely free. No limits, no watermarks, no sign-up required.",
     images: [
       {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "The QR Spot - No Subscription QR Codes",
+        alt: "The QR Spot - Free QR Code Generator",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "The QR Spot - No Subscription QR Codes | Pay Once, Own Forever",
+    title: "The QR Spot - Free QR Code Generator | Unlimited & No Limits",
     description:
-      "Create editable QR codes with no subscriptions. One-time payment. Generate unlimited QR codes free, unlock editing for $1.99.",
+      "Create unlimited QR codes completely free. No limits, no watermarks, no sign-up required.",
     images: ["/api/og"],
     creator: "@heliosinnovations",
   },
@@ -106,7 +106,7 @@ const websiteSchema = {
   name: "The QR Spot",
   url: siteUrl,
   description:
-    "Create editable QR codes with no subscriptions. One-time payment. Generate unlimited QR codes free, unlock editing for $1.99.",
+    "Create unlimited QR codes completely free. No limits, no watermarks, no sign-up required.",
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -130,14 +130,14 @@ const webApplicationSchema = {
     priceCurrency: "USD",
   },
   description:
-    "No subscription QR code generator. Create unlimited QR codes for free. One-time payment to unlock editing.",
+    "Free QR code generator. Create unlimited QR codes with no limits or watermarks.",
   featureList: [
     "Unlimited QR code generation",
     "Download as PNG or SVG",
     "Print directly from browser",
     "No signup required",
     "No expiration dates",
-    "No subscriptions - one-time pricing",
+    "100% free forever",
   ],
   screenshot: `${siteUrl}/api/og`,
   aggregateRating: {

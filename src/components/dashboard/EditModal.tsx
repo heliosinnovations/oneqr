@@ -30,7 +30,6 @@ export default function EditModal({
   qrCode,
   onClose,
   onUpdate,
-  forceRefresh = false,
 }: EditModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>("content");
   const [newUrl, setNewUrl] = useState("");
@@ -38,9 +37,6 @@ export default function EditModal({
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [qrPreview, setQrPreview] = useState<string | null>(null);
-  const [processingPayment, setProcessingPayment] = useState(false);
-  const [isEditable, setIsEditable] = useState(qrCode.is_editable);
-  const [loadingProfile, setLoadingProfile] = useState(true);
 
   // Style settings
   const [foregroundColor, setForegroundColor] = useState(
@@ -60,37 +56,6 @@ export default function EditModal({
   );
 
   const supabase = createClient();
-
-  // Check if user can edit content - directly check is_editable on QR code
-  const canEditContent = isEditable;
-
-  // Fetch QR code editable status (in case it was updated via payment)
-  // Payment success page updates is_editable immediately, so no polling needed
-  useEffect(() => {
-    async function fetchQRStatus() {
-      setLoadingProfile(true);
-
-      // Re-fetch the QR code to check if it's editable
-      // Use a cache-busting approach to ensure fresh data
-      const { data: qrData, error } = await supabase
-        .from("qr_codes")
-        .select("is_editable")
-        .eq("id", qrCode.id)
-        .single();
-
-      if (error) {
-        console.error("Error fetching QR status:", error);
-        // Still use the prop value if fetch fails
-        setIsEditable(qrCode.is_editable);
-      } else if (qrData) {
-        setIsEditable(qrData.is_editable);
-      }
-
-      setLoadingProfile(false);
-    }
-
-    fetchQRStatus();
-  }, [supabase, qrCode.id, qrCode.is_editable, forceRefresh]);
 
   // Generate QR preview
   useEffect(() => {
@@ -204,38 +169,6 @@ export default function EditModal({
     }, 1500);
   };
 
-  const handleUnlock = async () => {
-    setProcessingPayment(true);
-
-    try {
-      const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SINGLE;
-
-      // Call checkout API with QR code ID
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          priceId,
-          qrCodeId: qrCode.id,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.url;
-      } else {
-        setError("Failed to start payment process");
-        setProcessingPayment(false);
-      }
-    } catch (err) {
-      console.error("Checkout error:", err);
-      setError("Failed to start payment process");
-      setProcessingPayment(false);
-    }
-  };
-
   const tabs: { id: TabType; label: string; icon: JSX.Element }[] = [
     {
       id: "content",
@@ -315,133 +248,7 @@ export default function EditModal({
     },
   ];
 
-  // Content Tab - Locked State (single $1.99 paywall)
-  const renderLockedContent = () => (
-    <div className="p-4 sm:p-6">
-      {/* QR Info Row */}
-      <div className="mb-4 flex items-center gap-3 rounded-xl bg-[var(--surface)] p-3 sm:mb-6 sm:gap-4 sm:p-4">
-        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white sm:h-14 sm:w-14">
-          {qrPreview ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={qrPreview}
-              alt="QR preview"
-              className="h-9 w-9 sm:h-11 sm:w-11"
-            />
-          ) : (
-            <div className="h-9 w-9 animate-pulse rounded bg-[var(--border)] sm:h-11 sm:w-11" />
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-sm font-semibold text-[var(--fg)] sm:text-base">
-            {qrCode.title}
-          </div>
-          <div className="truncate text-xs text-[var(--muted)]">
-            theqrspot.com/r/{qrCode.short_code}
-          </div>
-        </div>
-      </div>
-
-      {/* Lock Message */}
-      <div className="mb-4 rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--surface)] p-5 text-center sm:mb-6 sm:p-8">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent-light)]">
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            className="h-8 w-8 text-[var(--accent)]"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-            />
-          </svg>
-        </div>
-        <h3 className="mb-2 font-serif text-lg text-[var(--fg)] sm:text-xl">
-          Unlock Editing and Analytics
-        </h3>
-        <p className="mb-3 text-sm text-[var(--muted)] sm:mb-4">
-          Change where this QR code redirects and view scan analytics.
-        </p>
-
-        {/* Current URL */}
-        <div className="rounded-lg bg-white p-3 text-left">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)] sm:text-[11px]">
-            Current destination
-          </div>
-          <div className="mt-1 break-all text-sm text-[var(--fg)]">
-            {qrCode.destination_url}
-          </div>
-        </div>
-      </div>
-
-      {/* Single $1.99 Pricing */}
-      <div className="mb-4 rounded-xl border-2 border-[var(--accent)] bg-[var(--accent-light)] p-4 text-center sm:mb-6 sm:p-6">
-        <div className="font-serif text-3xl text-[var(--fg)] sm:text-4xl">
-          $1.99
-        </div>
-        <div className="mt-1 text-sm font-semibold text-[var(--fg)]">
-          One-time payment
-        </div>
-        <div className="mt-2 text-xs text-[var(--muted)]">
-          Unlock editing and analytics for this QR code forever
-        </div>
-      </div>
-
-      {error && (
-        <p className="mb-4 text-center text-sm text-red-500">{error}</p>
-      )}
-
-      {/* Unlock Button */}
-      <button
-        onClick={handleUnlock}
-        disabled={processingPayment}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] hover:shadow-lg disabled:translate-y-0 disabled:opacity-70"
-      >
-        {processingPayment ? (
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-        ) : (
-          <>
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              className="h-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
-              />
-            </svg>
-            Unlock for $1.99
-          </>
-        )}
-      </button>
-
-      <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[var(--muted)]">
-        <svg
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          className="h-3.5 w-3.5"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-          />
-        </svg>
-        Secure payment via Stripe
-      </div>
-    </div>
-  );
-
-  // Content Tab - Editable State
+  // Content Tab - Always Editable
   const renderEditableContent = () => {
     if (success) {
       return (
@@ -839,124 +646,7 @@ export default function EditModal({
     </div>
   );
 
-  // Analytics Tab - Locked State (single $1.99 paywall)
-  const renderLockedAnalytics = () => (
-    <div className="p-4 sm:p-6">
-      {/* QR Info Row */}
-      <div className="mb-4 flex items-center gap-3 rounded-xl bg-[var(--surface)] p-3 sm:mb-6 sm:gap-4 sm:p-4">
-        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white sm:h-14 sm:w-14">
-          {qrPreview ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={qrPreview}
-              alt="QR preview"
-              className="h-9 w-9 sm:h-11 sm:w-11"
-            />
-          ) : (
-            <div className="h-9 w-9 animate-pulse rounded bg-[var(--border)] sm:h-11 sm:w-11" />
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-sm font-semibold text-[var(--fg)] sm:text-base">
-            {qrCode.title}
-          </div>
-          <div className="truncate text-xs text-[var(--muted)]">
-            theqrspot.com/r/{qrCode.short_code}
-          </div>
-        </div>
-      </div>
-
-      {/* Lock Message */}
-      <div className="mb-4 rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--surface)] p-5 text-center sm:mb-6 sm:p-8">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent-light)]">
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            className="h-8 w-8 text-[var(--accent)]"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-            />
-          </svg>
-        </div>
-        <h3 className="mb-2 font-serif text-lg text-[var(--fg)] sm:text-xl">
-          Unlock Editing and Analytics
-        </h3>
-        <p className="mb-3 text-sm text-[var(--muted)] sm:mb-4">
-          View detailed scan analytics including total scans, weekly trends, and
-          more.
-        </p>
-      </div>
-
-      {/* Single $1.99 Pricing */}
-      <div className="mb-4 rounded-xl border-2 border-[var(--accent)] bg-[var(--accent-light)] p-4 text-center sm:mb-6 sm:p-6">
-        <div className="font-serif text-3xl text-[var(--fg)] sm:text-4xl">
-          $1.99
-        </div>
-        <div className="mt-1 text-sm font-semibold text-[var(--fg)]">
-          One-time payment
-        </div>
-        <div className="mt-2 text-xs text-[var(--muted)]">
-          Unlock editing and analytics for this QR code forever
-        </div>
-      </div>
-
-      {error && (
-        <p className="mb-4 text-center text-sm text-red-500">{error}</p>
-      )}
-
-      {/* Unlock Button */}
-      <button
-        onClick={handleUnlock}
-        disabled={processingPayment}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] hover:shadow-lg disabled:translate-y-0 disabled:opacity-70"
-      >
-        {processingPayment ? (
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-        ) : (
-          <>
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              className="h-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
-              />
-            </svg>
-            Unlock for $1.99
-          </>
-        )}
-      </button>
-
-      <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[var(--muted)]">
-        <svg
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          className="h-3.5 w-3.5"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-          />
-        </svg>
-        Secure payment via Stripe
-      </div>
-    </div>
-  );
-
-  // Analytics Tab - Unlocked State (for paid users)
+  // Analytics Tab - Always Available
   const renderAnalyticsTab = () => (
     <div className="p-4 sm:p-6">
       {/* Coming Soon / Basic Stats */}
@@ -1011,27 +701,13 @@ export default function EditModal({
   const renderTabContent = () => {
     switch (activeTab) {
       case "content":
-        if (loadingProfile) {
-          return (
-            <div className="flex h-64 items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--border)] border-t-[var(--accent)]" />
-            </div>
-          );
-        }
-        return canEditContent ? renderEditableContent() : renderLockedContent();
+        return renderEditableContent();
       case "style":
         return renderStyleTab();
       case "format":
         return renderFormatTab();
       case "analytics":
-        if (loadingProfile) {
-          return (
-            <div className="flex h-64 items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--border)] border-t-[var(--accent)]" />
-            </div>
-          );
-        }
-        return canEditContent ? renderAnalyticsTab() : renderLockedAnalytics();
+        return renderAnalyticsTab();
       default:
         return null;
     }

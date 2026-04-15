@@ -573,27 +573,25 @@ export default function QRDetailPage({
             </div>
           </div>
 
-          {/* Upgrade CTA (only for non-editable) */}
-          {!qrCode.is_editable && (
-            <div className="rounded-2xl bg-gradient-to-r from-[var(--accent)] to-[#ff8c42] p-8 text-white">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h3 className="mb-1 font-serif text-xl">
-                    Unlock Editing and Analytics
-                  </h3>
-                  <p className="text-sm opacity-90">
-                    $1.99 one-time. Edit this QR code forever.
-                  </p>
-                </div>
-                <Link
-                  href={`/edit/${qrCode.id}`}
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg bg-white px-6 py-3 text-sm font-semibold text-[var(--accent)] transition-transform hover:-translate-y-0.5"
-                >
-                  Unlock for $1.99
-                </Link>
+          {/* Edit CTA */}
+          <div className="rounded-2xl bg-gradient-to-r from-[var(--accent)] to-[#ff8c42] p-8 text-white">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="mb-1 font-serif text-xl">
+                  Edit This QR Code
+                </h3>
+                <p className="text-sm opacity-90">
+                  Change destination, customize design, and more.
+                </p>
               </div>
+              <Link
+                href={`/edit/${qrCode.id}`}
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-lg bg-white px-6 py-3 text-sm font-semibold text-[var(--accent)] transition-transform hover:-translate-y-0.5"
+              >
+                Edit QR Code
+              </Link>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

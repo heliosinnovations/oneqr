@@ -711,7 +711,6 @@ function EditPageContent({ params }: { params: Promise<{ id: string }> }) {
   const [activeTab, setActiveTab] = useState<TabType>("content");
   const [zoomLevel, setZoomLevel] = useState(100);
   const [saving, setSaving] = useState(false);
-  const [processingPayment, setProcessingPayment] = useState(false);
 
   // Content type state for WiFi and Contact forms
   const [selectedContentType, setSelectedContentType] = useState<
@@ -1457,38 +1456,7 @@ showpage
     showToast,
   ]);
 
-  // Handle unlock payment
-  const handleUnlock = async () => {
-    if (!qrCode) return;
-
-    setProcessingPayment(true);
-
-    try {
-      const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SINGLE;
-
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          priceId,
-          qrCodeId: qrCode.id,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        showToast("Failed to start payment process", "error");
-        setProcessingPayment(false);
-      }
-    } catch (err) {
-      console.error("Checkout error:", err);
-      showToast("Failed to start payment process", "error");
-      setProcessingPayment(false);
-    }
-  };
+  // All QR codes are now free to edit - payment handling removed
 
   // Auto-regenerate QR when options change
   useEffect(() => {
@@ -1875,128 +1843,10 @@ showpage
     );
   }
 
-  // Check if content/analytics tabs are locked
-  const isLocked = !qrCode.is_editable;
+  // All QR codes are now free to edit - no payment required
+  const isLocked = false;
 
-  // Render locked content tab
-  const renderLockedContent = () => (
-    <div className="p-4 sm:p-5">
-      {/* Current URL Display */}
-      <div className="mb-4 rounded-lg bg-[var(--pro-surface-hover)] p-4">
-        <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--pro-muted)] sm:text-[11px]">
-          Current destination
-        </div>
-        <div className="mt-1 break-all text-sm text-[var(--pro-fg)]">
-          {qrCode.destination_url}
-        </div>
-      </div>
-
-      {/* Lock Message */}
-      <div className="mb-4 rounded-xl border-2 border-dashed border-[var(--pro-border)] bg-[var(--pro-surface-hover)] p-5 text-center sm:mb-6 sm:p-8">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--pro-accent-light)]">
-          <Icon name="lock" className="h-8 w-8 text-[var(--pro-accent)]" />
-        </div>
-        <h3 className="mb-2 font-serif text-lg text-[var(--pro-fg)] sm:text-xl">
-          Unlock Editing
-        </h3>
-        <p className="mb-3 text-sm text-[var(--pro-muted)] sm:mb-4">
-          Change where this QR code redirects anytime.
-        </p>
-      </div>
-
-      {/* Pricing */}
-      <div className="mb-4 rounded-xl border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] p-4 text-center sm:mb-6 sm:p-6">
-        <div className="font-serif text-3xl text-[var(--pro-fg)] sm:text-4xl">
-          $1.99
-        </div>
-        <div className="mt-1 text-sm font-semibold text-[var(--pro-fg)]">
-          One-time payment
-        </div>
-        <div className="mt-2 text-xs text-[var(--pro-muted)]">
-          Unlock editing and analytics for this QR code forever
-        </div>
-      </div>
-
-      {/* Unlock Button */}
-      <button
-        onClick={handleUnlock}
-        disabled={processingPayment}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--pro-accent)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] hover:shadow-lg disabled:translate-y-0 disabled:opacity-70"
-      >
-        {processingPayment ? (
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-        ) : (
-          <>
-            <Icon name="unlock" className="h-5 w-5" />
-            Unlock for $1.99
-          </>
-        )}
-      </button>
-
-      <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[var(--pro-muted)]">
-        <Icon name="lock" className="h-3.5 w-3.5" />
-        Secure payment via Stripe
-      </div>
-    </div>
-  );
-
-  // Render locked analytics tab
-  const renderLockedAnalytics = () => (
-    <div className="p-4 sm:p-5">
-      {/* Blurred placeholder */}
-      <div className="relative mb-6 overflow-hidden rounded-xl bg-[var(--pro-surface-hover)] p-6">
-        <div className="pointer-events-none blur-sm">
-          <div className="mb-4 h-32 rounded-lg bg-[var(--pro-border)]"></div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="h-16 rounded-lg bg-[var(--pro-border)]"></div>
-            <div className="h-16 rounded-lg bg-[var(--pro-border)]"></div>
-          </div>
-        </div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <Icon
-              name="lock"
-              className="mx-auto mb-2 h-8 w-8 text-[var(--pro-accent)]"
-            />
-            <p className="text-sm font-medium text-[var(--pro-fg)]">
-              Analytics Locked
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Pricing */}
-      <div className="mb-4 rounded-xl border-2 border-[var(--pro-accent)] bg-[var(--pro-accent-light)] p-4 text-center sm:mb-6 sm:p-6">
-        <div className="font-serif text-3xl text-[var(--pro-fg)] sm:text-4xl">
-          $1.99
-        </div>
-        <div className="mt-1 text-sm font-semibold text-[var(--pro-fg)]">
-          One-time payment
-        </div>
-        <div className="mt-2 text-xs text-[var(--pro-muted)]">
-          Unlock editing and analytics for this QR code forever
-        </div>
-      </div>
-
-      {/* Unlock Button */}
-      <button
-        onClick={handleUnlock}
-        disabled={processingPayment}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--pro-accent)] px-6 py-4 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#e64500] hover:shadow-lg disabled:translate-y-0 disabled:opacity-70"
-      >
-        {processingPayment ? (
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-        ) : (
-          <>
-            <Icon name="unlock" className="h-5 w-5" />
-            Unlock for $1.99
-          </>
-        )}
-      </button>
-    </div>
-  );
-
-  // Render unlocked analytics tab
+  // Render analytics tab (always available now)
   const renderAnalyticsTab = () => (
     <div className="p-4 sm:p-5">
       {/* Stats Grid */}
@@ -2151,10 +2001,7 @@ showpage
               </div>
 
               {/* Content Tab */}
-              {activeTab === "content" &&
-                (isLocked ? (
-                  renderLockedContent()
-                ) : (
+              {activeTab === "content" && (
                   <div className="p-4 sm:p-5">
                     {/* WiFi Form */}
                     {selectedContentType === "wifi" && (
@@ -2261,7 +2108,7 @@ showpage
                         </>
                       )}
                   </div>
-                ))}
+                )}
 
               {/* Labels Tab */}
               {activeTab === "labels" && (
@@ -2762,8 +2609,7 @@ showpage
               )}
 
               {/* Analytics Tab */}
-              {activeTab === "analytics" &&
-                (isLocked ? renderLockedAnalytics() : renderAnalyticsTab())}
+              {activeTab === "analytics" && renderAnalyticsTab()}
             </div>
           </div>
 

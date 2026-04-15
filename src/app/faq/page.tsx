@@ -21,10 +21,10 @@ export default function FAQPage() {
                     What is The QR Spot?
                   </h3>
                   <p className="text-gray-700">
-                    The QR Spot is a QR code generator that lets you create QR
-                    codes for free, download them, and optionally make them
-                    editable forever. Unlike other services, your QR codes never
-                    expire and there are no hidden limits.
+                    The QR Spot is a completely free QR code generator that lets
+                    you create unlimited QR codes, customize them, edit them,
+                    and download them. Unlike other services, your QR codes
+                    never expire and there are no hidden limits.
                   </p>
                 </div>
 
@@ -32,16 +32,11 @@ export default function FAQPage() {
                   <h3 className="mb-2 text-xl font-semibold">
                     How much does it cost?
                   </h3>
-                  <ul className="list-disc space-y-1 pl-6 text-gray-700">
-                    <li>
-                      <strong>Free:</strong> Generate unlimited QR codes,
-                      download as PNG/SVG, print immediately
-                    </li>
-                    <li>
-                      <strong>$1.99 per QR code:</strong> Unlock editing (change
-                      the destination URL anytime) and view analytics
-                    </li>
-                  </ul>
+                  <p className="text-gray-700">
+                    <strong>100% Free!</strong> Generate unlimited QR codes,
+                    download as PNG/SVG, print immediately, edit anytime, and
+                    view analytics—all completely free.
+                  </p>
                 </div>
 
                 <div>
@@ -49,11 +44,10 @@ export default function FAQPage() {
                     What does &quot;editable&quot; mean?
                   </h3>
                   <p className="text-gray-700">
-                    When you pay to make a QR code editable, you can change
-                    where it points without reprinting it. For example, if you
-                    printed QR codes on business cards, you can update the
-                    destination URL to point to a new website, portfolio, or
-                    offer—without reprinting the cards.
+                    You can change where a QR code points without reprinting it.
+                    For example, if you printed QR codes on business cards, you
+                    can update the destination URL to point to a new website,
+                    portfolio, or offer—without reprinting the cards.
                   </p>
                 </div>
 
@@ -62,8 +56,7 @@ export default function FAQPage() {
                     Do my QR codes expire?
                   </h3>
                   <p className="text-gray-700">
-                    Never. Once you generate a QR code, it works forever. Even
-                    the free ones.
+                    Never. Once you generate a QR code, it works forever.
                   </p>
                 </div>
               </div>
@@ -154,7 +147,7 @@ export default function FAQPage() {
                   <ul className="list-disc space-y-1 pl-6 text-gray-700">
                     <li>Save QR codes to your dashboard</li>
                     <li>Edit destination URLs after printing</li>
-                    <li>View scan analytics (coming soon)</li>
+                    <li>View scan analytics</li>
                     <li>Access your QR codes from any device</li>
                   </ul>
                 </div>
@@ -192,21 +185,10 @@ export default function FAQPage() {
                     How do editable QR codes work?
                   </h3>
                   <p className="text-gray-700">
-                    When you make a QR code editable, it redirects through our
-                    service (e.g., <code>theqrspot.com/abc123</code>
+                    When you save a QR code to your dashboard, it redirects
+                    through our service (e.g., <code>theqrspot.com/abc123</code>
                     ). You can change the destination URL in your dashboard, and
                     the QR code automatically updates.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="mb-2 text-xl font-semibold">
-                    Can I edit a free QR code?
-                  </h3>
-                  <p className="text-gray-700">
-                    No. Free QR codes point directly to your URL and can&apos;t
-                    be edited. To make a QR code editable, pay $1.99 per QR
-                    code.
                   </p>
                 </div>
 
@@ -215,7 +197,8 @@ export default function FAQPage() {
                     Do you track who scans my QR codes?
                   </h3>
                   <p className="mb-2 text-gray-700">
-                    For editable QR codes, we collect basic scan analytics:
+                    For QR codes saved to your dashboard, we collect basic scan
+                    analytics:
                   </p>
                   <ul className="list-disc space-y-1 pl-6 text-gray-700">
                     <li>Number of scans</li>
@@ -235,54 +218,6 @@ export default function FAQPage() {
                   <p className="text-gray-700">
                     Yes. In your dashboard, turn off analytics for any QR code.
                     Scans will still work, but won&apos;t be tracked.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            <section>
-              <h2 className="mb-6 border-b pb-2 font-serif text-3xl">
-                Payments & Billing
-              </h2>
-
-              <div className="space-y-6">
-                <div>
-                  <h3 className="mb-2 text-xl font-semibold">
-                    What payment methods do you accept?
-                  </h3>
-                  <p className="text-gray-700">
-                    We accept credit cards, debit cards, Apple Pay, and Google
-                    Pay via Stripe.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="mb-2 text-xl font-semibold">
-                    Is it a subscription?
-                  </h3>
-                  <p className="text-gray-700">
-                    No! All payments are one-time only. No recurring charges, no
-                    hidden fees.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="mb-2 text-xl font-semibold">
-                    What if I want a refund?
-                  </h3>
-                  <p className="text-gray-700">
-                    If you&apos;re not satisfied within 30 days, email us at
-                    info@heliosinnovations.org for a full refund.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="mb-2 text-xl font-semibold">
-                    Do you offer discounts for bulk purchases?
-                  </h3>
-                  <p className="text-gray-700">
-                    Not yet, but we&apos;re working on it! Contact us for custom
-                    pricing on large orders.
                   </p>
                 </div>
               </div>
@@ -323,8 +258,8 @@ export default function FAQPage() {
                     Can I customize the QR code design?
                   </h3>
                   <p className="text-gray-700">
-                    Not yet, but custom colors, logos, and frames are coming
-                    soon!
+                    Yes! You can customize colors, patterns, and more using our
+                    generator.
                   </p>
                 </div>
 
@@ -420,9 +355,8 @@ export default function FAQPage() {
                     The QR code redirects to the wrong URL.
                   </h3>
                   <p className="text-gray-700">
-                    If it&apos;s an editable QR code, check your dashboard to
-                    see what URL it&apos;s set to. If it&apos;s a free QR code,
-                    you may have entered the wrong URL when creating it.
+                    Check your dashboard to see what URL it&apos;s set to and
+                    update it if needed.
                   </p>
                 </div>
 

@@ -142,19 +142,14 @@ export default function TermsPage() {
             </section>
 
             <section className="mb-12">
-              <h2 className="mb-4 font-serif text-3xl">Payment Terms</h2>
-              <p>The QR Spot offers both free and paid features:</p>
+              <h2 className="mb-4 font-serif text-3xl">Service Features</h2>
+              <p>The QR Spot is completely free and includes:</p>
               <ul className="list-disc space-y-2 pl-6">
-                <li>
-                  <strong>Free tier:</strong> Generate unlimited QR codes, save
-                  to dashboard
-                </li>
-                <li>
-                  <strong>Paid features:</strong> One-time payment for editing
-                  and advanced features
-                </li>
-                <li>All payments are processed securely via Stripe</li>
-                <li>Refunds are handled on a case-by-case basis</li>
+                <li>Generate unlimited QR codes</li>
+                <li>Save QR codes to your dashboard</li>
+                <li>Edit QR code destinations anytime</li>
+                <li>View scan analytics</li>
+                <li>Download in multiple formats</li>
               </ul>
             </section>
 
