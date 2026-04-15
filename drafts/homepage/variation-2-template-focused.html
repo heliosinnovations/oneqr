@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TheQRSpot - The Ultimate Free QR Code Generator | Variation 2: Template-Focused</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fffef9;
+      --fg: #1a1a1a;
+      --accent: #ff4d00;
+      --accent-light: #fff0e6;
+      --muted: #666;
+      --border: #e5e5e0;
+      --surface: #f7f6f1;
+      --success: #22c55e;
+      --success-light: #dcfce7;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'DM Serif Display', serif;
+      line-height: 1.2;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 254, 249, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      padding: 1rem 2rem;
+    }
+
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--fg);
+    }
+
+    .nav-cta {
+      background: var(--accent);
+      color: white;
+      padding: 0.625rem 1.25rem;
+      border-radius: 100px;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .nav-cta:hover {
+      background: #e64500;
+      transform: translateY(-1px);
+    }
+
+    /* Hero - Split layout with template selector */
+    .hero {
+      padding: 7rem 2rem 3rem;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .hero-top {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 4rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--fg);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-badge .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero h1 .accent {
+      color: var(--accent);
+    }
+
+    .hero h1 em {
+      font-style: italic;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+
+    .hero-pills {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      background: var(--surface);
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      font-size: 0.8125rem;
+      color: var(--fg);
+    }
+
+    .hero-pill svg {
+      width: 16px;
+      height: 16px;
+      color: var(--success);
+    }
+
+    /* Template Gallery - Main Focus */
+    .template-gallery {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.08);
+    }
+
+    .gallery-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .gallery-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .gallery-cta {
+      font-size: 0.875rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .gallery-cta svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.5rem;
+    }
+
+    .template-card {
+      position: relative;
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+
+    .template-card:hover {
+      background: white;
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(255, 77, 0, 0.15);
+    }
+
+    .template-card.featured {
+      grid-column: span 2;
+      grid-row: span 2;
+      padding: 2rem;
+    }
+
+    .template-icon {
+      width: 56px;
+      height: 56px;
+      background: white;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .template-card.featured .template-icon {
+      width: 80px;
+      height: 80px;
+    }
+
+    .template-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .template-card.featured .template-icon svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    .template-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .template-card.featured .template-name {
+      font-size: 1.125rem;
+    }
+
+    .template-desc {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .template-card.featured .template-desc {
+      font-size: 0.875rem;
+    }
+
+    .template-popular {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--accent);
+      color: white;
+      font-size: 0.625rem;
+      font-weight: 700;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .template-start-btn {
+      display: none;
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: auto;
+    }
+
+    .template-card:hover .template-start-btn {
+      display: block;
+    }
+
+    /* Quick Start Section */
+    .quick-start {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .quick-start-label {
+      font-size: 0.875rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .quick-start-input {
+      flex: 1;
+      padding: 1rem 1.25rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .quick-start-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .quick-start-btn {
+      padding: 1rem 2rem;
+      background: var(--fg);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .quick-start-btn:hover {
+      background: var(--accent);
+    }
+
+    /* Features Strip */
+    .features-strip {
+      padding: 4rem 2rem;
+      background: var(--fg);
+      color: white;
+    }
+
+    .features-strip-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 3rem;
+    }
+
+    .feature-item {
+      text-align: center;
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      color: var(--accent);
+    }
+
+    .feature-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .feature-item h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-item p {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Social Proof */
+    .social-proof {
+      padding: 5rem 2rem;
+    }
+
+    .social-proof-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .social-proof h2 {
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      padding: 2rem;
+      background: var(--surface);
+      border-radius: 16px;
+    }
+
+    .stat-number {
+      font-family: 'DM Serif Display', serif;
+      font-size: 3.5rem;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.9375rem;
+      color: var(--muted);
+    }
+
+    /* Comparison - Compact */
+    .comparison {
+      padding: 5rem 2rem;
+      background: var(--surface);
+    }
+
+    .comparison-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .comparison-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .comparison-header h2 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .comparison-header p {
+      color: var(--muted);
+      font-size: 1.125rem;
+    }
+
+    .comparison-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .comparison-card {
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem;
+      position: relative;
+    }
+
+    .comparison-card.theqrspot {
+      border: 3px solid var(--accent);
+    }
+
+    .comparison-card.theqrspot::before {
+      content: 'TheQRSpot';
+      position: absolute;
+      top: -12px;
+      left: 24px;
+      background: var(--accent);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .comparison-card.competitors::before {
+      content: 'Competitors';
+      position: absolute;
+      top: -12px;
+      left: 24px;
+      background: var(--muted);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .comparison-price {
+      font-family: 'DM Serif Display', serif;
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .comparison-card.theqrspot .comparison-price {
+      color: var(--accent);
+    }
+
+    .comparison-card.competitors .comparison-price {
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .comparison-list {
+      list-style: none;
+    }
+
+    .comparison-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9375rem;
+    }
+
+    .comparison-list li:last-child {
+      border-bottom: none;
+    }
+
+    .comparison-list .check {
+      width: 20px;
+      height: 20px;
+      background: var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .comparison-list .check svg {
+      width: 12px;
+      height: 12px;
+      color: white;
+    }
+
+    .comparison-list .x {
+      width: 20px;
+      height: 20px;
+      background: var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .comparison-list .x svg {
+      width: 12px;
+      height: 12px;
+      color: var(--muted);
+    }
+
+    /* Use Cases - Visual Grid */
+    .use-cases {
+      padding: 5rem 2rem;
+    }
+
+    .use-cases-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .use-cases-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .use-cases-header h2 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .use-cases-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .use-case-card {
+      position: relative;
+      background: linear-gradient(135deg, var(--surface) 0%, white 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .use-case-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+    }
+
+    .use-case-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .use-case-card h4 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .use-case-card p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .use-case-link {
+      font-size: 0.875rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .use-case-link svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Final CTA - Full Width */
+    .final-cta {
+      padding: 6rem 2rem;
+      background: var(--fg);
+      text-align: center;
+      color: white;
+    }
+
+    .final-cta-inner {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .final-cta h2 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .final-cta h2 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .final-cta p {
+      font-size: 1.125rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 2rem;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--accent);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.0625rem;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 77, 0, 0.4);
+    }
+
+    .btn-primary svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 3rem 2rem;
+      background: var(--fg);
+      color: rgba(255, 254, 249, 0.6);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      color: var(--bg);
+    }
+
+    .footer-logo span {
+      color: var(--accent);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: rgba(255, 254, 249, 0.6);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--bg);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .template-card.featured {
+        grid-column: span 1;
+        grid-row: span 1;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .hero h1 {
+        font-size: 3rem;
+      }
+
+      .features-strip-inner {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+      }
+
+      .comparison-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .use-cases-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 6rem 1.5rem 2rem;
+      }
+
+      .hero h1 {
+        font-size: 2.25rem;
+      }
+
+      .hero-pills {
+        gap: 0.5rem;
+      }
+
+      .hero-pill {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+      }
+
+      .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+
+      .template-card {
+        padding: 1rem;
+      }
+
+      .template-icon {
+        width: 44px;
+        height: 44px;
+      }
+
+      .template-icon svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .quick-start {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .quick-start-label {
+        display: none;
+      }
+
+      .features-strip-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .use-cases-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .final-cta h2 {
+        font-size: 2rem;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="logo">TheQR<span>Spot</span></a>
+      <ul class="nav-links">
+        <li><a href="/templates">Templates</a></li>
+        <li><a href="/bulk">Bulk Create</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="/faq">FAQ</a></li>
+      </ul>
+      <a href="#qr-generator" class="nav-cta">Start Free</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section - Template Focused -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-top">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          Free Forever — No Credit Card Required
+        </div>
+        <h1>The Ultimate <span class="accent"><em>Free</em></span><br>QR Code Generator</h1>
+        <p class="hero-subtitle">Choose from 10+ smart templates. Advanced customization. No watermarks. All free.</p>
+
+        <div class="hero-pills">
+          <span class="hero-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Unlimited codes
+          </span>
+          <span class="hero-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            2000px exports
+          </span>
+          <span class="hero-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Bulk generation
+          </span>
+          <span class="hero-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            No watermarks
+          </span>
+        </div>
+      </div>
+
+      <!-- Template Gallery - Main Focus -->
+      <div class="template-gallery" id="qr-generator">
+        <div class="gallery-header">
+          <span class="gallery-title">Choose a template to start</span>
+          <a href="/templates" class="gallery-cta">
+            View all 10+ templates
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="gallery-grid">
+          <!-- Featured: URL -->
+          <div class="template-card featured">
+            <span class="template-popular">Most Popular</span>
+            <div class="template-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+              </svg>
+            </div>
+            <span class="template-name">URL / Website</span>
+            <span class="template-desc">Link to any webpage, social profile, or online resource</span>
+            <button class="template-start-btn">Create URL QR</button>
+          </div>
+
+          <!-- WiFi -->
+          <div class="template-card">
+            <div class="template-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+                <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                <circle cx="12" cy="20" r="1"/>
+              </svg>
+            </div>
+            <span class="template-name">WiFi</span>
+            <span class="template-desc">Share network credentials</span>
+            <button class="template-start-btn">Create WiFi QR</button>
+          </div>
+
+          <!-- vCard -->
+          <div class="template-card">
+            <div class="template-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <span class="template-name">vCard</span>
+            <span class="template-desc">Digital business card</span>
+            <button class="template-start-btn">Create vCard QR</button>
+          </div>
+
+          <!-- WhatsApp -->
+          <div class="template-card">
+            <div class="template-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+            </div>
+            <span class="template-name">WhatsApp</span>
+            <span class="template-desc">Start a chat instantly</span>
+            <button class="template-start-btn">Create WhatsApp QR</button>
+          </div>
+
+          <!-- Email -->
+          <div class="template-card">
+            <div class="template-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <span class="template-name">Email</span>
+            <span class="template-desc">Pre-filled email drafts</span>
+            <button class="template-start-btn">Create Email QR</button>
+          </div>
+
+          <!-- Location -->
+          <div class="template-card">
+            <div class="template-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <span class="template-name">Location</span>
+            <span class="template-desc">Share GPS coordinates</span>
+            <button class="template-start-btn">Create Location QR</button>
+          </div>
+
+          <!-- SMS -->
+          <div class="template-card">
+            <div class="template-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <span class="template-name">SMS</span>
+            <span class="template-desc">Pre-written text message</span>
+            <button class="template-start-btn">Create SMS QR</button>
+          </div>
+
+          <!-- Payment -->
+          <div class="template-card">
+            <div class="template-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+            </div>
+            <span class="template-name">Payment</span>
+            <span class="template-desc">UPI, PayPal, Venmo</span>
+            <button class="template-start-btn">Create Payment QR</button>
+          </div>
+        </div>
+
+        <!-- Quick Start for URL -->
+        <div class="quick-start">
+          <span class="quick-start-label">Or paste a URL:</span>
+          <input type="url" class="quick-start-input" placeholder="https://example.com">
+          <button class="quick-start-btn">Generate QR</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Strip -->
+  <section class="features-strip" id="features">
+    <div class="features-strip-inner">
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <h4>Instant Generation</h4>
+        <p>Create QR codes in seconds. No waiting, no delays.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+          </svg>
+        </div>
+        <h4>High-Res Exports</h4>
+        <p>Up to 2000px PNG or vector SVG for print.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h4>Bulk Generation</h4>
+        <p>Create up to 50 QR codes at once. Free.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <h4>No Watermarks</h4>
+        <p>Clean, professional QR codes. Always.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Proof -->
+  <section class="social-proof">
+    <div class="social-proof-inner">
+      <h2>Trusted by thousands</h2>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">50K+</div>
+          <div class="stat-label">Happy users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">500K+</div>
+          <div class="stat-label">QR codes generated</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Free forever</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison - Side by Side -->
+  <section class="comparison">
+    <div class="comparison-inner">
+      <div class="comparison-header">
+        <h2>Why choose us?</h2>
+        <p>Compare and see the difference</p>
+      </div>
+
+      <div class="comparison-cards">
+        <div class="comparison-card theqrspot">
+          <div class="comparison-price">$0/mo</div>
+          <ul class="comparison-list">
+            <li>
+              <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              Unlimited QR codes
+            </li>
+            <li>
+              <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              10+ smart templates
+            </li>
+            <li>
+              <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              High-res exports (2000px)
+            </li>
+            <li>
+              <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              Bulk generation (50 codes)
+            </li>
+            <li>
+              <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              No watermarks ever
+            </li>
+            <li>
+              <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              Advanced customization
+            </li>
+          </ul>
+        </div>
+
+        <div class="comparison-card competitors">
+          <div class="comparison-price">$5-15/mo</div>
+          <ul class="comparison-list">
+            <li>
+              <span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+              2-5 QR codes limit
+            </li>
+            <li>
+              <span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+              Few or no templates
+            </li>
+            <li>
+              <span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+              Low-res exports (400px)
+            </li>
+            <li>
+              <span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+              Bulk is paid only
+            </li>
+            <li>
+              <span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+              Watermarks on free tier
+            </li>
+            <li>
+              <span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+              Basic customization
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use Cases -->
+  <section class="use-cases">
+    <div class="use-cases-inner">
+      <div class="use-cases-header">
+        <h2>Perfect for everyone</h2>
+      </div>
+
+      <div class="use-cases-grid">
+        <div class="use-case-card">
+          <div class="use-case-icon">🍽️</div>
+          <h4>Restaurants</h4>
+          <p>Digital menus that update instantly. No printing costs.</p>
+          <a href="/templates" class="use-case-link">
+            Create menu QR
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="use-case-card">
+          <div class="use-case-icon">🛍️</div>
+          <h4>Retail</h4>
+          <p>Product info, reviews, and promotions at a scan.</p>
+          <a href="/templates" class="use-case-link">
+            Create product QR
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="use-case-card">
+          <div class="use-case-icon">🎫</div>
+          <h4>Events</h4>
+          <p>Ticket check-in, event details, and schedules.</p>
+          <a href="/templates" class="use-case-link">
+            Create event QR
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="use-case-card">
+          <div class="use-case-icon">💼</div>
+          <h4>Business Cards</h4>
+          <p>Share your contact info with a single scan.</p>
+          <a href="/templates" class="use-case-link">
+            Create vCard QR
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="use-case-card">
+          <div class="use-case-icon">🏠</div>
+          <h4>Real Estate</h4>
+          <p>Property tours, floorplans, and contact details.</p>
+          <a href="/templates" class="use-case-link">
+            Create property QR
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="use-case-card">
+          <div class="use-case-icon">📶</div>
+          <h4>WiFi Sharing</h4>
+          <p>Let guests connect without typing passwords.</p>
+          <a href="/templates" class="use-case-link">
+            Create WiFi QR
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final-cta">
+    <div class="final-cta-inner">
+      <h2>Start creating <em>free</em> QR codes</h2>
+      <p>No credit card. No trial. No limits. Just free QR codes.</p>
+      <a href="#qr-generator" class="btn-primary">
+        Choose a template
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">TheQR<span>Spot</span></div>
+      <ul class="footer-links">
+        <li><a href="/templates">Templates</a></li>
+        <li><a href="/bulk">Bulk Create</a></li>
+        <li><a href="/faq">FAQ</a></li>
+        <li><a href="/privacy">Privacy</a></li>
+        <li><a href="/terms">Terms</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>
