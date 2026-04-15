@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneQR - Ultimate Free QR Generator | Variation 3: Professional/Corporate</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: '#fffef9',
+            fg: '#1a1a1a',
+            accent: '#ff4d00',
+            'accent-light': '#fff0e6',
+            muted: '#666',
+            border: '#e5e5e0',
+            surface: '#f7f6f1',
+          },
+          fontFamily: {
+            serif: ['DM Serif Display', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3 { font-family: 'DM Serif Display', serif; }
+
+    /* Professional subtle animations */
+    .card-hover {
+      transition: all 0.2s ease;
+    }
+    .card-hover:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      border-color: #ff4d00;
+    }
+
+    /* Stat counter effect */
+    .stat-number {
+      background: linear-gradient(135deg, #ff4d00 0%, #ff6b2c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Subtle line accent */
+    .accent-line {
+      position: relative;
+    }
+    .accent-line::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: #ff4d00;
+    }
+  </style>
+</head>
+<body class="bg-bg text-fg">
+  <!-- Navigation - Professional -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="flex items-center justify-between h-16">
+        <a href="#" class="flex items-center gap-3">
+          <svg class="w-8 h-8 text-accent" viewBox="0 0 32 32" fill="currentColor">
+            <rect x="4" y="4" width="6" height="6" rx="1"/>
+            <rect x="4" y="22" width="6" height="6" rx="1"/>
+            <rect x="22" y="4" width="6" height="6" rx="1"/>
+            <rect x="12" y="4" width="3" height="3"/>
+            <rect x="17" y="4" width="3" height="3"/>
+            <rect x="4" y="12" width="3" height="3"/>
+            <rect x="4" y="17" width="3" height="3"/>
+            <rect x="12" y="22" width="3" height="3"/>
+            <rect x="17" y="22" width="3" height="3"/>
+            <rect x="22" y="12" width="6" height="3"/>
+            <rect x="22" y="17" width="6" height="3"/>
+            <rect x="22" y="22" width="6" height="6" rx="1"/>
+          </svg>
+          <span class="text-xl font-semibold tracking-tight">OneQR</span>
+        </a>
+        <div class="hidden md:flex items-center gap-8 text-sm font-medium text-muted">
+          <a href="#features" class="hover:text-fg transition-colors">Features</a>
+          <a href="#solutions" class="hover:text-fg transition-colors">Solutions</a>
+          <a href="#enterprise" class="hover:text-fg transition-colors">Enterprise</a>
+          <a href="#pricing" class="hover:text-fg transition-colors">Pricing</a>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="#generator" class="hidden sm:inline-block text-sm font-medium text-muted hover:text-fg transition-colors">
+            Try Free
+          </a>
+          <a href="#generator" class="bg-accent text-white px-5 py-2.5 text-sm font-semibold hover:bg-fg transition-colors">
+            Create QR Code
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Hero Section - Professional/Corporate -->
+    <section class="pt-28 pb-16 lg:pt-36 lg:pb-24 px-6 lg:px-12 border-b border-border">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+          <!-- Left: Content -->
+          <div>
+            <p class="text-sm font-semibold text-accent uppercase tracking-wide mb-4">
+              Enterprise-Grade QR Solution
+            </p>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight mb-6 accent-line">
+              Ultimate Free
+              <br />
+              QR Generator
+            </h1>
+            <p class="text-lg text-muted leading-relaxed mb-8 max-w-lg">
+              Professional QR code generation for businesses of all sizes. Unlimited saves, smart templates, folder organization, and bulk generation — all completely free.
+            </p>
+
+            <!-- Key Stats -->
+            <div class="grid grid-cols-3 gap-6 mb-10 pb-10 border-b border-border">
+              <div>
+                <div class="text-3xl font-bold stat-number">10+</div>
+                <div class="text-sm text-muted">Smart Templates</div>
+              </div>
+              <div>
+                <div class="text-3xl font-bold stat-number">∞</div>
+                <div class="text-sm text-muted">Unlimited Saves</div>
+              </div>
+              <div>
+                <div class="text-3xl font-bold stat-number">100%</div>
+                <div class="text-sm text-muted">Free Forever</div>
+              </div>
+            </div>
+
+            <!-- CTAs -->
+            <div class="flex flex-wrap items-center gap-4">
+              <a href="#generator" class="inline-flex items-center gap-2 bg-accent text-white px-6 py-3 font-semibold hover:bg-fg transition-colors">
+                Get Started Free
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+              <a href="#features" class="inline-flex items-center gap-2 text-fg font-medium hover:text-accent transition-colors">
+                View Features
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Right: QR Generator -->
+          <div id="generator">
+            <div class="bg-white border border-border p-8 shadow-sm">
+              <div class="flex items-center justify-between mb-6 pb-4 border-b border-border">
+                <h3 class="text-lg font-semibold">QR Code Generator</h3>
+                <span class="text-xs font-medium text-white bg-accent px-2 py-1">FREE</span>
+              </div>
+
+              <!-- Template Tabs -->
+              <div class="flex gap-1 mb-6 p-1 bg-surface rounded">
+                <button class="flex-1 bg-white px-3 py-2 text-sm font-medium shadow-sm">URL</button>
+                <button class="flex-1 px-3 py-2 text-sm font-medium text-muted hover:text-fg transition-colors">Text</button>
+                <button class="flex-1 px-3 py-2 text-sm font-medium text-muted hover:text-fg transition-colors">WiFi</button>
+                <button class="flex-1 px-3 py-2 text-sm font-medium text-muted hover:text-fg transition-colors">vCard</button>
+                <button class="flex-1 px-3 py-2 text-sm font-medium text-muted hover:text-fg transition-colors">More</button>
+              </div>
+
+              <!-- Input -->
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium mb-2">Destination URL</label>
+                  <input type="url" placeholder="https://example.com" class="w-full px-4 py-3 border border-border focus:outline-none focus:border-accent transition-colors" />
+                </div>
+
+                <button class="w-full bg-accent text-white py-3 font-semibold hover:bg-fg transition-colors">
+                  Generate QR Code
+                </button>
+
+                <p class="text-center text-xs text-muted">
+                  No login required. Your data stays private.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trusted By Section -->
+    <section class="py-12 px-6 lg:px-12 bg-surface border-b border-border">
+      <div class="max-w-7xl mx-auto">
+        <p class="text-center text-sm font-medium text-muted mb-8">
+          TRUSTED BY TEAMS WORLDWIDE
+        </p>
+        <div class="flex flex-wrap justify-center items-center gap-12 opacity-40">
+          <svg class="h-8" viewBox="0 0 120 40" fill="currentColor"><rect width="120" height="40" rx="4"/></svg>
+          <svg class="h-8" viewBox="0 0 120 40" fill="currentColor"><rect width="120" height="40" rx="4"/></svg>
+          <svg class="h-8" viewBox="0 0 120 40" fill="currentColor"><rect width="120" height="40" rx="4"/></svg>
+          <svg class="h-8" viewBox="0 0 120 40" fill="currentColor"><rect width="120" height="40" rx="4"/></svg>
+          <svg class="h-8" viewBox="0 0 120 40" fill="currentColor"><rect width="120" height="40" rx="4"/></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section - Professional Grid -->
+    <section id="features" class="py-20 lg:py-28 px-6 lg:px-12">
+      <div class="max-w-7xl mx-auto">
+        <!-- Section Header -->
+        <div class="max-w-2xl mb-16">
+          <p class="text-sm font-semibold text-accent uppercase tracking-wide mb-3">
+            Capabilities
+          </p>
+          <h2 class="text-3xl md:text-4xl leading-[1.15] tracking-tight mb-4">
+            Enterprise features. Zero cost.
+          </h2>
+          <p class="text-lg text-muted">
+            Everything you need to create, manage, and distribute QR codes at scale.
+          </p>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Smart Templates -->
+          <div class="card-hover p-6 border border-border bg-white">
+            <div class="w-12 h-12 bg-accent/10 flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Smart Templates</h3>
+            <p class="text-sm text-muted leading-relaxed">
+              10 pre-built templates for WiFi, vCard, WhatsApp, Email, SMS, Phone, App Store, Social Media, Location, and Events.
+            </p>
+          </div>
+
+          <!-- Unlimited Storage -->
+          <div class="card-hover p-6 border border-border bg-white">
+            <div class="w-12 h-12 bg-accent/10 flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                <polyline points="17 21 17 13 7 13 7 21"/>
+                <polyline points="7 3 7 8 15 8"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Unlimited Saves</h3>
+            <p class="text-sm text-muted leading-relaxed">
+              Save QR codes locally. Organize with folders and tags. Quick search. All data stays on your device.
+            </p>
+          </div>
+
+          <!-- Bulk Generation -->
+          <div class="card-hover p-6 border border-border bg-white">
+            <div class="w-12 h-12 bg-accent/10 flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <path d="M14 2v6h6M12 18v-6M9 15h6"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Bulk Generation</h3>
+            <p class="text-sm text-muted leading-relaxed">
+              Upload CSV files. Generate hundreds of QR codes. Download as ZIP archive. Perfect for campaigns.
+            </p>
+          </div>
+
+          <!-- Privacy First -->
+          <div class="card-hover p-6 border border-border bg-white">
+            <div class="w-12 h-12 bg-accent/10 flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">No Login Required</h3>
+            <p class="text-sm text-muted leading-relaxed">
+              No accounts. No tracking. No data collection. Client-side generation. 100% private.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Solutions Section -->
+    <section id="solutions" class="py-20 lg:py-28 px-6 lg:px-12 bg-fg text-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+          <!-- Left: Content -->
+          <div>
+            <p class="text-sm font-semibold text-accent uppercase tracking-wide mb-3">
+              Use Cases
+            </p>
+            <h2 class="text-3xl md:text-4xl leading-[1.15] tracking-tight mb-6">
+              Built for every industry
+            </h2>
+            <p class="text-lg text-white/60 mb-10">
+              From small businesses to enterprise teams, OneQR adapts to your workflow.
+            </p>
+
+            <div class="space-y-6">
+              <div class="flex gap-4">
+                <div class="w-10 h-10 bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-semibold mb-1">Hospitality</h4>
+                  <p class="text-sm text-white/60">WiFi sharing, menus, check-in systems, and room information.</p>
+                </div>
+              </div>
+
+              <div class="flex gap-4">
+                <div class="w-10 h-10 bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                    <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-semibold mb-1">Retail & E-commerce</h4>
+                  <p class="text-sm text-white/60">Product pages, promotions, loyalty programs, and inventory tracking.</p>
+                </div>
+              </div>
+
+              <div class="flex gap-4">
+                <div class="w-10 h-10 bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 010 7.75"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-semibold mb-1">Events & Conferences</h4>
+                  <p class="text-sm text-white/60">Attendee registration, schedule sharing, and networking cards.</p>
+                </div>
+              </div>
+
+              <div class="flex gap-4">
+                <div class="w-10 h-10 bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-semibold mb-1">Marketing & Sales</h4>
+                  <p class="text-sm text-white/60">Campaign tracking, lead generation, and print-to-digital bridges.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Templates Grid -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white/5 border border-white/10 p-6 hover:bg-white/10 transition-colors">
+              <div class="w-10 h-10 bg-accent/20 flex items-center justify-center mb-4">
+                <svg class="w-5 h-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12.55a11 11 0 0114.08 0M1.42 9a16 16 0 0121.16 0M8.53 16.11a6 6 0 016.95 0M12 20h.01"/>
+                </svg>
+              </div>
+              <h4 class="font-medium mb-1">WiFi</h4>
+              <p class="text-xs text-white/50">Network credentials</p>
+            </div>
+            <div class="bg-white/5 border border-white/10 p-6 hover:bg-white/10 transition-colors">
+              <div class="w-10 h-10 bg-accent/20 flex items-center justify-center mb-4">
+                <svg class="w-5 h-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </div>
+              <h4 class="font-medium mb-1">vCard</h4>
+              <p class="text-xs text-white/50">Contact information</p>
+            </div>
+            <div class="bg-white/5 border border-white/10 p-6 hover:bg-white/10 transition-colors">
+              <div class="w-10 h-10 bg-accent/20 flex items-center justify-center mb-4">
+                <svg class="w-5 h-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
+                </svg>
+              </div>
+              <h4 class="font-medium mb-1">WhatsApp</h4>
+              <p class="text-xs text-white/50">Direct messaging</p>
+            </div>
+            <div class="bg-white/5 border border-white/10 p-6 hover:bg-white/10 transition-colors">
+              <div class="w-10 h-10 bg-accent/20 flex items-center justify-center mb-4">
+                <svg class="w-5 h-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </div>
+              <h4 class="font-medium mb-1">Email</h4>
+              <p class="text-xs text-white/50">Pre-filled compose</p>
+            </div>
+            <div class="bg-white/5 border border-white/10 p-6 hover:bg-white/10 transition-colors">
+              <div class="w-10 h-10 bg-accent/20 flex items-center justify-center mb-4">
+                <svg class="w-5 h-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+              </div>
+              <h4 class="font-medium mb-1">Location</h4>
+              <p class="text-xs text-white/50">Maps integration</p>
+            </div>
+            <div class="bg-white/5 border border-white/10 p-6 hover:bg-white/10 transition-colors">
+              <div class="w-10 h-10 bg-accent/20 flex items-center justify-center mb-4">
+                <svg class="w-5 h-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </div>
+              <h4 class="font-medium mb-1">Event</h4>
+              <p class="text-xs text-white/50">Calendar invite</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enterprise Section -->
+    <section id="enterprise" class="py-20 lg:py-28 px-6 lg:px-12 bg-surface">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+          <!-- Left: Bulk Upload Preview -->
+          <div class="order-2 lg:order-1">
+            <div class="bg-white border border-border p-8">
+              <div class="flex items-center justify-between mb-6">
+                <h4 class="font-semibold">Bulk QR Generation</h4>
+                <span class="text-xs font-medium text-accent bg-accent/10 px-2 py-1">NEW</span>
+              </div>
+              <div class="border-2 border-dashed border-border rounded p-8 text-center mb-6">
+                <svg class="w-10 h-10 text-muted mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <p class="text-sm text-muted mb-2">Drop your CSV file here</p>
+                <button class="text-sm font-medium text-accent hover:underline">or browse files</button>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-muted">Supported: .csv, .xlsx</span>
+                <a href="#" class="font-medium text-accent hover:underline">Download template</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Content -->
+          <div class="order-1 lg:order-2">
+            <p class="text-sm font-semibold text-accent uppercase tracking-wide mb-3">
+              Scale
+            </p>
+            <h2 class="text-3xl md:text-4xl leading-[1.15] tracking-tight mb-6">
+              Bulk generation for enterprise teams
+            </h2>
+            <p class="text-lg text-muted mb-8">
+              Generate hundreds of QR codes from a single CSV upload. Perfect for event organizers, marketing teams, and large-scale deployments.
+            </p>
+
+            <ul class="space-y-4 mb-8">
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-accent flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>Upload CSV with URLs, contacts, or WiFi networks</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-accent flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>Batch process all entries automatically</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-accent flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>Download all QR codes as a single ZIP archive</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-accent flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>No limits on number of QR codes generated</span>
+              </li>
+            </ul>
+
+            <a href="#generator" class="inline-flex items-center gap-2 bg-accent text-white px-6 py-3 font-semibold hover:bg-fg transition-colors">
+              Try Bulk Generation
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-20 lg:py-28 px-6 lg:px-12 border-t border-border">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl md:text-4xl leading-[1.15] tracking-tight mb-4">
+          Start generating QR codes today
+        </h2>
+        <p class="text-lg text-muted mb-8">
+          No signup required. No credit card. No hidden fees.
+        </p>
+        <a href="#generator" class="inline-flex items-center gap-2 bg-accent text-white px-8 py-4 font-semibold hover:bg-fg transition-colors">
+          Create Free QR Code
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-fg text-white py-16 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid md:grid-cols-4 gap-12 mb-12">
+        <!-- Brand -->
+        <div>
+          <a href="#" class="flex items-center gap-3 mb-4">
+            <svg class="w-8 h-8 text-accent" viewBox="0 0 32 32" fill="currentColor">
+              <rect x="4" y="4" width="6" height="6" rx="1"/>
+              <rect x="4" y="22" width="6" height="6" rx="1"/>
+              <rect x="22" y="4" width="6" height="6" rx="1"/>
+              <rect x="22" y="22" width="6" height="6" rx="1"/>
+            </svg>
+            <span class="text-xl font-semibold">OneQR</span>
+          </a>
+          <p class="text-sm text-white/50">
+            Ultimate free QR code generator for businesses and individuals.
+          </p>
+        </div>
+
+        <!-- Product -->
+        <div>
+          <h5 class="font-semibold mb-4">Product</h5>
+          <ul class="space-y-3 text-sm text-white/60">
+            <li><a href="#" class="hover:text-white transition-colors">Features</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Templates</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Bulk Generation</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">API</a></li>
+          </ul>
+        </div>
+
+        <!-- Resources -->
+        <div>
+          <h5 class="font-semibold mb-4">Resources</h5>
+          <ul class="space-y-3 text-sm text-white/60">
+            <li><a href="#" class="hover:text-white transition-colors">Documentation</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Legal -->
+        <div>
+          <h5 class="font-semibold mb-4">Legal</h5>
+          <ul class="space-y-3 text-sm text-white/60">
+            <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-sm text-white/50">
+          &copy; 2026 OneQR. All rights reserved.
+        </p>
+        <p class="text-sm text-white/50">
+          Ultimate Free QR Generator
+        </p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
