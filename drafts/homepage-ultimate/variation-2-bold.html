@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneQR - Ultimate Free QR Generator | Variation 2: Bold/Playful</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: '#fffef9',
+            fg: '#1a1a1a',
+            accent: '#ff4d00',
+            'accent-light': '#fff0e6',
+            muted: '#666',
+            border: '#e5e5e0',
+            surface: '#f7f6f1',
+          },
+          fontFamily: {
+            serif: ['DM Serif Display', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3 { font-family: 'DM Serif Display', serif; }
+
+    /* Bold gradient background */
+    .hero-gradient {
+      background: linear-gradient(135deg, #ff4d00 0%, #ff8533 50%, #ffad66 100%);
+    }
+
+    /* Animated gradient blob */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.6;
+      animation: float 8s ease-in-out infinite;
+    }
+    .blob-1 {
+      width: 400px;
+      height: 400px;
+      background: #ff4d00;
+      top: -100px;
+      right: -100px;
+      animation-delay: 0s;
+    }
+    .blob-2 {
+      width: 300px;
+      height: 300px;
+      background: #ff8533;
+      bottom: -50px;
+      left: -50px;
+      animation-delay: 2s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+    }
+
+    /* Card hover effects */
+    .feature-card {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #ff4d00, #ff8533);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .feature-card:hover::before {
+      transform: scaleX(1);
+    }
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(255, 77, 0, 0.2);
+    }
+
+    /* Template pill animation */
+    .template-pill {
+      transition: all 0.2s ease;
+    }
+    .template-pill:hover {
+      transform: scale(1.05);
+      background: #ff4d00;
+      color: white;
+    }
+
+    /* Pulse animation */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .pulse {
+      animation: pulse 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-bg text-fg overflow-x-hidden">
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="flex items-center justify-between h-16">
+        <a href="#" class="flex items-center gap-2 text-2xl font-extrabold">
+          <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center text-white text-sm">Q</div>
+          <span>OneQR</span>
+        </a>
+        <div class="hidden md:flex items-center gap-8 text-sm font-semibold text-muted">
+          <a href="#features" class="hover:text-accent transition-colors">Features</a>
+          <a href="#templates" class="hover:text-accent transition-colors">Templates</a>
+          <a href="#bulk" class="hover:text-accent transition-colors">Bulk</a>
+        </div>
+        <a href="#generator" class="bg-accent text-white px-5 py-2.5 rounded-full font-semibold hover:bg-fg transition-colors text-sm">
+          Get Started
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Hero Section - Bold/Playful -->
+    <section class="relative min-h-screen flex items-center pt-16 overflow-hidden">
+      <!-- Background blobs -->
+      <div class="absolute inset-0 overflow-hidden">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+      </div>
+
+      <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 py-20 grid lg:grid-cols-2 gap-12 items-center">
+        <!-- Left: Text -->
+        <div>
+          <!-- Badge -->
+          <div class="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-2 mb-8">
+            <span class="w-2 h-2 bg-accent rounded-full pulse"></span>
+            <span class="text-sm font-semibold text-accent">100% Free Forever</span>
+          </div>
+
+          <!-- Main Headline -->
+          <h1 class="text-5xl md:text-6xl lg:text-7xl leading-[1] tracking-tight mb-6">
+            <span class="block">Ultimate</span>
+            <span class="block text-accent">Free QR</span>
+            <span class="block">Generator</span>
+          </h1>
+
+          <!-- Features Pills -->
+          <div class="flex flex-wrap gap-3 mb-8">
+            <span class="bg-fg text-white px-4 py-2 rounded-full text-sm font-medium">
+              ✓ Unlimited Saves
+            </span>
+            <span class="bg-fg text-white px-4 py-2 rounded-full text-sm font-medium">
+              ✓ 10 Templates
+            </span>
+            <span class="bg-fg text-white px-4 py-2 rounded-full text-sm font-medium">
+              ✓ Bulk Generation
+            </span>
+            <span class="bg-fg text-white px-4 py-2 rounded-full text-sm font-medium">
+              ✓ No Login
+            </span>
+          </div>
+
+          <!-- CTA -->
+          <div class="flex flex-col sm:flex-row items-start gap-4">
+            <a href="#generator" class="inline-flex items-center gap-3 bg-accent text-white px-8 py-4 text-lg font-bold rounded-full hover:bg-fg transition-all hover:scale-105 shadow-lg shadow-accent/30">
+              Start Creating
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+            <p class="text-muted text-sm pt-2">No credit card required</p>
+          </div>
+        </div>
+
+        <!-- Right: QR Generator Card -->
+        <div id="generator" class="relative">
+          <div class="bg-white rounded-3xl shadow-2xl p-8 border-4 border-fg">
+            <!-- Floating elements -->
+            <div class="absolute -top-6 -right-6 w-16 h-16 bg-accent rounded-2xl flex items-center justify-center rotate-12 shadow-lg">
+              <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm13-2h1v1h-1v-1zm-2 0h1v1h-1v-1zm4 0h1v1h-1v-1zm-4 2h1v1h-1v-1zm2 0h1v1h-1v-1zm-2 2h1v1h-1v-1zm4 0h1v1h-1v-1zm-2 2h1v1h-1v-1zm2 0h1v1h-1v-1z"/>
+              </svg>
+            </div>
+
+            <h3 class="text-2xl font-bold mb-6">Create QR Code</h3>
+
+            <div class="space-y-4">
+              <!-- Template Selector -->
+              <div class="flex gap-2 overflow-x-auto pb-2">
+                <button class="template-pill whitespace-nowrap bg-accent text-white px-4 py-2 rounded-full text-sm font-medium">URL</button>
+                <button class="template-pill whitespace-nowrap bg-surface px-4 py-2 rounded-full text-sm font-medium">WiFi</button>
+                <button class="template-pill whitespace-nowrap bg-surface px-4 py-2 rounded-full text-sm font-medium">vCard</button>
+                <button class="template-pill whitespace-nowrap bg-surface px-4 py-2 rounded-full text-sm font-medium">WhatsApp</button>
+                <button class="template-pill whitespace-nowrap bg-surface px-4 py-2 rounded-full text-sm font-medium">Email</button>
+              </div>
+
+              <!-- Input -->
+              <input type="text" placeholder="https://yourwebsite.com" class="w-full px-5 py-4 bg-surface border-2 border-border rounded-xl focus:outline-none focus:border-accent transition-colors text-lg" />
+
+              <!-- Generate Button -->
+              <button class="w-full bg-fg text-white py-4 font-bold text-lg rounded-xl hover:bg-accent transition-colors">
+                Generate QR Code
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section - Bold Cards -->
+    <section id="features" class="py-24 lg:py-32 px-6 lg:px-12 bg-fg text-white">
+      <div class="max-w-6xl mx-auto">
+        <!-- Section Header -->
+        <header class="text-center mb-16">
+          <span class="inline-block bg-accent px-4 py-2 rounded-full text-sm font-bold mb-6">
+            POWERFUL FEATURES
+          </span>
+          <h2 class="text-4xl md:text-5xl lg:text-6xl leading-[1.05] tracking-tight">
+            Everything you need.
+            <br />
+            <span class="text-accent">Nothing you don't.</span>
+          </h2>
+        </header>
+
+        <!-- Features Grid - Asymmetric -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Large Card - Smart Templates -->
+          <div class="feature-card md:col-span-2 bg-white text-fg p-8 rounded-3xl">
+            <div class="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center mb-6">
+              <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+            </div>
+            <h3 class="text-3xl font-bold mb-3">10 Smart Templates</h3>
+            <p class="text-muted text-lg leading-relaxed">
+              WiFi, vCard, WhatsApp, Email, SMS, Phone, App Store, Social Media, Location, and Events. One click to get started.
+            </p>
+            <div class="flex flex-wrap gap-2 mt-6">
+              <span class="bg-accent-light text-accent px-3 py-1 rounded-full text-sm font-medium">WiFi</span>
+              <span class="bg-accent-light text-accent px-3 py-1 rounded-full text-sm font-medium">vCard</span>
+              <span class="bg-accent-light text-accent px-3 py-1 rounded-full text-sm font-medium">WhatsApp</span>
+              <span class="bg-accent-light text-accent px-3 py-1 rounded-full text-sm font-medium">+7 more</span>
+            </div>
+          </div>
+
+          <!-- Small Card - Unlimited Saves -->
+          <div class="feature-card bg-white text-fg p-8 rounded-3xl">
+            <div class="w-14 h-14 bg-green-500 rounded-xl flex items-center justify-center mb-5">
+              <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                <polyline points="17 21 17 13 7 13 7 21"/>
+                <polyline points="7 3 7 8 15 8"/>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">Unlimited Saves</h3>
+            <p class="text-muted">
+              Save to browser. Organize with folders. Search instantly.
+            </p>
+          </div>
+
+          <!-- Small Card - Bulk Generation -->
+          <div class="feature-card bg-white text-fg p-8 rounded-3xl">
+            <div class="w-14 h-14 bg-purple-500 rounded-xl flex items-center justify-center mb-5">
+              <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <path d="M14 2v6h6M12 18v-6M9 15h6"/>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">Bulk Generation</h3>
+            <p class="text-muted">
+              CSV upload. Batch create. ZIP download.
+            </p>
+          </div>
+
+          <!-- Wide Card - Privacy -->
+          <div class="feature-card md:col-span-2 lg:col-span-4 bg-gradient-to-r from-accent to-orange-400 text-white p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-6">
+              <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-3xl font-bold">No Login Required</h3>
+                <p class="text-white/80 text-lg">100% private. No accounts. No tracking. Your data stays on your device.</p>
+              </div>
+            </div>
+            <a href="#generator" class="bg-white text-accent px-8 py-4 rounded-full font-bold hover:bg-fg hover:text-white transition-colors whitespace-nowrap">
+              Try It Now
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Templates Section -->
+    <section id="templates" class="py-24 lg:py-32 px-6 lg:px-12">
+      <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-16">
+          <h2 class="text-4xl md:text-5xl leading-[1.05] tracking-tight mb-4">
+            <span class="text-accent">10</span> Ready-to-Use Templates
+          </h2>
+          <p class="text-xl text-muted">
+            Pick a template. Fill in the fields. Done.
+          </p>
+        </header>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+          <button class="group bg-white p-6 rounded-2xl border-2 border-border hover:border-accent transition-all hover:-translate-y-1">
+            <div class="w-14 h-14 bg-accent/10 rounded-xl mx-auto mb-4 flex items-center justify-center group-hover:bg-accent transition-colors">
+              <svg class="w-7 h-7 text-accent group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12.55a11 11 0 0114.08 0M1.42 9a16 16 0 0121.16 0M8.53 16.11a6 6 0 016.95 0M12 20h.01"/>
+              </svg>
+            </div>
+            <span class="font-semibold">WiFi</span>
+          </button>
+          <button class="group bg-white p-6 rounded-2xl border-2 border-border hover:border-accent transition-all hover:-translate-y-1">
+            <div class="w-14 h-14 bg-accent/10 rounded-xl mx-auto mb-4 flex items-center justify-center group-hover:bg-accent transition-colors">
+              <svg class="w-7 h-7 text-accent group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <span class="font-semibold">vCard</span>
+          </button>
+          <button class="group bg-white p-6 rounded-2xl border-2 border-border hover:border-accent transition-all hover:-translate-y-1">
+            <div class="w-14 h-14 bg-accent/10 rounded-xl mx-auto mb-4 flex items-center justify-center group-hover:bg-accent transition-colors">
+              <svg class="w-7 h-7 text-accent group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
+              </svg>
+            </div>
+            <span class="font-semibold">WhatsApp</span>
+          </button>
+          <button class="group bg-white p-6 rounded-2xl border-2 border-border hover:border-accent transition-all hover:-translate-y-1">
+            <div class="w-14 h-14 bg-accent/10 rounded-xl mx-auto mb-4 flex items-center justify-center group-hover:bg-accent transition-colors">
+              <svg class="w-7 h-7 text-accent group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <span class="font-semibold">Email</span>
+          </button>
+          <button class="group bg-white p-6 rounded-2xl border-2 border-border hover:border-accent transition-all hover:-translate-y-1">
+            <div class="w-14 h-14 bg-accent/10 rounded-xl mx-auto mb-4 flex items-center justify-center group-hover:bg-accent transition-colors">
+              <svg class="w-7 h-7 text-accent group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+              </svg>
+            </div>
+            <span class="font-semibold">Phone</span>
+          </button>
+          <button class="group bg-white p-6 rounded-2xl border-2 border-border hover:border-accent transition-all hover:-translate-y-1">
+            <div class="w-14 h-14 bg-accent/10 rounded-xl mx-auto mb-4 flex items-center justify-center group-hover:bg-accent transition-colors">
+              <svg class="w-7 h-7 text-accent group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+              </svg>
+            </div>
+            <span class="font-semibold">SMS</span>
+          </button>
+          <button class="group bg-white p-6 rounded-2xl border-2 border-border hover:border-accent transition-all hover:-translate-y-1">
+            <div class="w-14 h-14 bg-accent/10 rounded-xl mx-auto mb-4 flex items-center justify-center group-hover:bg-accent transition-colors">
+              <svg class="w-7 h-7 text-accent group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </div>
+            <span class="font-semibold">App Store</span>
+          </button>
+          <button class="group bg-white p-6 rounded-2xl border-2 border-border hover:border-accent transition-all hover:-translate-y-1">
+            <div class="w-14 h-14 bg-accent/10 rounded-xl mx-auto mb-4 flex items-center justify-center group-hover:bg-accent transition-colors">
+              <svg class="w-7 h-7 text-accent group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="18" cy="5" r="3"/>
+                <circle cx="6" cy="12" r="3"/>
+                <circle cx="18" cy="19" r="3"/>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+              </svg>
+            </div>
+            <span class="font-semibold">Social</span>
+          </button>
+          <button class="group bg-white p-6 rounded-2xl border-2 border-border hover:border-accent transition-all hover:-translate-y-1">
+            <div class="w-14 h-14 bg-accent/10 rounded-xl mx-auto mb-4 flex items-center justify-center group-hover:bg-accent transition-colors">
+              <svg class="w-7 h-7 text-accent group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <span class="font-semibold">Location</span>
+          </button>
+          <button class="group bg-white p-6 rounded-2xl border-2 border-border hover:border-accent transition-all hover:-translate-y-1">
+            <div class="w-14 h-14 bg-accent/10 rounded-xl mx-auto mb-4 flex items-center justify-center group-hover:bg-accent transition-colors">
+              <svg class="w-7 h-7 text-accent group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <span class="font-semibold">Event</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bulk Generation Section -->
+    <section id="bulk" class="py-24 lg:py-32 px-6 lg:px-12 bg-surface">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <span class="inline-block bg-purple-100 text-purple-600 px-4 py-2 rounded-full text-sm font-bold mb-6">
+              BULK GENERATION
+            </span>
+            <h2 class="text-4xl md:text-5xl leading-[1.05] tracking-tight mb-6">
+              Generate <span class="text-accent">hundreds</span> of QR codes at once.
+            </h2>
+            <p class="text-xl text-muted mb-8 leading-relaxed">
+              Upload a CSV file with your URLs, contacts, or WiFi networks. We'll generate all QR codes and package them in a ZIP for download.
+            </p>
+            <ul class="space-y-4 mb-8">
+              <li class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </div>
+                <span class="font-medium">CSV upload support</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </div>
+                <span class="font-medium">Batch processing</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </div>
+                <span class="font-medium">ZIP download</span>
+              </li>
+            </ul>
+            <a href="#generator" class="inline-flex items-center gap-3 bg-accent text-white px-8 py-4 rounded-full font-bold hover:bg-fg transition-colors">
+              Try Bulk Generation
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+          <div class="bg-white rounded-3xl p-8 shadow-xl border-2 border-border">
+            <div class="border-2 border-dashed border-border rounded-2xl p-12 text-center">
+              <div class="w-16 h-16 bg-accent/10 rounded-2xl mx-auto mb-6 flex items-center justify-center">
+                <svg class="w-8 h-8 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </div>
+              <h4 class="text-xl font-bold mb-2">Drop your CSV here</h4>
+              <p class="text-muted mb-4">or click to browse files</p>
+              <button class="bg-surface px-6 py-3 rounded-full font-medium hover:bg-accent hover:text-white transition-colors">
+                Select File
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-24 lg:py-32 px-6 lg:px-12 bg-fg text-white text-center">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-4xl md:text-5xl lg:text-6xl leading-[1] tracking-tight mb-8">
+          Ready to create
+          <br />
+          <span class="text-accent">amazing</span> QR codes?
+        </h2>
+        <a href="#generator" class="inline-flex items-center gap-3 bg-accent text-white px-10 py-5 text-xl font-bold rounded-full hover:bg-white hover:text-fg transition-all hover:scale-105 shadow-lg shadow-accent/30">
+          Start Creating Free
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+        <p class="mt-6 text-white/50">No signup. No limits. No tricks.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-fg text-white py-12 px-6 lg:px-12 border-t border-white/10">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="flex items-center gap-2 text-xl font-extrabold">
+        <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center text-white text-sm">Q</div>
+        <span>OneQR</span>
+      </div>
+      <p class="text-white/50 text-sm">
+        &copy; 2026 OneQR. Ultimate Free QR Generator.
+      </p>
+      <div class="flex items-center gap-6 text-sm text-white/50">
+        <a href="#" class="hover:text-white transition-colors">Privacy</a>
+        <a href="#" class="hover:text-white transition-colors">Terms</a>
+        <a href="#" class="hover:text-white transition-colors">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
