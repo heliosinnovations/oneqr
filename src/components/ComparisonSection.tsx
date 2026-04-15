@@ -1,441 +1,174 @@
 import Link from "next/link";
 
-interface CompetitorData {
-  name: string;
-  pricing: string;
-  pricingBadge?: "free" | "paid" | "limited" | "one-time";
-  pricingModel: string;
-  expiration: string;
-  maxResolution: string;
-  exportFormats: string;
-  scanLimits: string;
-  designOptions: string;
-  designIcon?: "check" | "partial";
-  isHighlighted?: boolean;
-}
-
-const competitors: CompetitorData[] = [
-  {
-    name: "The QR Spot",
-    pricing: "Free to create",
-    pricingBadge: "one-time",
-    pricingModel: "One-time",
-    expiration: "Never expires",
-    maxResolution: "4K / 600 DPI",
-    exportFormats: "PNG, SVG, PDF, EPS",
-    scanLimits: "Unlimited",
-    designOptions: "6 patterns, 9 styles",
-    designIcon: "check",
-    isHighlighted: true,
-  },
-  {
-    name: "Others",
-    pricing: "$5-40/month",
-    pricingModel: "Monthly subscription",
-    expiration: "Expires with plan",
-    maxResolution: "300-2000px",
-    exportFormats: "PNG, SVG, PDF",
-    scanLimits: "10,000/month",
-    designOptions: "Limited",
-    designIcon: "partial",
-  },
-];
-
-const features = [
-  "Pricing",
-  "QR Code Expiration",
-  "Max Resolution",
-  "Export Formats",
-  "Scan Limits",
-  "Advanced Design Options",
-] as const;
-
-function PricingBadge({
-  type,
-}: {
-  type: "free" | "paid" | "limited" | "one-time";
-}) {
-  const baseClasses =
-    "inline-block rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wide";
-
-  switch (type) {
-    case "free":
-      return (
-        <span className={`${baseClasses} bg-emerald-500 text-white`}>
-          Free Forever
-        </span>
-      );
-    case "one-time":
-      return (
-        <span className={`${baseClasses} bg-emerald-500 text-white`}>
-          One-Time
-        </span>
-      );
-    case "paid":
-      return (
-        <span className={`${baseClasses} bg-red-500 text-white`}>Paid</span>
-      );
-    case "limited":
-      return (
-        <span className={`${baseClasses} bg-amber-500 text-white`}>
-          Limited
-        </span>
-      );
-  }
+interface ComparisonRowProps {
+  feature: string;
+  theQRSpotValue: string;
+  competitorValue: string;
+  isTheQRSpotHighlighted?: boolean;
 }
 
 function CheckIcon() {
   return (
-    <span className="text-lg font-bold text-emerald-500" aria-label="Yes">
-      &#10003;
+    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        strokeWidth="3"
+        className="h-3.5 w-3.5"
+      >
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
     </span>
   );
 }
 
-function PartialIcon() {
+function XIcon() {
   return (
-    <span className="text-sm font-bold text-amber-500" aria-label="Limited">
-      Limited
+    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        strokeWidth="3"
+        className="h-3.5 w-3.5 opacity-40"
+      >
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
     </span>
+  );
+}
+
+function ComparisonRow({
+  feature,
+  theQRSpotValue,
+  competitorValue,
+  isTheQRSpotHighlighted = true,
+}: ComparisonRowProps) {
+  return (
+    <tr>
+      <td className="border-b border-white/5 px-4 py-4 text-sm font-medium text-white/80 md:px-6">
+        {feature}
+      </td>
+      <td className="border-b border-white/5 bg-accent/5 px-4 py-4 md:px-6">
+        <span className="flex items-center gap-2">
+          {isTheQRSpotHighlighted && <CheckIcon />}
+          <span className="text-sm font-semibold text-accent">
+            {theQRSpotValue}
+          </span>
+        </span>
+      </td>
+      <td className="border-b border-white/5 px-4 py-4 md:px-6">
+        <span className="flex items-center gap-2">
+          <XIcon />
+          <span className="text-sm text-white/40">{competitorValue}</span>
+        </span>
+      </td>
+    </tr>
   );
 }
 
 export default function ComparisonSection() {
   return (
     <section
-      className="scroll-mt-20 bg-bg px-6 py-20 lg:px-12 lg:py-28"
+      id="features"
+      className="scroll-mt-20 bg-fg px-6 py-20 text-bg lg:px-12 lg:py-24"
       aria-labelledby="comparison-heading"
     >
-      <div className="mx-auto max-w-[1200px]">
+      <div className="mx-auto max-w-[1000px]">
         {/* Section Header */}
         <header className="mb-14 text-center">
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-            Compare &amp; Save
+            Why Choose The QR Spot?
           </p>
           <h2
             id="comparison-heading"
-            className="font-serif text-[clamp(32px,5vw,48px)] leading-[1.15] tracking-tight text-fg"
+            className="font-serif text-3xl leading-tight tracking-tight md:text-4xl lg:text-[44px]"
           >
-            Why choose <em className="italic text-accent">The QR Spot</em>?
+            More features. Zero cost.
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-base text-muted">
-            Professional features without professional pricing. See how we
-            compare to the competition.
+          <p className="mx-auto mt-4 max-w-xl text-base text-white/60">
+            See how we compare to paid alternatives. Spoiler: we&apos;re better
+            and completely free.
           </p>
         </header>
 
-        {/* Desktop Table */}
-        <div className="hidden overflow-x-auto rounded border-2 border-fg md:block">
-          <table className="w-full min-w-[640px] border-collapse bg-bg">
+        {/* Comparison Table */}
+        <div className="overflow-x-auto rounded-2xl bg-white/[0.03]">
+          <table className="w-full min-w-[500px] border-collapse">
             <thead>
-              <tr>
-                <th className="border-b border-r border-border bg-surface px-5 py-4 text-left font-serif text-lg font-normal">
+              <tr className="bg-white/5">
+                <th className="border-b border-white/10 px-4 py-4 text-left text-xs font-semibold uppercase tracking-[0.05em] text-white/50 md:px-6">
                   Feature
                 </th>
-                {competitors.map((competitor, index) => (
-                  <th
-                    key={competitor.name}
-                    className={`border-b border-border px-5 py-4 text-left font-serif text-lg font-normal ${
-                      competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-t-[3px] border-fg bg-accent text-white"
-                        : "bg-surface"
-                    } ${index === 0 ? "" : ""}`}
-                  >
-                    {competitor.isHighlighted ? (
-                      <span className="flex items-center gap-2">
-                        <span className="inline-block h-2 w-2 rounded-full bg-white" />
-                        {competitor.name}
-                      </span>
-                    ) : (
-                      competitor.name
-                    )}
-                  </th>
-                ))}
+                <th className="border-b border-white/10 bg-accent/10 px-4 py-4 text-left text-xs font-semibold uppercase tracking-[0.05em] text-accent md:px-6">
+                  The QR Spot
+                </th>
+                <th className="border-b border-white/10 px-4 py-4 text-left text-xs font-semibold uppercase tracking-[0.05em] text-white/50 md:px-6">
+                  Competitors
+                </th>
               </tr>
             </thead>
             <tbody>
-              {/* Pricing Row */}
-              <tr>
-                <td className="border-b border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
-                  Pricing
-                </td>
-                {competitors.map((competitor) => (
-                  <td
-                    key={`pricing-${competitor.name}`}
-                    className={`border-b border-border px-5 py-4 ${
-                      competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-fg bg-accent-light"
-                        : ""
-                    }`}
-                  >
-                    {competitor.pricingBadge ? (
-                      <PricingBadge type={competitor.pricingBadge} />
-                    ) : (
-                      <span className="text-sm text-muted">
-                        {competitor.pricing}
-                      </span>
-                    )}
-                  </td>
-                ))}
-              </tr>
-
-              {/* Pricing Model Row */}
-              <tr>
-                <td className="border-b border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
-                  Pricing Model
-                </td>
-                {competitors.map((competitor) => (
-                  <td
-                    key={`model-${competitor.name}`}
-                    className={`border-b border-border px-5 py-4 ${
-                      competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-fg bg-accent-light"
-                        : ""
-                    }`}
-                  >
-                    <span
-                      className={`text-sm ${competitor.isHighlighted ? "font-semibold text-fg" : "text-muted"}`}
-                    >
-                      {competitor.pricingModel}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-
-              {/* Expiration Row */}
-              <tr>
-                <td className="border-b border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
-                  QR Code Expiration
-                </td>
-                {competitors.map((competitor) => (
-                  <td
-                    key={`expiration-${competitor.name}`}
-                    className={`border-b border-border px-5 py-4 ${
-                      competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-fg bg-accent-light"
-                        : ""
-                    }`}
-                  >
-                    <span
-                      className={`text-sm ${competitor.isHighlighted ? "font-semibold text-fg" : "text-muted"}`}
-                    >
-                      {competitor.expiration}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-
-              {/* Max Resolution Row */}
-              <tr>
-                <td className="border-b border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
-                  Max Resolution
-                </td>
-                {competitors.map((competitor) => (
-                  <td
-                    key={`resolution-${competitor.name}`}
-                    className={`border-b border-border px-5 py-4 ${
-                      competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-fg bg-accent-light"
-                        : ""
-                    }`}
-                  >
-                    <span
-                      className={`text-sm ${competitor.isHighlighted ? "font-semibold text-fg" : "text-muted"}`}
-                    >
-                      {competitor.maxResolution}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-
-              {/* Export Formats Row */}
-              <tr>
-                <td className="border-b border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
-                  Export Formats
-                </td>
-                {competitors.map((competitor) => (
-                  <td
-                    key={`formats-${competitor.name}`}
-                    className={`border-b border-border px-5 py-4 ${
-                      competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-fg bg-accent-light"
-                        : ""
-                    }`}
-                  >
-                    <span
-                      className={`text-sm ${competitor.isHighlighted ? "font-semibold text-fg" : "text-muted"}`}
-                    >
-                      {competitor.exportFormats}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-
-              {/* Scan Limits Row */}
-              <tr>
-                <td className="border-b border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
-                  Scan Limits
-                </td>
-                {competitors.map((competitor) => (
-                  <td
-                    key={`scans-${competitor.name}`}
-                    className={`border-b border-border px-5 py-4 ${
-                      competitor.isHighlighted
-                        ? "border-l-[3px] border-r-[3px] border-fg bg-accent-light"
-                        : ""
-                    }`}
-                  >
-                    <span
-                      className={`text-sm ${competitor.isHighlighted ? "font-semibold text-fg" : "text-muted"}`}
-                    >
-                      {competitor.scanLimits}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-
-              {/* Design Options Row (Last) */}
-              <tr>
-                <td className="border-r border-border bg-surface px-5 py-4 text-sm font-medium text-fg">
-                  Advanced Design Options
-                </td>
-                {competitors.map((competitor) => (
-                  <td
-                    key={`design-${competitor.name}`}
-                    className={`px-5 py-4 ${
-                      competitor.isHighlighted
-                        ? "border-b-[3px] border-l-[3px] border-r-[3px] border-fg bg-accent-light"
-                        : ""
-                    }`}
-                  >
-                    <span className="flex items-center gap-2">
-                      {competitor.designIcon === "check" && <CheckIcon />}
-                      {competitor.designIcon === "partial" && <PartialIcon />}
-                      {competitor.isHighlighted && (
-                        <span className="text-sm font-semibold text-fg">
-                          {competitor.designOptions}
-                        </span>
-                      )}
-                    </span>
-                  </td>
-                ))}
-              </tr>
+              <ComparisonRow
+                feature="Price"
+                theQRSpotValue="FREE"
+                competitorValue="$5-15/month"
+              />
+              <ComparisonRow
+                feature="QR Codes"
+                theQRSpotValue="Unlimited"
+                competitorValue="2-5 codes"
+              />
+              <ComparisonRow
+                feature="Customization"
+                theQRSpotValue="Advanced (colors, patterns, labels)"
+                competitorValue="Basic / Locked"
+              />
+              <ComparisonRow
+                feature="Smart Templates"
+                theQRSpotValue="10+ templates"
+                competitorValue="Few / None"
+              />
+              <ComparisonRow
+                feature="Bulk Generation"
+                theQRSpotValue="Up to 50 codes"
+                competitorValue="Paid only"
+              />
+              <ComparisonRow
+                feature="High-Res Export"
+                theQRSpotValue="4K PNG, SVG, PDF"
+                competitorValue="400px PNG"
+              />
+              <ComparisonRow
+                feature="Watermarks"
+                theQRSpotValue="None"
+                competitorValue="Yes (free tier)"
+              />
+              <ComparisonRow
+                feature="Save to Account"
+                theQRSpotValue="Unlimited + Folders"
+                competitorValue="Limited"
+              />
             </tbody>
           </table>
         </div>
 
-        {/* Mobile Cards */}
-        <div className="space-y-4 md:hidden">
-          {competitors.map((competitor) => (
-            <div
-              key={`card-${competitor.name}`}
-              className={`rounded-lg border-2 p-6 ${
-                competitor.isHighlighted
-                  ? "border-fg bg-accent-light"
-                  : "border-border bg-bg"
-              }`}
-            >
-              <h3
-                className={`mb-4 flex items-center gap-2 font-serif text-xl ${
-                  competitor.isHighlighted ? "text-accent" : "text-fg"
-                }`}
-              >
-                {competitor.isHighlighted && (
-                  <span className="inline-block h-2 w-2 rounded-full bg-accent" />
-                )}
-                {competitor.name}
-              </h3>
-
-              <div className="space-y-0">
-                <div className="flex items-center justify-between border-b border-border py-3 text-sm">
-                  <span className="text-muted">Pricing</span>
-                  <span className="text-right font-medium">
-                    {competitor.pricingBadge ? (
-                      <PricingBadge type={competitor.pricingBadge} />
-                    ) : (
-                      competitor.pricing
-                    )}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between border-b border-border py-3 text-sm">
-                  <span className="text-muted">Pricing Model</span>
-                  <span
-                    className={`text-right font-medium ${competitor.isHighlighted ? "text-fg" : ""}`}
-                  >
-                    {competitor.pricingModel}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between border-b border-border py-3 text-sm">
-                  <span className="text-muted">Expiration</span>
-                  <span
-                    className={`text-right font-medium ${competitor.isHighlighted ? "text-fg" : ""}`}
-                  >
-                    {competitor.expiration}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between border-b border-border py-3 text-sm">
-                  <span className="text-muted">Max Resolution</span>
-                  <span
-                    className={`text-right font-medium ${competitor.isHighlighted ? "text-fg" : ""}`}
-                  >
-                    {competitor.maxResolution}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between border-b border-border py-3 text-sm">
-                  <span className="text-muted">Export Formats</span>
-                  <span
-                    className={`text-right font-medium ${competitor.isHighlighted ? "text-fg" : ""}`}
-                  >
-                    {competitor.exportFormats}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between border-b border-border py-3 text-sm">
-                  <span className="text-muted">Scan Limits</span>
-                  <span
-                    className={`text-right font-medium ${competitor.isHighlighted ? "text-fg" : ""}`}
-                  >
-                    {competitor.scanLimits}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between py-3 text-sm">
-                  <span className="text-muted">Design Options</span>
-                  <span
-                    className={`text-right font-medium ${competitor.isHighlighted ? "text-fg" : ""}`}
-                  >
-                    {competitor.designOptions}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Footer Note */}
-        <p className="mt-6 text-center text-[13px] text-muted">
-          * Comparison based on typical QR code generator pricing and features
-          as of March 2026.
-        </p>
-
         {/* CTA */}
         <div className="mt-12 text-center">
           <Link
-            href="/generator"
-            className="inline-flex items-center gap-2.5 bg-accent px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-fg"
+            href="#qr-generator"
+            className="inline-flex items-center gap-2 rounded-lg bg-accent px-8 py-4 font-semibold text-white shadow-lg shadow-accent/40 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-accent/50"
           >
-            Try It Free
+            Start Creating for Free
             <svg
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              className="h-5 w-5"
-              aria-hidden="true"
             >
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
