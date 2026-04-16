@@ -17,8 +17,10 @@ import {
 } from "@/components/ContentTypeForms";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/AuthModal";
+import QRTypeSelector from "@/components/QRTypeSelector";
 import type { User } from "@supabase/supabase-js";
 
+type QRType = "static" | "dynamic";
 type TabType = "content" | "labels" | "colors" | "style" | "export";
 type ToastType = { message: string; type: "success" | "error"; id: number };
 type ErrorLevelType = "L" | "M" | "Q" | "H";
@@ -673,9 +675,13 @@ function GeneratorContent() {
   // Get URL from query params
   const searchParams = useSearchParams();
   const urlParam = searchParams.get("url");
+  const qrTypeParam = searchParams.get("qr_type") as QRType | null;
 
   // Form state
   const [url, setUrl] = useState(urlParam || "");
+  const [qrType, setQrType] = useState<QRType | undefined>(
+    qrTypeParam || undefined
+  );
   const [urlValid, setUrlValid] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -922,7 +928,8 @@ function GeneratorContent() {
           title,
           short_code: shortCode,
           destination_url: generatedUrl,
-          is_editable: false,
+          is_editable: qrType === "dynamic",
+          qr_type: qrType || "static",
           scan_count: 0,
           qr_data: qrCustomization,
         })
@@ -950,6 +957,7 @@ function GeneratorContent() {
   }, [
     qrDataUrl,
     generatedUrl,
+    qrType,
     fgColor,
     bgColor,
     pattern,
@@ -2090,6 +2098,26 @@ showpage
                             below
                           </p>
                         </div>
+
+                        {/* QR Type Selector */}
+                        {urlValid && (
+                          <div className="mb-5">
+                            <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-[var(--pro-fg)]">
+                              QR Type
+                            </label>
+                            <QRTypeSelector
+                              selectedType={qrType}
+                              onSelect={setQrType}
+                            />
+                            {qrType && (
+                              <p className="mt-2 text-xs text-[var(--pro-muted)]">
+                                {qrType === "static"
+                                  ? "Static QR codes point directly to your URL and cannot be changed after printing."
+                                  : "Dynamic QR codes use a redirect server. Edit the destination anytime for $1.99 (one-time fee)."}
+                              </p>
+                            )}
+                          </div>
+                        )}
 
                         {/* Quick Actions */}
                         <div className="flex flex-wrap gap-1.5">
