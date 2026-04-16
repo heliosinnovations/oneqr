@@ -1,6 +1,6 @@
 # The QR Spot
 
-Simple, honest QR code generator with no limits, no expiring codes, and no tricks. Free to generate, pay once to edit forever.
+Simple, honest QR code generator with no limits, no expiring codes, and no tricks. 100% free forever.
 
 ## Tech Stack
 
