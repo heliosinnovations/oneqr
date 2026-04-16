@@ -6,7 +6,10 @@ import Link from "next/link";
 import { trackEvent } from "@/lib/analytics";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/AuthModal";
+import QRTypeSelector from "@/components/QRTypeSelector";
 import { User } from "@supabase/supabase-js";
+
+type QRType = "static" | "dynamic";
 
 // Generate a random 8-character alphanumeric code
 function generateShortCode(): string {
@@ -73,6 +76,8 @@ export default function SimpleQRGenerator() {
   const [savedQrId, setSavedQrId] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [userLoading, setUserLoading] = useState(true);
+  const [qrType, setQrType] = useState<QRType | undefined>(undefined);
+  const [showTypeSelector, setShowTypeSelector] = useState(false);
 
   // Check user authentication status
   useEffect(() => {
@@ -148,6 +153,13 @@ export default function SimpleQRGenerator() {
     }, 300);
     return () => clearTimeout(timer);
   }, [url, generateQR]);
+
+  // Reset QR type and saved status when URL changes
+  useEffect(() => {
+    setQrType(undefined);
+    setSavedQrId(null);
+    setSaveStatus(null);
+  }, [url]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -273,7 +285,8 @@ export default function SimpleQRGenerator() {
           title,
           short_code: shortCode,
           destination_url: processedUrl,
-          is_editable: false,
+          is_editable: qrType === "dynamic",
+          qr_type: qrType || "static",
           scan_count: 0,
         })
         .select("id")
@@ -312,7 +325,7 @@ export default function SimpleQRGenerator() {
       message: "Failed to generate unique code. Please try again.",
     });
     setIsSaving(false);
-  }, [qrDataUrl, url]);
+  }, [qrDataUrl, url, qrType]);
 
   // Listen for auth state changes to auto-save after login
   useEffect(() => {
@@ -331,9 +344,13 @@ export default function SimpleQRGenerator() {
     return () => subscription.unsubscribe();
   }, [showAuthModal, saveQRCode]);
 
-  const moreOptionsUrl = url.trim()
-    ? `/generator?url=${encodeURIComponent(url.trim())}`
-    : "/generator";
+  const moreOptionsUrl = (() => {
+    const params = new URLSearchParams();
+    if (url.trim()) params.set("url", url.trim());
+    if (qrType) params.set("qr_type", qrType);
+    const queryString = params.toString();
+    return queryString ? `/generator?${queryString}` : "/generator";
+  })();
 
   return (
     <div className="bg-surface p-8" role="form" aria-label="QR Code Generator">
@@ -437,8 +454,46 @@ export default function SimpleQRGenerator() {
         </p>
       )}
 
-      {/* Actions Section */}
-      {qrDataUrl && (
+      {/* QR Type Selector - Show after QR is generated */}
+      {qrDataUrl && !qrType && (
+        <div className="mb-6">
+          <p className="mb-4 text-center text-sm font-medium text-fg">
+            Choose your QR type:
+          </p>
+          <QRTypeSelector
+            selectedType={qrType}
+            onSelect={(type) => {
+              setQrType(type);
+            }}
+          />
+        </div>
+      )}
+
+      {/* Selected type indicator */}
+      {qrDataUrl && qrType && (
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">{qrType === "static" ? "📄" : "🔄"}</span>
+            <span className="text-sm font-medium">
+              {qrType === "static" ? "Static QR" : "Dynamic QR"}
+            </span>
+            {qrType === "dynamic" && (
+              <span className="rounded bg-accent-light px-2 py-0.5 text-xs font-semibold text-accent">
+                $1.99 at first edit
+              </span>
+            )}
+          </div>
+          <button
+            onClick={() => setQrType(undefined)}
+            className="text-xs text-muted transition-colors hover:text-accent"
+          >
+            Change
+          </button>
+        </div>
+      )}
+
+      {/* Actions Section - Only show after type is selected */}
+      {qrDataUrl && qrType && (
         <div className="flex flex-col gap-3 sm:gap-4">
           {/* Download buttons - always available, no login required */}
           <div className="flex items-center gap-2 sm:gap-4">
