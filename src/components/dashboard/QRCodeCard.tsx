@@ -15,6 +15,9 @@ export interface QRCodeData {
   updated_at: string;
   folder_id: string | null;
   qr_data?: Record<string, unknown>;
+  qr_type?: "static" | "dynamic";
+  edit_count?: number;
+  is_paid?: boolean;
 }
 
 interface QRCodeCardProps {
@@ -383,19 +386,31 @@ export default function QRCodeCard({
             {qr.destination_url}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {qr.is_editable ? (
-              <>
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#d1e7dd] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#198754]">
-                  Paid
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-[var(--accent-light)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent)]">
-                  Dynamic
-                </span>
-              </>
-            ) : (
+            {qr.qr_type === "static" && (
               <span className="inline-flex items-center gap-1 rounded-full bg-[var(--surface)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
-                Free
+                📄 Static
               </span>
+            )}
+            {qr.qr_type === "dynamic" && (
+              <>
+                <span className="inline-flex items-center gap-1 rounded-full bg-[var(--accent-light)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent)]">
+                  🔄 Dynamic
+                </span>
+                {qr.is_paid || qr.is_editable ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[#d1e7dd] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#198754]">
+                    Paid ✓
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[#fff3cd] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#856404]">
+                    🔒 Locked
+                  </span>
+                )}
+                {(qr.edit_count || 0) > 0 && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[var(--surface)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+                    {qr.edit_count} {qr.edit_count === 1 ? "edit" : "edits"}
+                  </span>
+                )}
+              </>
             )}
             {currentFolder && (
               <span
